@@ -107,6 +107,7 @@
 
             <h3 class="group-title">自動取得値の手動上書き</h3>
             <div class="form-grid">
+              <label class="field">Fear &amp; Greed Index<input id="override-fearGreed" type="number" inputmode="decimal" min="0" max="100" step="0.1"></label>
               <label class="field">VIX<input id="override-vix" type="number" inputmode="decimal" step="0.1"></label>
               <label class="field">S&amp;P500 200日線乖離（%）<input id="override-spDeviation" type="number" inputmode="decimal" step="0.1"></label>
               <label class="field">Nasdaq100 200日線乖離（%）<input id="override-nasdaqDeviation" type="number" inputmode="decimal" step="0.1"></label>
@@ -123,7 +124,6 @@
 
             <h3 class="group-title">手動任意項目</h3>
             <div class="form-grid">
-              <label class="field">Fear &amp; Greed Index<input id="manual-fearGreed" type="number" inputmode="decimal" min="0" max="100" step="0.1"></label>
               <label class="field">S&amp;P500 200日線上銘柄比率（%）<input id="manual-spAbove200" type="number" inputmode="decimal" min="0" max="100" step="0.1"></label>
               <label class="field">Put/Call Ratio<input id="manual-putCall" type="number" inputmode="decimal" step="0.01"></label>
               <label class="field">NAAIM Exposure Index<input id="manual-naaim" type="number" inputmode="decimal" step="0.1"></label>

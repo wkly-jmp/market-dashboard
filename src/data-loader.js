@@ -194,7 +194,7 @@ export function getSourceRows(latestData) {
       name: field ? field.name : id,
       series: source.series || "--",
       source: source.source || "FRED",
-      date: source.date || "--"
+      date: source.time ? source.date + " " + source.time : source.date || "--"
     };
   });
 }

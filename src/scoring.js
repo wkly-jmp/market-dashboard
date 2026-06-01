@@ -12,7 +12,8 @@ export const FIELDS = [
   { id: "yieldCurve", name: "10年-2年金利差", shortName: "長短金利差", unit: "%", source: "auto", describe: describeYieldCurve },
   { id: "dollarDeviation", name: "ドル指数 200日線乖離", shortName: "ドル指数乖離", unit: "%", source: "auto", describe: describeDollarDeviation },
   { id: "oilDeviation", name: "原油価格 200日線乖離", shortName: "原油乖離", unit: "%", source: "auto", describe: describeOilDeviation },
-  { id: "fearGreed", name: "Fear & Greed Index", shortName: "Fear & Greed", unit: "", source: "manual", min: 0, max: 100, describe: describeFearGreed },
+  { id: "fearGreed", name: "Fear & Greed Index", shortName: "Fear & Greed", unit: "", source: "auto", min: 0, max: 100, describe: describeFearGreed },
+  { id: "fearGreedChange", name: "Fear & Greed 1か月変化", shortName: "F&G変化", unit: "", source: "auto", describe: describeFearGreedChange },
   { id: "spAbove200", name: "S&P500 200日線上銘柄比率", shortName: "200日線上比率", unit: "%", source: "manual", min: 0, max: 100, describe: describeSpAbove200 },
   { id: "putCall", name: "Put/Call Ratio", shortName: "Put/Call", unit: "", source: "manual", min: 0, describe: describePutCall },
   { id: "naaim", name: "NAAIM Exposure Index", shortName: "NAAIM", unit: "", source: "manual", describe: describeNaaim },
@@ -343,6 +344,14 @@ function describeFearGreed(value) {
   if (value <= 55) return axis("中立", "センチメントは中立圏。", "neutral", 45, 20, 35, 6, 4, 3);
   if (value <= 75) return axis("強気", "楽観が強まりつつあり、追いかけすぎに注意。", "overheated", 65, 20, 35, 8, 3, 3);
   return axis("過熱", "楽観が極端。新規追加は慎重。", "overheated", 88, 25, 20, 10, 3, 3);
+}
+
+function describeFearGreedChange(value) {
+  if (value >= 20) return axis("急改善", "Fear & Greedが大きく改善。悲観からの回復を強く示す。", "pessimistic", 58, 28, 82, 5, 5, 10);
+  if (value >= 8) return axis("改善", "Fear & Greedが改善。回復モメンタムを補強。", "pessimistic", 52, 28, 68, 4, 4, 9);
+  if (value > -8) return axis("中立", "Fear & Greedの変化は中立圏。", "neutral", 45, 30, 45, 3, 3, 4);
+  if (value > -20) return axis("悪化", "Fear & Greedが悪化。センチメントの失速に注意。", "warning", 35, 55, 25, 4, 5, 8);
+  return axis("急悪化", "Fear & Greedが大きく悪化。リスク回避が強い。", "warning", 20, 75, 15, 4, 6, 10);
 }
 
 function describeVix(value) {

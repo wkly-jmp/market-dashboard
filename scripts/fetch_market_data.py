@@ -7,20 +7,23 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.error import URLError
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "data" / "latest.json"
 FRED_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={series}&cosd={start_date}"
+CNN_FEAR_GREED_URL = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
+STOOQ_USDJPY_URL = "https://stooq.com/q/l/?s=usdjpy&f=sd2t2ohlcv&h&e=csv"
+FRANKFURTER_USDJPY_URL = "https://api.frankfurter.app/latest?from=USD&to=JPY"
 
 SERIES = {
     "vix": "VIXCLS",
     "sp500": "SP500",
     "nasdaq100": "NASDAQ100",
     "us10y": "DGS10",
-    "usdjpy": "DEXJPUS",
+    "usdjpy_fred": "DEXJPUS",
     "credit_spread": "BAA10Y",
     "financial_stress": "STLFSI4",
     "real_yield": "DFII10",
@@ -36,7 +39,9 @@ def main() -> int:
 
     try:
         raw = {name: fetch_series(series) for name, series in SERIES.items()}
-        payload = build_payload(raw)
+        fear_greed = fetch_fear_greed(warnings)
+        usdjpy_quote = fetch_usdjpy_quote(raw["usdjpy_fred"], warnings)
+        payload = build_payload(raw, fear_greed, usdjpy_quote, warnings)
         write_json(payload)
         return 0
     except Exception as exc:
@@ -79,7 +84,93 @@ def fetch_series(series: str) -> list[tuple[datetime, float]]:
     return result
 
 
-def build_payload(raw: dict[str, list[tuple[datetime, float]]]) -> dict:
+def fetch_fear_greed(warnings: list[str]) -> dict | None:
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125 Safari/537.36",
+        "Accept": "application/json,text/plain,*/*",
+        "Referer": "https://www.cnn.com/markets/fear-and-greed",
+        "Origin": "https://www.cnn.com",
+    }
+
+    try:
+        request = Request(CNN_FEAR_GREED_URL, headers=headers)
+        with urlopen(request, timeout=30) as response:
+            data = json.loads(response.read().decode("utf-8"))
+        result = data.get("fear_and_greed") or {}
+        score = float(result["score"])
+        timestamp = result.get("timestamp")
+        previous_month = result.get("previous_1_month")
+        return {
+            "score": score,
+            "timestamp": timestamp,
+            "previous_1_month": float(previous_month) if previous_month is not None else None,
+            "rating": result.get("rating", ""),
+        }
+    except Exception as exc:
+        warnings.append(f"Fear & Greed取得に失敗しました: {exc}")
+        return None
+
+
+def fetch_usdjpy_quote(fred_rows: list[tuple[datetime, float]], warnings: list[str]) -> dict:
+    stooq = fetch_usdjpy_from_stooq()
+    if stooq:
+        return stooq
+
+    frankfurter = fetch_usdjpy_from_frankfurter()
+    if frankfurter:
+        warnings.append("Stooqのドル円取得に失敗したため、Frankfurterの日次レートを使用しました。")
+        return frankfurter
+
+    date, value = latest(fred_rows)
+    warnings.append("Stooq/Frankfurterのドル円取得に失敗したため、FRED DEXJPUSを使用しました。")
+    return {
+        "value": value,
+        "source": "FRED",
+        "series": "DEXJPUS",
+        "date": date.strftime("%Y-%m-%d"),
+    }
+
+
+def fetch_usdjpy_from_stooq() -> dict | None:
+    try:
+        request = Request(STOOQ_USDJPY_URL, headers={"User-Agent": "Mozilla/5.0"})
+        with urlopen(request, timeout=20) as response:
+            text = response.read().decode("utf-8-sig")
+        rows = list(csv.DictReader(text.splitlines()))
+        if not rows:
+            return None
+        row = rows[0]
+        close = float(row["Close"])
+        date = row.get("Date", "")
+        time = row.get("Time", "")
+        return {
+            "value": close,
+            "source": "Stooq",
+            "series": "USDJPY",
+            "date": date,
+            "time": time,
+        }
+    except Exception:
+        return None
+
+
+def fetch_usdjpy_from_frankfurter() -> dict | None:
+    try:
+        request = Request(FRANKFURTER_USDJPY_URL, headers={"User-Agent": "Mozilla/5.0"})
+        with urlopen(request, timeout=20) as response:
+            data = json.loads(response.read().decode("utf-8"))
+        value = float(data["rates"]["JPY"])
+        return {
+            "value": value,
+            "source": "Frankfurter",
+            "series": "USDJPY_ECB_REFERENCE",
+            "date": data.get("date", ""),
+        }
+    except Exception:
+        return None
+
+
+def build_payload(raw: dict[str, list[tuple[datetime, float]]], fear_greed: dict | None, usdjpy_quote: dict, warnings: list[str]) -> dict:
     now_utc = datetime.now(timezone.utc)
     now_jst = now_utc.astimezone(ZoneInfo("Asia/Tokyo"))
 
@@ -87,7 +178,7 @@ def build_payload(raw: dict[str, list[tuple[datetime, float]]]) -> dict:
     sp_date, sp = latest(raw["sp500"])
     nasdaq_date, nasdaq = latest(raw["nasdaq100"])
     us10y_date, us10y = latest(raw["us10y"])
-    usdjpy_date, usdjpy = latest(raw["usdjpy"])
+    usdjpy = usdjpy_quote["value"]
     credit_date, credit_spread = latest(raw["credit_spread"])
     stress_date, financial_stress = latest(raw["financial_stress"])
     real_yield_date, real_yield = latest(raw["real_yield"])
@@ -109,7 +200,7 @@ def build_payload(raw: dict[str, list[tuple[datetime, float]]]) -> dict:
         "nasdaqDeviation": round((nasdaq / nasdaq_ma - 1) * 100, 2),
         "us10y": round(us10y, 3),
         "us10yChange": round((us10y - us10y_month_ago) * 100, 1),
-        "usdjpy": round(usdjpy, 3),
+        "usdjpy": round(usdjpy, 4),
         "creditSpread": round(credit_spread, 3),
         "financialStress": round(financial_stress, 3),
         "realYield": round(real_yield, 3),
@@ -118,27 +209,56 @@ def build_payload(raw: dict[str, list[tuple[datetime, float]]]) -> dict:
         "oilDeviation": round((oil / oil_ma - 1) * 100, 2),
     }
 
+    if fear_greed:
+        values["fearGreed"] = round(fear_greed["score"], 2)
+        if fear_greed["previous_1_month"] is not None:
+            values["fearGreedChange"] = round(fear_greed["score"] - fear_greed["previous_1_month"], 2)
+
+    usdjpy_source = {
+        "series": usdjpy_quote["series"],
+        "source": usdjpy_quote["source"],
+        "date": usdjpy_quote["date"],
+    }
+    if usdjpy_quote.get("time"):
+        usdjpy_source["time"] = usdjpy_quote["time"]
+
+    sources = {
+        "vix": source("VIXCLS", vix_date),
+        "vixChange": source("VIXCLS", vix_date),
+        "spDeviation": source("SP500", sp_date),
+        "nasdaqDeviation": source("NASDAQ100", nasdaq_date),
+        "us10y": source("DGS10", us10y_date),
+        "us10yChange": source("DGS10", us10y_date),
+        "usdjpy": usdjpy_source,
+        "creditSpread": source("BAA10Y", credit_date),
+        "financialStress": source("STLFSI4", stress_date),
+        "realYield": source("DFII10", real_yield_date),
+        "yieldCurve": source("T10Y2Y", curve_date),
+        "dollarDeviation": source("DTWEXBGS", dollar_date),
+        "oilDeviation": source("DCOILWTICO", oil_date),
+    }
+
+    if fear_greed:
+        fear_date = parse_source_date(fear_greed.get("timestamp"))
+        sources["fearGreed"] = {
+            "series": "CNN_FEAR_GREED",
+            "source": "CNN",
+            "date": fear_date,
+        }
+        if "fearGreedChange" in values:
+            sources["fearGreedChange"] = {
+                "series": "CNN_FEAR_GREED",
+                "source": "CNN",
+                "date": fear_date,
+            }
+
     return {
         "updated_at": now_utc.replace(microsecond=0).isoformat().replace("+00:00", "Z"),
         "updated_at_jst": now_jst.strftime("%Y-%m-%d %H:%M"),
         "status": "ok",
         "values": values,
-        "sources": {
-            "vix": source("VIXCLS", vix_date),
-            "vixChange": source("VIXCLS", vix_date),
-            "spDeviation": source("SP500", sp_date),
-            "nasdaqDeviation": source("NASDAQ100", nasdaq_date),
-            "us10y": source("DGS10", us10y_date),
-            "us10yChange": source("DGS10", us10y_date),
-            "usdjpy": source("DEXJPUS", usdjpy_date),
-            "creditSpread": source("BAA10Y", credit_date),
-            "financialStress": source("STLFSI4", stress_date),
-            "realYield": source("DFII10", real_yield_date),
-            "yieldCurve": source("T10Y2Y", curve_date),
-            "dollarDeviation": source("DTWEXBGS", dollar_date),
-            "oilDeviation": source("DCOILWTICO", oil_date),
-        },
-        "warnings": [],
+        "sources": sources,
+        "warnings": warnings,
     }
 
 
@@ -167,6 +287,15 @@ def source(series: str, date: datetime) -> dict[str, str]:
         "source": "FRED",
         "date": date.strftime("%Y-%m-%d"),
     }
+
+
+def parse_source_date(timestamp: str | None) -> str:
+    if not timestamp:
+        return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    try:
+        return datetime.fromisoformat(timestamp.replace("Z", "+00:00")).strftime("%Y-%m-%d")
+    except ValueError:
+        return datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
 
 def build_error_payload(previous: dict | None, warnings: list[str]) -> dict:

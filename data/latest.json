@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-06-01T09:03:51Z",
-  "updated_at_jst": "2026-06-01 18:03",
+  "updated_at": "2026-06-01T09:49:36Z",
+  "updated_at_jst": "2026-06-01 18:49",
   "status": "ok",
   "values": {
     "vix": 15.74,
@@ -9,13 +9,15 @@
     "nasdaqDeviation": 19.47,
     "us10y": 4.45,
     "us10yChange": 9.0,
-    "usdjpy": 159.2,
+    "usdjpy": 159.4665,
     "creditSpread": 1.57,
     "financialStress": -0.761,
     "realYield": 2.06,
     "yieldCurve": 0.47,
     "dollarDeviation": -0.42,
-    "oilDeviation": 34.57
+    "oilDeviation": 34.57,
+    "fearGreed": 59.17,
+    "fearGreedChange": -12.0
   },
   "sources": {
     "vix": {
@@ -49,9 +51,10 @@
       "date": "2026-05-28"
     },
     "usdjpy": {
-      "series": "DEXJPUS",
-      "source": "FRED",
-      "date": "2026-05-22"
+      "series": "USDJPY",
+      "source": "Stooq",
+      "date": "2026-06-01",
+      "time": "11:49:36"
     },
     "creditSpread": {
       "series": "BAA10Y",
@@ -82,6 +85,16 @@
       "series": "DCOILWTICO",
       "source": "FRED",
       "date": "2026-05-26"
+    },
+    "fearGreed": {
+      "series": "CNN_FEAR_GREED",
+      "source": "CNN",
+      "date": "2026-06-01"
+    },
+    "fearGreedChange": {
+      "series": "CNN_FEAR_GREED",
+      "source": "CNN",
+      "date": "2026-06-01"
     }
   },
   "warnings": []
