@@ -1,10 +1,17 @@
 export const FIELDS = [
   { id: "vix", name: "VIX", shortName: "VIX", weight: 16, unit: "", deltaUnit: "", source: "auto", calc: scoreVix, min: 0 },
+  { id: "vixChange", name: "VIX 1か月変化", shortName: "VIX変化", weight: 8, unit: "", deltaUnit: "", source: "auto", calc: scoreVixChange },
   { id: "spDeviation", name: "S&P500 200日線乖離", shortName: "S&P500乖離", weight: 14, unit: "%", deltaUnit: "pt", source: "auto", calc: scoreSpDeviation },
   { id: "nasdaqDeviation", name: "Nasdaq100 200日線乖離", shortName: "Nasdaq100乖離", weight: 12, unit: "%", deltaUnit: "pt", source: "auto", calc: scoreNasdaqDeviation },
   { id: "us10y", name: "米10年金利", shortName: "米10年金利", weight: 10, unit: "%", deltaUnit: "pt", source: "auto", calc: scoreUs10y, min: 0 },
   { id: "us10yChange", name: "米10年金利 1か月変化", shortName: "金利1か月変化", weight: 10, unit: "bp", deltaUnit: "bp", source: "auto", calc: scoreUs10yChange },
   { id: "usdjpy", name: "ドル円", shortName: "ドル円", weight: 6, unit: "円", deltaUnit: "円", source: "auto", calc: scoreUsdJpy, min: 0 },
+  { id: "creditSpread", name: "信用スプレッド代理", shortName: "信用スプレッド", weight: 10, unit: "%", deltaUnit: "pt", source: "auto", calc: scoreCreditSpread, min: 0 },
+  { id: "financialStress", name: "金融ストレス指数", shortName: "金融ストレス", weight: 10, unit: "", deltaUnit: "", source: "auto", calc: scoreFinancialStress },
+  { id: "realYield", name: "米10年実質金利", shortName: "実質金利", weight: 8, unit: "%", deltaUnit: "pt", source: "auto", calc: scoreRealYield },
+  { id: "yieldCurve", name: "10年-2年金利差", shortName: "長短金利差", weight: 6, unit: "%", deltaUnit: "pt", source: "auto", calc: scoreYieldCurve },
+  { id: "dollarDeviation", name: "ドル指数 200日線乖離", shortName: "ドル指数乖離", weight: 6, unit: "%", deltaUnit: "pt", source: "auto", calc: scoreDollarDeviation },
+  { id: "oilDeviation", name: "原油価格 200日線乖離", shortName: "原油乖離", weight: 4, unit: "%", deltaUnit: "pt", source: "auto", calc: scoreOilDeviation },
   { id: "fearGreed", name: "Fear & Greed Index", shortName: "Fear & Greed", weight: 18, unit: "", deltaUnit: "", source: "manual", calc: scoreFearGreed, min: 0, max: 100 },
   { id: "spAbove200", name: "S&P500 200日線上銘柄比率", shortName: "200日線上比率", weight: 8, unit: "%", deltaUnit: "pt", source: "manual", calc: scoreSpAbove200, min: 0, max: 100 },
   { id: "putCall", name: "Put/Call Ratio", shortName: "Put/Call", weight: 6, unit: "", deltaUnit: "", source: "manual", calc: scorePutCall, min: 0 },
@@ -66,6 +73,8 @@ export function calculateScore(values) {
 export function detectCorrections(values, memoText = "") {
   const crisis =
     valueOver(values.vix, 35) ||
+    valueOver(values.creditSpread, 3.2) ||
+    valueOver(values.financialStress, 1) ||
     valueUnderOrEqual(values.spDeviation, -10) ||
     valueUnderOrEqual(values.nasdaqDeviation, -12);
 
@@ -78,7 +87,8 @@ export function detectCorrections(values, memoText = "") {
 
   const rate =
     valueOverOrEqual(values.us10y, 4.8) ||
-    valueOverOrEqual(values.us10yChange, 30);
+    valueOverOrEqual(values.us10yChange, 30) ||
+    valueOverOrEqual(values.realYield, 2.2);
 
   const fx =
     valueOver(values.usdjpy, 160) ||
@@ -128,8 +138,14 @@ export function judgeMomentum(values, previousSnapshot, deltas) {
 
   countMomentum("fearGreed", (diff) => diff >= 5, (diff) => diff <= -5);
   countMomentum("vix", (diff, current, previous) => diff <= -2 || percentChange(current, previous) <= -10, (diff, current, previous) => diff >= 2 || percentChange(current, previous) >= 10);
+  countMomentum("vixChange", (diff) => diff < 0, (diff) => diff > 0);
   countMomentum("spDeviation", (diff) => diff > 0, (diff) => diff < 0);
   countMomentum("nasdaqDeviation", (diff) => diff > 0, (diff) => diff < 0);
+  countMomentum("creditSpread", (diff) => diff < 0, (diff) => diff > 0);
+  countMomentum("financialStress", (diff) => diff < 0, (diff) => diff > 0);
+  countMomentum("realYield", (diff) => diff < 0, (diff) => diff > 0);
+  countMomentum("yieldCurve", (diff) => diff > 0, (diff) => diff < 0);
+  countMomentum("dollarDeviation", (diff) => diff < 0, (diff) => diff > 0);
   countMomentum("putCall", (diff) => diff < 0, (diff) => diff > 0);
   countMomentum("naaim", (diff) => diff > 0, (diff) => diff < 0);
   countMomentum("aaii", (diff) => diff > 0, (diff) => diff < 0);
@@ -324,6 +340,14 @@ function scoreVix(value) {
   return result(10, "警戒", "強い恐怖。危機警戒として速度制限。", "warning");
 }
 
+function scoreVixChange(value) {
+  if (value <= -6) return result(38, "改善", "VIXが大きく低下。ストレス緩和の兆し。", "pessimistic");
+  if (value < -2) return result(44, "やや改善", "VIXは低下傾向。回復モメンタムを補強。", "pessimistic");
+  if (value <= 2) return result(50, "中立", "VIX変化は中立圏。", "neutral");
+  if (value <= 6) return result(34, "警戒", "VIXが上昇。市場ストレスの悪化に注意。", "warning");
+  return result(18, "警戒", "VIXが急上昇。短期的なリスク回避に注意。", "warning");
+}
+
 function scoreSpDeviation(value) {
   if (value <= -10) return result(15, "悲観", "200日線を大きく下回る。悲観だが危機警戒も必要。", "pessimistic");
   if (value <= -3) return result(35, "やや悲観", "長期線を下回り、弱めの地合い。", "pessimistic");
@@ -361,6 +385,41 @@ function scoreUsdJpy(value) {
   return result(72, "警戒", "為替介入・急変警戒。円ベースPFでは変動リスク大。", "warning");
 }
 
+function scoreCreditSpread(value) {
+  if (value < 1.5) return result(68, "過熱", "信用不安はかなり低い。リスク選好が強すぎる可能性。", "overheated");
+  if (value < 2.3) return result(54, "中立", "信用スプレッドは落ち着いている。", "neutral");
+  if (value < 3.2) return result(34, "警戒", "信用スプレッドが拡大。景気・信用不安に注意。", "warning");
+  return result(16, "警戒", "信用ストレスが強い。危機補正の対象。", "warning");
+}
+
+function scoreFinancialStress(value) {
+  if (value < -0.8) return result(66, "楽観", "金融ストレスはかなり低く、リスク選好が強い可能性。", "overheated");
+  if (value < 0) return result(54, "中立", "金融ストレスは低めで安定。", "neutral");
+  if (value < 1) return result(34, "警戒", "金融ストレスが上昇。市場環境の悪化に注意。", "warning");
+  return result(14, "警戒", "金融ストレスが高い。危機補正の対象。", "warning");
+}
+
+function scoreRealYield(value) {
+  if (value < 0.5) return result(42, "支援的", "実質金利は低く、リスク資産に比較的支援的。", "pessimistic");
+  if (value < 1.5) return result(50, "中立", "実質金利は中立圏。", "neutral");
+  if (value < 2.2) return result(64, "警戒", "実質金利が高めで、グロースや金に圧力。", "warning");
+  return result(76, "警戒", "実質金利が高い。バリュエーション圧力に注意。", "warning");
+}
+
+function scoreYieldCurve(value) {
+  if (value < -0.5) return result(28, "警戒", "長短金利差が大きく逆転。景気後退リスクに注意。", "warning");
+  if (value < 0) return result(38, "やや警戒", "逆イールド。景気サイクル面では警戒。", "warning");
+  if (value <= 1.5) return result(50, "中立", "長短金利差は中立圏。", "neutral");
+  return result(60, "景気拡大寄り", "順イールドが大きく、景気拡大寄りの環境。", "neutral");
+}
+
+function scoreDollarDeviation(value) {
+  if (value <= -5) return result(42, "ドル安", "ドル安方向。海外リスク資産には支援的な面もある。", "pessimistic");
+  if (value <= 5) return result(50, "中立", "ドル指数は200日線近辺。", "neutral");
+  if (value <= 10) return result(62, "警戒", "ドル高が進み、新興国・外貨建て資産に圧力。", "warning");
+  return result(72, "警戒", "ドル高が強い。グローバル金融環境に注意。", "warning");
+}
+
 function scoreSpAbove200(value) {
   if (value < 30) return result(20, "悲観", "上昇参加銘柄が少なく、地合いは弱い。", "pessimistic");
   if (value < 45) return result(36, "やや悲観", "市場の広がりは限定的。", "pessimistic");
@@ -395,6 +454,13 @@ function scoreGoldDeviation(value) {
   if (value <= 8) return result(50, "中立", "金は中立圏。", "neutral");
   if (value <= 18) return result(66, "強い", "金は強いが、短期過熱にはまだ余地。", "overheated");
   return result(84, "過熱", "金の短期過熱。貴金属PFの追いかけ買いに注意。", "overheated");
+}
+
+function scoreOilDeviation(value) {
+  if (value <= -20) return result(34, "弱い", "原油が大きく弱い。景気減速懸念を示す場合がある。", "warning");
+  if (value <= 10) return result(50, "中立", "原油は中立圏。", "neutral");
+  if (value <= 25) return result(62, "警戒", "原油が強く、インフレ再燃に注意。", "warning");
+  return result(74, "警戒", "原油の上方乖離が大きい。金利・インフレ圧力に注意。", "warning");
 }
 
 function result(score, label, comment, tone) {

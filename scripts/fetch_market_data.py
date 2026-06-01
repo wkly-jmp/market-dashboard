@@ -13,7 +13,7 @@ from zoneinfo import ZoneInfo
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "data" / "latest.json"
-FRED_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={series}"
+FRED_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={series}&cosd={start_date}"
 
 SERIES = {
     "vix": "VIXCLS",
@@ -21,6 +21,12 @@ SERIES = {
     "nasdaq100": "NASDAQ100",
     "us10y": "DGS10",
     "usdjpy": "DEXJPUS",
+    "credit_spread": "BAA10Y",
+    "financial_stress": "STLFSI4",
+    "real_yield": "DFII10",
+    "yield_curve": "T10Y2Y",
+    "dollar_index": "DTWEXBGS",
+    "oil": "DCOILWTICO",
 }
 
 
@@ -41,9 +47,10 @@ def main() -> int:
 
 
 def fetch_series(series: str) -> list[tuple[datetime, float]]:
-    url = FRED_URL.format(series=series)
+    start_date = (datetime.now(timezone.utc) - timedelta(days=900)).strftime("%Y-%m-%d")
+    url = FRED_URL.format(series=series, start_date=start_date)
     try:
-        with urlopen(url, timeout=30) as response:
+        with urlopen(url, timeout=45) as response:
             text = response.read().decode("utf-8-sig")
     except URLError as exc:
         raise RuntimeError(f"{series} を取得できませんでした: {exc}") from exc
@@ -81,18 +88,34 @@ def build_payload(raw: dict[str, list[tuple[datetime, float]]]) -> dict:
     nasdaq_date, nasdaq = latest(raw["nasdaq100"])
     us10y_date, us10y = latest(raw["us10y"])
     usdjpy_date, usdjpy = latest(raw["usdjpy"])
+    credit_date, credit_spread = latest(raw["credit_spread"])
+    stress_date, financial_stress = latest(raw["financial_stress"])
+    real_yield_date, real_yield = latest(raw["real_yield"])
+    curve_date, yield_curve = latest(raw["yield_curve"])
+    dollar_date, dollar_index = latest(raw["dollar_index"])
+    oil_date, oil = latest(raw["oil"])
 
     sp_ma = moving_average(raw["sp500"], 200)
     nasdaq_ma = moving_average(raw["nasdaq100"], 200)
+    dollar_ma = moving_average(raw["dollar_index"], 200)
+    oil_ma = moving_average(raw["oil"], 200)
     _, us10y_month_ago = nearest_on_or_before(raw["us10y"], us10y_date - timedelta(days=30))
+    _, vix_month_ago = nearest_on_or_before(raw["vix"], vix_date - timedelta(days=30))
 
     values = {
         "vix": round(vix, 2),
+        "vixChange": round(vix - vix_month_ago, 2),
         "spDeviation": round((sp / sp_ma - 1) * 100, 2),
         "nasdaqDeviation": round((nasdaq / nasdaq_ma - 1) * 100, 2),
         "us10y": round(us10y, 3),
         "us10yChange": round((us10y - us10y_month_ago) * 100, 1),
         "usdjpy": round(usdjpy, 3),
+        "creditSpread": round(credit_spread, 3),
+        "financialStress": round(financial_stress, 3),
+        "realYield": round(real_yield, 3),
+        "yieldCurve": round(yield_curve, 3),
+        "dollarDeviation": round((dollar_index / dollar_ma - 1) * 100, 2),
+        "oilDeviation": round((oil / oil_ma - 1) * 100, 2),
     }
 
     return {
@@ -102,11 +125,18 @@ def build_payload(raw: dict[str, list[tuple[datetime, float]]]) -> dict:
         "values": values,
         "sources": {
             "vix": source("VIXCLS", vix_date),
+            "vixChange": source("VIXCLS", vix_date),
             "spDeviation": source("SP500", sp_date),
             "nasdaqDeviation": source("NASDAQ100", nasdaq_date),
             "us10y": source("DGS10", us10y_date),
             "us10yChange": source("DGS10", us10y_date),
             "usdjpy": source("DEXJPUS", usdjpy_date),
+            "creditSpread": source("BAA10Y", credit_date),
+            "financialStress": source("STLFSI4", stress_date),
+            "realYield": source("DFII10", real_yield_date),
+            "yieldCurve": source("T10Y2Y", curve_date),
+            "dollarDeviation": source("DTWEXBGS", dollar_date),
+            "oilDeviation": source("DCOILWTICO", oil_date),
         },
         "warnings": [],
     }
