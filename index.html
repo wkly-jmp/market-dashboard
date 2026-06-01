@@ -30,69 +30,69 @@
 
     <div id="warningArea" class="warnings"></div>
 
-    <section class="card main-card" aria-label="市場ドライブメーター">
-      <div class="score-row">
+    <section class="card main-card" aria-label="市場局面">
+      <div class="regime-hero">
         <div>
-          <div class="score-number">
-            <strong id="scoreValue">--</strong>
-            <span>/ 100</span>
-          </div>
-          <div id="marketLabel" class="market-label">未判定</div>
+          <p class="box-title">現在の局面</p>
+          <h2 id="regimeTitle">読み込み中</h2>
+          <p id="regimeSubtitle">data/latest.json を読み込んでいます。</p>
           <p id="compareAge" class="meta">前回比較：比較なし</p>
         </div>
-
         <div>
-          <div id="gauge" class="gauge" style="--needle: 50%;">
-            <div class="gauge-needle"></div>
-          </div>
-          <div class="gauge-scale">
-            <span>悲観</span>
-            <span>中立</span>
-            <span>過熱</span>
-          </div>
+          <p class="box-title">ポジション方針</p>
+          <h3 id="primaryAction">判定中</h3>
+          <p id="actionDetail">市場データを評価しています。</p>
         </div>
       </div>
 
-      <div class="drive-panel">
-        <div class="signal-box">
-          <p class="box-title">信号表示</p>
-          <div class="traffic" aria-hidden="true">
-            <div id="lampRed" class="lamp red"></div>
-            <div id="lampYellow" class="lamp yellow"></div>
-            <div id="lampBlue" class="lamp blue"></div>
+      <div class="axis-grid">
+        <div class="axis-card heat">
+          <div class="axis-head">
+            <span>過熱度</span>
+            <strong id="heatValue">--</strong>
           </div>
-          <p id="signalText" class="signal-text">未判定</p>
+          <div id="heatBar" class="axis-bar"><i></i></div>
+          <p>買われすぎ、リスクオン過多、追いかけ注意を測る軸。</p>
         </div>
-
-        <div class="speed-box">
-          <p class="box-title">制限速度</p>
-          <div class="speed-sign">
-            <div>
-              <strong id="speedValue">0</strong>
-              <span>km/h</span>
-            </div>
+        <div class="axis-card stress">
+          <div class="axis-head">
+            <span>ストレス度</span>
+            <strong id="stressValue">--</strong>
           </div>
-          <p id="directionText" class="direction-text">維持</p>
+          <div id="stressBar" class="axis-bar"><i></i></div>
+          <p>市場が壊れやすいか、急いで増やしてよいかを測る軸。</p>
+        </div>
+        <div class="axis-card recovery">
+          <div class="axis-head">
+            <span>回復度</span>
+            <strong id="recoveryValue">--</strong>
+          </div>
+          <div id="recoveryBar" class="axis-bar"><i></i></div>
+          <p>悲観が底打ちし、分割拡大候補になり始めたかを測る軸。</p>
         </div>
       </div>
 
-      <div class="momentum-box">
-        <p class="box-title">履歴からの前回比</p>
-        <p id="momentumStatus" class="momentum-status">回復モメンタム：比較なし</p>
-        <p id="momentumDetail">保存履歴が2件以上あると、前回比から改善・悪化を判定します。</p>
+      <div class="action-grid">
+        <div class="action-tile">
+          <span>拡大余地</span>
+          <strong id="expansionLevel">--</strong>
+        </div>
+        <div class="action-tile">
+          <span>縮小/利確</span>
+          <strong id="trimLevel">--</strong>
+        </div>
+        <div class="action-tile">
+          <span>防御姿勢</span>
+          <strong id="hedgeLevel">--</strong>
+        </div>
       </div>
 
-      <div class="action">
-        <h2 id="actionTitle">読み込み中</h2>
-        <p id="actionDetail">data/latest.json を読み込んでいます。</p>
-      </div>
+      <div id="regimeMatrix" class="matrix-wrap"></div>
     </section>
-
-    <div id="badgeArea" class="badges"></div>
 
     <div class="layout">
       <section class="card section">
-        <h2>自動取得指標</h2>
+        <h2>判断材料</h2>
         <div id="indicatorCards" class="indicator-grid"></div>
       </section>
 

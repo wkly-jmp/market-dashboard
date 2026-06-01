@@ -1,11 +1,4 @@
-import {
-  calculateDeltas,
-  calculateScore,
-  decideDrive,
-  detectCorrections,
-  FIELDS,
-  judgeMomentum
-} from "./scoring.js";
+import { analyzeMarket } from "./scoring.js";
 import {
   buildValues,
   clearOverrides,
@@ -28,21 +21,21 @@ const elements = {
   updatedAt: document.getElementById("updatedAt"),
   dataDates: document.getElementById("dataDates"),
   warningArea: document.getElementById("warningArea"),
-  scoreValue: document.getElementById("scoreValue"),
-  marketLabel: document.getElementById("marketLabel"),
-  compareAge: document.getElementById("compareAge"),
-  gauge: document.getElementById("gauge"),
-  lampBlue: document.getElementById("lampBlue"),
-  lampYellow: document.getElementById("lampYellow"),
-  lampRed: document.getElementById("lampRed"),
-  signalText: document.getElementById("signalText"),
-  speedValue: document.getElementById("speedValue"),
-  directionText: document.getElementById("directionText"),
-  momentumStatus: document.getElementById("momentumStatus"),
-  momentumDetail: document.getElementById("momentumDetail"),
-  actionTitle: document.getElementById("actionTitle"),
+  regimeTitle: document.getElementById("regimeTitle"),
+  regimeSubtitle: document.getElementById("regimeSubtitle"),
+  primaryAction: document.getElementById("primaryAction"),
   actionDetail: document.getElementById("actionDetail"),
-  badgeArea: document.getElementById("badgeArea"),
+  compareAge: document.getElementById("compareAge"),
+  heatValue: document.getElementById("heatValue"),
+  stressValue: document.getElementById("stressValue"),
+  recoveryValue: document.getElementById("recoveryValue"),
+  heatBar: document.getElementById("heatBar"),
+  stressBar: document.getElementById("stressBar"),
+  recoveryBar: document.getElementById("recoveryBar"),
+  expansionLevel: document.getElementById("expansionLevel"),
+  trimLevel: document.getElementById("trimLevel"),
+  hedgeLevel: document.getElementById("hedgeLevel"),
+  regimeMatrix: document.getElementById("regimeMatrix"),
   indicatorCards: document.getElementById("indicatorCards"),
   sourceList: document.getElementById("sourceList"),
   summaryText: document.getElementById("summaryText"),
@@ -55,7 +48,7 @@ const elements = {
 
 let latestData = null;
 let currentValues = {};
-let currentScore = null;
+let currentAnalysis = null;
 
 async function init() {
   hydrateOverrideForm(loadOverrides());
@@ -73,22 +66,19 @@ function render() {
   saveOverrides(overrides);
 
   const built = buildValues(latestData, overrides);
-  const memoText = elements.memo.value || "";
-  const calculated = calculateScore(built.values);
   const previousSnapshot = getComparisonSnapshot(built.values);
-  const deltas = calculateDeltas(built.values, previousSnapshot);
-  const momentum = judgeMomentum(built.values, previousSnapshot, deltas);
-  const corrections = detectCorrections(built.values, memoText);
-  const drive = decideDrive(calculated.score, corrections, momentum);
+  const analysis = analyzeMarket(built.values, previousSnapshot);
 
   currentValues = built.values;
-  currentScore = calculated.score;
+  currentAnalysis = analysis;
 
   renderDataStatus(latestData);
   renderWarnings(latestData, built.inputWarnings);
-  renderMain(calculated.score, drive, momentum);
-  renderBadges(corrections);
-  renderCards(calculated.cards, deltas);
+  renderRegime(analysis);
+  renderAxes(analysis.axes);
+  renderActions(analysis.actions);
+  renderMatrix(analysis);
+  renderCards(analysis.indicators);
   renderSources(latestData);
   renderSummary(overrides);
 }
@@ -120,70 +110,66 @@ function renderWarnings(data, inputWarnings) {
   }
 }
 
-function renderMain(score, drive, momentum) {
-  elements.scoreValue.textContent = score === null ? "--" : score;
-  elements.marketLabel.textContent = drive.label;
-  elements.gauge.style.setProperty("--needle", score === null ? "50%" : clamp(score, 0, 100) + "%");
-  elements.signalText.textContent = signalLabel(drive.signal);
-  elements.speedValue.textContent = drive.speed;
-  elements.directionText.textContent = drive.direction;
-  elements.actionTitle.textContent = drive.title;
-  elements.actionDetail.textContent = drive.detail;
-  elements.momentumStatus.textContent = momentum.label;
-  elements.momentumDetail.textContent = momentum.detail;
-
-  if (momentum.previousAgeDays === null) {
-    elements.compareAge.textContent = "前回比較：比較なし";
-  } else {
-    elements.compareAge.textContent = "前回比較：" + momentum.previousAgeDays + "日前の履歴を使用" + (momentum.previousAt ? "（" + momentum.previousAt + "）" : "");
-  }
-
-  [elements.lampBlue, elements.lampYellow, elements.lampRed].forEach((lamp) => {
-    lamp.classList.remove("active");
-  });
-
-  if (drive.signal === "blue") elements.lampBlue.classList.add("active");
-  if (drive.signal === "yellow") elements.lampYellow.classList.add("active");
-  if (drive.signal === "red") elements.lampRed.classList.add("active");
-  if (drive.signal === "blue-yellow") {
-    elements.lampBlue.classList.add("active");
-    elements.lampYellow.classList.add("active");
-  }
-  if (drive.signal === "yellow-red") {
-    elements.lampYellow.classList.add("active");
-    elements.lampRed.classList.add("active");
-  }
+function renderRegime(analysis) {
+  const { regime, actions, previous } = analysis;
+  elements.regimeTitle.textContent = regime.title;
+  elements.regimeSubtitle.textContent = regime.subtitle;
+  elements.primaryAction.textContent = actions.primary;
+  elements.actionDetail.textContent = actions.stance;
+  elements.compareAge.textContent = previous.text;
+  document.body.dataset.regime = regime.tone;
 }
 
-function renderBadges(corrections) {
-  const badges = [];
-  if (corrections.crisis) badges.push({ text: "危機警戒", className: "crisis" });
-  if (corrections.overheat) badges.push({ text: "過熱警戒", className: "overheat" });
-  if (corrections.rate) badges.push({ text: "金利警戒", className: "rate" });
-  if (corrections.fx) badges.push({ text: "為替警戒", className: "fx" });
-
-  elements.badgeArea.innerHTML = badges.map((badge) => {
-    return '<span class="badge ' + badge.className + '">' + badge.text + "</span>";
-  }).join("");
+function renderAxes(axes) {
+  setAxis(elements.heatValue, elements.heatBar, axes.heat);
+  setAxis(elements.stressValue, elements.stressBar, axes.stress);
+  setAxis(elements.recoveryValue, elements.recoveryBar, axes.recovery);
 }
 
-function renderCards(cards, deltas) {
-  const visibleCards = cards.filter((card) => card.source === "auto" || card.score !== null);
+function renderActions(actions) {
+  elements.expansionLevel.textContent = actions.expansion;
+  elements.trimLevel.textContent = actions.trim;
+  elements.hedgeLevel.textContent = actions.hedge;
+}
+
+function renderMatrix(analysis) {
+  const { heat, stress, recovery } = analysis.axes;
+  const x = clamp(heat, 0, 100);
+  const y = clamp(100 - stress, 0, 100);
+  const label = recovery >= 60 ? "回復強め" : recovery <= 35 ? "回復弱め" : "回復中立";
+
+  elements.regimeMatrix.innerHTML = [
+    '<div class="matrix">',
+    '<span class="matrix-label top-left">低過熱 / 低ストレス</span>',
+    '<span class="matrix-label top-right">高過熱 / 低ストレス</span>',
+    '<span class="matrix-label bottom-left">低過熱 / 高ストレス</span>',
+    '<span class="matrix-label bottom-right">高過熱 / 高ストレス</span>',
+    '<span class="matrix-dot" style="left: ' + x + '%; top: ' + y + '%;">',
+    '<span>' + escapeHtml(label) + '</span>',
+    '</span>',
+    '</div>'
+  ].join("");
+}
+
+function renderCards(indicators) {
+  const visibleCards = indicators.filter((card) => card.source === "auto" || card.value !== null);
 
   elements.indicatorCards.innerHTML = visibleCards.map((card) => {
-    const width = card.score === null ? 0 : card.score;
-    const delta = deltas[card.id] || { text: "比較なし", tone: "none" };
-    const deltaClass = delta.tone === "good" ? "good" : delta.tone === "bad" ? "bad" : "";
+    const deltaClass = card.delta.tone === "good" ? "good" : card.delta.tone === "bad" ? "bad" : "";
     return [
       '<article class="indicator-card">',
       '<div class="indicator-head">',
       '<h3 class="indicator-name">' + escapeHtml(card.name) + "</h3>",
-      '<span class="indicator-value">' + escapeHtml(card.value) + "</span>",
+      '<span class="indicator-value">' + escapeHtml(card.displayValue) + "</span>",
       "</div>",
-      '<div class="delta ' + deltaClass + '">' + escapeHtml(delta.text) + "</div>",
+      '<div class="delta ' + deltaClass + '">' + escapeHtml(card.delta.text) + "</div>",
       '<span class="tag ' + card.tone + '">' + escapeHtml(card.label) + "</span>",
       "<p>" + escapeHtml(card.comment) + "</p>",
-      '<div class="contribution" title="スコア寄与"><span style="--w: ' + width + '%;"></span></div>',
+      '<div class="mini-bars">',
+      miniBar("過熱", card.heat),
+      miniBar("ストレス", card.stress),
+      miniBar("回復", card.recovery),
+      "</div>",
       "</article>"
     ].join("");
   }).join("");
@@ -211,11 +197,9 @@ function bindEvents() {
   elements.refreshButton.addEventListener("click", reloadData);
   elements.recalcButton.addEventListener("click", render);
   elements.saveButton.addEventListener("click", () => {
-    const previous = saveSnapshot(currentValues, currentScore, latestData, elements.memo.value || "");
+    const score = currentAnalysis ? Math.round((currentAnalysis.axes.heat + currentAnalysis.axes.stress + currentAnalysis.axes.recovery) / 3) : null;
+    saveSnapshot(currentValues, score, latestData, elements.memo.value || "");
     render();
-    if (!previous) {
-      elements.compareAge.textContent = "前回比較：今回が初回保存";
-    }
   });
   elements.resetButton.addEventListener("click", () => {
     if (!confirm("手動上書きと任意メモをリセットしますか？")) return;
@@ -229,15 +213,20 @@ function bindEvents() {
   });
 }
 
-function signalLabel(signal) {
-  const labels = {
-    blue: "青：分割で拡大候補",
-    yellow: "黄：維持・様子見",
-    red: "赤：新規抑制・縮小候補",
-    "blue-yellow": "青〜黄：小さく拡大候補",
-    "yellow-red": "黄〜赤：慎重・縮小候補"
-  };
-  return labels[signal] || "未判定";
+function setAxis(valueElement, barElement, value) {
+  valueElement.textContent = value;
+  barElement.style.setProperty("--value", clamp(value, 0, 100) + "%");
+}
+
+function miniBar(label, value) {
+  if (value === null || value === undefined) return "";
+  return [
+    '<div class="mini-bar">',
+    '<span>' + label + '</span>',
+    '<div><i style="width: ' + clamp(value, 0, 100) + '%;"></i></div>',
+    '<b>' + Math.round(value) + '</b>',
+    '</div>'
+  ].join("");
 }
 
 function escapeHtml(text) {
