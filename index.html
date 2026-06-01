@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>市場温度計ダッシュボード</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <div>
+        <p class="eyebrow">GitHub Pages + FRED data</p>
+        <h1>市場温度計</h1>
+        <p>自動取得データからPF調整の方向を確認</p>
+      </div>
+      <button id="refreshButton" class="button secondary compact" type="button">再読み込み</button>
+    </header>
+
+    <section id="dataStatus" class="card status-card">
+      <div>
+        <p class="box-title">自動取得データ</p>
+        <p id="statusText" class="status-text">読み込み中</p>
+      </div>
+      <div>
+        <p id="updatedAt" class="meta">最終更新：--</p>
+        <p id="dataDates" class="meta">データ日付：--</p>
+      </div>
+    </section>
+
+    <div id="warningArea" class="warnings"></div>
+
+    <section class="card main-card" aria-label="市場ドライブメーター">
+      <div class="score-row">
+        <div>
+          <div class="score-number">
+            <strong id="scoreValue">--</strong>
+            <span>/ 100</span>
+          </div>
+          <div id="marketLabel" class="market-label">未判定</div>
+          <p id="compareAge" class="meta">前回比較：比較なし</p>
+        </div>
+
+        <div>
+          <div id="gauge" class="gauge" style="--needle: 50%;">
+            <div class="gauge-needle"></div>
+          </div>
+          <div class="gauge-scale">
+            <span>悲観</span>
+            <span>中立</span>
+            <span>過熱</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="drive-panel">
+        <div class="signal-box">
+          <p class="box-title">信号表示</p>
+          <div class="traffic" aria-hidden="true">
+            <div id="lampRed" class="lamp red"></div>
+            <div id="lampYellow" class="lamp yellow"></div>
+            <div id="lampBlue" class="lamp blue"></div>
+          </div>
+          <p id="signalText" class="signal-text">未判定</p>
+        </div>
+
+        <div class="speed-box">
+          <p class="box-title">制限速度</p>
+          <div class="speed-sign">
+            <div>
+              <strong id="speedValue">0</strong>
+              <span>km/h</span>
+            </div>
+          </div>
+          <p id="directionText" class="direction-text">維持</p>
+        </div>
+      </div>
+
+      <div class="momentum-box">
+        <p class="box-title">履歴からの前回比</p>
+        <p id="momentumStatus" class="momentum-status">回復モメンタム：比較なし</p>
+        <p id="momentumDetail">保存履歴が2件以上あると、前回比から改善・悪化を判定します。</p>
+      </div>
+
+      <div class="action">
+        <h2 id="actionTitle">読み込み中</h2>
+        <p id="actionDetail">data/latest.json を読み込んでいます。</p>
+      </div>
+    </section>
+
+    <div id="badgeArea" class="badges"></div>
+
+    <div class="layout">
+      <section class="card section">
+        <h2>自動取得指標</h2>
+        <div id="indicatorCards" class="indicator-grid"></div>
+      </section>
+
+      <aside class="side-stack">
+        <details class="card input-details" id="overrideDetails">
+          <summary>
+            <span id="summaryText">手動上書き・任意メモ</span>
+            <span class="summary-icon">⌄</span>
+          </summary>
+          <div class="details-body">
+            <p class="hint">空欄の項目は自動取得値を使います。任意項目は入力時だけスコアに加えます。</p>
+
+            <h3 class="group-title">自動取得値の手動上書き</h3>
+            <div class="form-grid">
+              <label class="field">VIX<input id="override-vix" type="number" inputmode="decimal" step="0.1"></label>
+              <label class="field">S&amp;P500 200日線乖離（%）<input id="override-spDeviation" type="number" inputmode="decimal" step="0.1"></label>
+              <label class="field">Nasdaq100 200日線乖離（%）<input id="override-nasdaqDeviation" type="number" inputmode="decimal" step="0.1"></label>
+              <label class="field">米10年金利（%）<input id="override-us10y" type="number" inputmode="decimal" step="0.01"></label>
+              <label class="field">米10年金利1か月変化（bp）<input id="override-us10yChange" type="number" inputmode="decimal" step="1"></label>
+              <label class="field">ドル円<input id="override-usdjpy" type="number" inputmode="decimal" step="0.01"></label>
+            </div>
+
+            <h3 class="group-title">手動任意項目</h3>
+            <div class="form-grid">
+              <label class="field">Fear &amp; Greed Index<input id="manual-fearGreed" type="number" inputmode="decimal" min="0" max="100" step="0.1"></label>
+              <label class="field">S&amp;P500 200日線上銘柄比率（%）<input id="manual-spAbove200" type="number" inputmode="decimal" min="0" max="100" step="0.1"></label>
+              <label class="field">Put/Call Ratio<input id="manual-putCall" type="number" inputmode="decimal" step="0.01"></label>
+              <label class="field">NAAIM Exposure Index<input id="manual-naaim" type="number" inputmode="decimal" step="0.1"></label>
+              <label class="field">AAII Bull-Bear Spread（%）<input id="manual-aaii" type="number" inputmode="decimal" step="0.1"></label>
+              <label class="field">金価格200日線乖離（%）<input id="manual-goldDeviation" type="number" inputmode="decimal" step="0.1"></label>
+            </div>
+
+            <label class="field memo-field">任意メモ
+              <textarea id="memo" placeholder="例：FRED更新前のため、VIXのみ手動で上書き。"></textarea>
+            </label>
+            <p class="memo-note">履歴にも保存されます。ただし長期日誌として使う場合は別途Keep等への保存を推奨。</p>
+
+            <div class="buttons">
+              <button id="saveButton" class="button" type="button">履歴保存</button>
+              <button id="recalcButton" class="button secondary" type="button">再計算</button>
+              <button id="resetButton" class="button danger" type="button">手動入力リセット</button>
+            </div>
+            <div id="alerts" class="alerts"></div>
+          </div>
+        </details>
+
+        <section class="card section">
+          <h2>データソース</h2>
+          <div id="sourceList" class="source-list"></div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="card notice">
+      <p>このツールは投資判断の補助であり、将来のリターンを保証するものではありません。</p>
+      <p>過熱・悲観の判定は入力値と簡易ロジックに基づく概算です。自動取得データが古い場合や取得失敗時は必ず元データを確認してください。</p>
+    </section>
+  </main>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>

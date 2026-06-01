@@ -1,0 +1,46 @@
+{
+  "updated_at": "2026-06-01T08:34:19Z",
+  "updated_at_jst": "2026-06-01 17:34",
+  "status": "ok",
+  "values": {
+    "vix": 15.74,
+    "spDeviation": 10.97,
+    "nasdaqDeviation": 19.47,
+    "us10y": 4.45,
+    "us10yChange": 9.0,
+    "usdjpy": 159.2
+  },
+  "sources": {
+    "vix": {
+      "series": "VIXCLS",
+      "source": "FRED",
+      "date": "2026-05-28"
+    },
+    "spDeviation": {
+      "series": "SP500",
+      "source": "FRED",
+      "date": "2026-05-29"
+    },
+    "nasdaqDeviation": {
+      "series": "NASDAQ100",
+      "source": "FRED",
+      "date": "2026-05-29"
+    },
+    "us10y": {
+      "series": "DGS10",
+      "source": "FRED",
+      "date": "2026-05-28"
+    },
+    "us10yChange": {
+      "series": "DGS10",
+      "source": "FRED",
+      "date": "2026-05-28"
+    },
+    "usdjpy": {
+      "series": "DEXJPUS",
+      "source": "FRED",
+      "date": "2026-05-22"
+    }
+  },
+  "warnings": []
+}
