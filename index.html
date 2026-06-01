@@ -30,20 +30,22 @@
 
     <div id="warningArea" class="warnings"></div>
 
-    <section class="card main-card" aria-label="市場局面">
+    <section class="card main-card regime-card" aria-label="市場局面">
       <div class="regime-hero">
-        <div>
+        <div class="regime-copy">
           <p class="box-title">現在の局面</p>
           <h2 id="regimeTitle">読み込み中</h2>
           <p id="regimeSubtitle">data/latest.json を読み込んでいます。</p>
           <p id="compareAge" class="meta">前回比較：比較なし</p>
         </div>
-        <div>
+        <div class="decision-panel">
           <p class="box-title">ポジション方針</p>
           <h3 id="primaryAction">判定中</h3>
           <p id="actionDetail">市場データを評価しています。</p>
         </div>
       </div>
+
+      <div id="spotlightCards" class="spotlight-grid"></div>
 
       <div class="axis-grid">
         <div class="axis-card heat">
@@ -87,7 +89,18 @@
         </div>
       </div>
 
-      <div id="regimeMatrix" class="matrix-wrap"></div>
+      <div class="visual-grid">
+        <div id="regimeMatrix" class="matrix-wrap"></div>
+        <div class="guide-card">
+          <p class="box-title">読み方</p>
+          <ul>
+            <li><strong>悲観 + 回復</strong><span>小さく分割で拡大候補</span></li>
+            <li><strong>悲観 + 高ストレス</strong><span>防御優先、急がない</span></li>
+            <li><strong>過熱 + 低ストレス</strong><span>追いかけ抑制</span></li>
+            <li><strong>過熱 + 高ストレス</strong><span>失速警戒、縮小候補</span></li>
+          </ul>
+        </div>
+      </div>
     </section>
 
     <div class="layout">

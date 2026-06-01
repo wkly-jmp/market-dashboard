@@ -36,6 +36,7 @@ const elements = {
   trimLevel: document.getElementById("trimLevel"),
   hedgeLevel: document.getElementById("hedgeLevel"),
   regimeMatrix: document.getElementById("regimeMatrix"),
+  spotlightCards: document.getElementById("spotlightCards"),
   indicatorCards: document.getElementById("indicatorCards"),
   sourceList: document.getElementById("sourceList"),
   summaryText: document.getElementById("summaryText"),
@@ -75,6 +76,7 @@ function render() {
   renderDataStatus(latestData);
   renderWarnings(latestData, built.inputWarnings);
   renderRegime(analysis);
+  renderSpotlights(analysis.indicators);
   renderAxes(analysis.axes);
   renderActions(analysis.actions);
   renderMatrix(analysis);
@@ -120,6 +122,25 @@ function renderRegime(analysis) {
   document.body.dataset.regime = regime.tone;
 }
 
+function renderSpotlights(indicators) {
+  const ids = ["fearGreed", "fearGreedChange", "dollarDeviation"];
+  const selected = ids
+    .map((id) => indicators.find((indicator) => indicator.id === id))
+    .filter(Boolean);
+
+  elements.spotlightCards.innerHTML = selected.map((card) => {
+    const deltaClass = card.delta.tone === "good" ? "good" : card.delta.tone === "bad" ? "bad" : "";
+    return [
+      '<article class="spotlight-card ' + card.tone + '">',
+      '<span class="spotlight-kicker">' + escapeHtml(card.name) + '</span>',
+      '<div class="spotlight-value">' + escapeHtml(card.displayValue) + '</div>',
+      '<div class="delta ' + deltaClass + '">' + escapeHtml(card.delta.text) + '</div>',
+      '<p>' + escapeHtml(card.comment) + '</p>',
+      '</article>'
+    ].join("");
+  }).join("");
+}
+
 function renderAxes(axes) {
   setAxis(elements.heatValue, elements.heatBar, axes.heat);
   setAxis(elements.stressValue, elements.stressBar, axes.stress);
@@ -152,7 +173,30 @@ function renderMatrix(analysis) {
 }
 
 function renderCards(indicators) {
-  const visibleCards = indicators.filter((card) => card.source === "auto" || card.value !== null);
+  const priority = [
+    "fearGreed",
+    "fearGreedChange",
+    "dollarDeviation",
+    "vix",
+    "vixChange",
+    "spDeviation",
+    "nasdaqDeviation",
+    "creditSpread",
+    "financialStress",
+    "realYield",
+    "yieldCurve",
+    "us10y",
+    "us10yChange",
+    "usdjpy",
+    "oilDeviation"
+  ];
+  const visibleCards = indicators
+    .filter((card) => card.source === "auto" || card.value !== null)
+    .sort((a, b) => {
+      const ai = priority.includes(a.id) ? priority.indexOf(a.id) : 999;
+      const bi = priority.includes(b.id) ? priority.indexOf(b.id) : 999;
+      return ai - bi;
+    });
 
   elements.indicatorCards.innerHTML = visibleCards.map((card) => {
     const deltaClass = card.delta.tone === "good" ? "good" : card.delta.tone === "bad" ? "bad" : "";
