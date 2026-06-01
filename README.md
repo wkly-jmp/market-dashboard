@@ -25,12 +25,21 @@ FREDのCSVをAPIキーなしで取得します。
 - `NASDAQ100`: NASDAQ100終値
 - `DGS10`: 米10年金利
 - `DEXJPUS`: ドル円
+- `BAA10Y`: 信用スプレッド代理
+- `STLFSI4`: St. Louis Fed Financial Stress Index
+- `DFII10`: 米10年実質金利
+- `T10Y2Y`: 10年-2年金利差
+- `DTWEXBGS`: ドル指数
+- `DCOILWTICO`: WTI原油価格
 
 計算で作る値:
 
 - `spDeviation`: S&P500最新値と200日移動平均の乖離率
 - `nasdaqDeviation`: NASDAQ100最新値と200日移動平均の乖離率
 - `us10yChange`: 米10年金利の約1か月前との差、単位bp
+- `vixChange`: VIXの約1か月前との差
+- `dollarDeviation`: ドル指数の200日移動平均からの乖離率
+- `oilDeviation`: WTI原油価格の200日移動平均からの乖離率
 
 ## 初版で自動取得しない項目
 
@@ -44,7 +53,7 @@ FREDのCSVをAPIキーなしで取得します。
 - 金価格200日線乖離
 - ハイイールド債スプレッド
 
-ハイイールド債スプレッドはFREDの `BAMLH0A0HYM2` が候補ですが、データ利用条件や運用方針を確認したうえで、private運用または明示的な利用許諾がある場合に追加してください。
+ハイイールド債スプレッドはFREDの `BAMLH0A0HYM2` が候補ですが、データ利用条件や運用方針を確認したうえで、private運用または明示的な利用許諾がある場合に追加してください。現行版では、より扱いやすい `BAA10Y` を信用スプレッド代理として使っています。
 
 ## GitHub Pagesで使う
 

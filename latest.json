@@ -1,0 +1,88 @@
+{
+  "updated_at": "2026-06-01T09:03:51Z",
+  "updated_at_jst": "2026-06-01 18:03",
+  "status": "ok",
+  "values": {
+    "vix": 15.74,
+    "vixChange": -2.09,
+    "spDeviation": 10.97,
+    "nasdaqDeviation": 19.47,
+    "us10y": 4.45,
+    "us10yChange": 9.0,
+    "usdjpy": 159.2,
+    "creditSpread": 1.57,
+    "financialStress": -0.761,
+    "realYield": 2.06,
+    "yieldCurve": 0.47,
+    "dollarDeviation": -0.42,
+    "oilDeviation": 34.57
+  },
+  "sources": {
+    "vix": {
+      "series": "VIXCLS",
+      "source": "FRED",
+      "date": "2026-05-28"
+    },
+    "vixChange": {
+      "series": "VIXCLS",
+      "source": "FRED",
+      "date": "2026-05-28"
+    },
+    "spDeviation": {
+      "series": "SP500",
+      "source": "FRED",
+      "date": "2026-05-29"
+    },
+    "nasdaqDeviation": {
+      "series": "NASDAQ100",
+      "source": "FRED",
+      "date": "2026-05-29"
+    },
+    "us10y": {
+      "series": "DGS10",
+      "source": "FRED",
+      "date": "2026-05-28"
+    },
+    "us10yChange": {
+      "series": "DGS10",
+      "source": "FRED",
+      "date": "2026-05-28"
+    },
+    "usdjpy": {
+      "series": "DEXJPUS",
+      "source": "FRED",
+      "date": "2026-05-22"
+    },
+    "creditSpread": {
+      "series": "BAA10Y",
+      "source": "FRED",
+      "date": "2026-05-28"
+    },
+    "financialStress": {
+      "series": "STLFSI4",
+      "source": "FRED",
+      "date": "2026-05-22"
+    },
+    "realYield": {
+      "series": "DFII10",
+      "source": "FRED",
+      "date": "2026-05-28"
+    },
+    "yieldCurve": {
+      "series": "T10Y2Y",
+      "source": "FRED",
+      "date": "2026-05-29"
+    },
+    "dollarDeviation": {
+      "series": "DTWEXBGS",
+      "source": "FRED",
+      "date": "2026-05-22"
+    },
+    "oilDeviation": {
+      "series": "DCOILWTICO",
+      "source": "FRED",
+      "date": "2026-05-26"
+    }
+  },
+  "warnings": []
+}
