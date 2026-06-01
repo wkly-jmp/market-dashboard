@@ -32,6 +32,13 @@
 
     <section class="card main-card regime-card" aria-label="市場局面">
       <div class="regime-hero">
+        <div class="regime-symbol">
+          <div id="regimeIcon" class="regime-icon">⚖️</div>
+          <div>
+            <span id="weatherLabel">中立</span>
+            <strong id="modeLabel">維持</strong>
+          </div>
+        </div>
         <div class="regime-copy">
           <p class="box-title">現在の局面</p>
           <h2 id="regimeTitle">読み込み中</h2>
@@ -45,6 +52,26 @@
         </div>
       </div>
 
+      <div class="stance-board">
+        <div class="stance-side attack">
+          <span class="stance-icon">⚔️</span>
+          <div>
+            <strong>攻め</strong>
+            <p>分割拡大・打診</p>
+          </div>
+        </div>
+        <div class="stance-meter">
+          <i id="stanceNeedle"></i>
+        </div>
+        <div class="stance-side defense">
+          <span class="stance-icon">🛡️</span>
+          <div>
+            <strong>守り</strong>
+            <p>縮小・防御・余力確保</p>
+          </div>
+        </div>
+      </div>
+
       <div id="spotlightCards" class="spotlight-grid"></div>
 
       <div class="axis-grid">
@@ -54,6 +81,7 @@
             <strong id="heatValue">--</strong>
           </div>
           <div id="heatBar" class="axis-bar"><i></i></div>
+          <div class="axis-zones"><span>低</span><span>注意</span><span>過熱</span></div>
           <p>買われすぎ、リスクオン過多、追いかけ注意を測る軸。</p>
         </div>
         <div class="axis-card stress">
@@ -62,6 +90,7 @@
             <strong id="stressValue">--</strong>
           </div>
           <div id="stressBar" class="axis-bar"><i></i></div>
+          <div class="axis-zones"><span>安定</span><span>警戒</span><span>荒れ</span></div>
           <p>市場が壊れやすいか、急いで増やしてよいかを測る軸。</p>
         </div>
         <div class="axis-card recovery">
@@ -70,6 +99,7 @@
             <strong id="recoveryValue">--</strong>
           </div>
           <div id="recoveryBar" class="axis-bar"><i></i></div>
+          <div class="axis-zones"><span>弱い</span><span>中立</span><span>改善</span></div>
           <p>悲観が底打ちし、分割拡大候補になり始めたかを測る軸。</p>
         </div>
       </div>

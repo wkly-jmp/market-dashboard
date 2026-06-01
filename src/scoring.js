@@ -173,7 +173,10 @@ function decideRegime(axes) {
       key: "crisis",
       title: "危機警戒",
       subtitle: "悲観は強いが、まだ急いで増やす局面ではない",
-      tone: "danger"
+      tone: "danger",
+      icon: "⛈️",
+      weather: "荒天",
+      mode: "守り優先"
     };
   }
 
@@ -182,7 +185,10 @@ function decideRegime(axes) {
       key: "recovering_stress",
       title: "悲観だが回復中",
       subtitle: "ストレスは残るが、改善の兆しが出ている",
-      tone: "blue"
+      tone: "blue",
+      icon: "🌦️",
+      weather: "雨上がり",
+      mode: "慎重に攻め"
     };
   }
 
@@ -191,7 +197,10 @@ function decideRegime(axes) {
       key: "overheat_fading",
       title: "過熱から失速",
       subtitle: "買われすぎにストレス上昇が重なり始めている",
-      tone: "danger"
+      tone: "danger",
+      icon: "⚠️",
+      weather: "雷注意",
+      mode: "縮小候補"
     };
   }
 
@@ -200,7 +209,10 @@ function decideRegime(axes) {
       key: "overheat",
       title: "過熱リスクオン",
       subtitle: "リスク選好が進み、新規追加は慎重に見る局面",
-      tone: "red"
+      tone: "red",
+      icon: "🔥",
+      weather: "熱波",
+      mode: "追いかけ注意"
     };
   }
 
@@ -209,7 +221,10 @@ function decideRegime(axes) {
       key: "constructive",
       title: "健全な回復",
       subtitle: "過熱は限定的で、回復モメンタムが優勢",
-      tone: "green"
+      tone: "green",
+      icon: "⚔️",
+      weather: "晴れ",
+      mode: "攻め候補"
     };
   }
 
@@ -218,7 +233,10 @@ function decideRegime(axes) {
       key: "risk_on",
       title: "通常のリスクオン",
       subtitle: "市場環境は比較的安定。追いかけすぎには注意",
-      tone: "yellow"
+      tone: "yellow",
+      icon: "🌤️",
+      weather: "晴れ寄り",
+      mode: "維持〜小攻め"
     };
   }
 
@@ -227,7 +245,10 @@ function decideRegime(axes) {
       key: "caution",
       title: "警戒・様子見",
       subtitle: "ストレスが残り、改善確認を待ちたい局面",
-      tone: "yellow"
+      tone: "yellow",
+      icon: "🛡️",
+      weather: "くもり",
+      mode: "守り寄り"
     };
   }
 
@@ -235,7 +256,10 @@ function decideRegime(axes) {
     key: "neutral",
     title: "中立・維持",
     subtitle: "強い方向感は限定的。ポジションは維持中心",
-    tone: "neutral"
+    tone: "neutral",
+    icon: "⚖️",
+    weather: "中立",
+    mode: "維持"
   };
 }
 

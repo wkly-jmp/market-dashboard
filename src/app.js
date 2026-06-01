@@ -22,6 +22,9 @@ const elements = {
   dataDates: document.getElementById("dataDates"),
   warningArea: document.getElementById("warningArea"),
   regimeTitle: document.getElementById("regimeTitle"),
+  regimeIcon: document.getElementById("regimeIcon"),
+  weatherLabel: document.getElementById("weatherLabel"),
+  modeLabel: document.getElementById("modeLabel"),
   regimeSubtitle: document.getElementById("regimeSubtitle"),
   primaryAction: document.getElementById("primaryAction"),
   actionDetail: document.getElementById("actionDetail"),
@@ -35,6 +38,7 @@ const elements = {
   expansionLevel: document.getElementById("expansionLevel"),
   trimLevel: document.getElementById("trimLevel"),
   hedgeLevel: document.getElementById("hedgeLevel"),
+  stanceNeedle: document.getElementById("stanceNeedle"),
   regimeMatrix: document.getElementById("regimeMatrix"),
   spotlightCards: document.getElementById("spotlightCards"),
   indicatorCards: document.getElementById("indicatorCards"),
@@ -115,11 +119,15 @@ function renderWarnings(data, inputWarnings) {
 function renderRegime(analysis) {
   const { regime, actions, previous } = analysis;
   elements.regimeTitle.textContent = regime.title;
+  elements.regimeIcon.textContent = regime.icon || "⚖️";
+  elements.weatherLabel.textContent = regime.weather || "中立";
+  elements.modeLabel.textContent = regime.mode || "維持";
   elements.regimeSubtitle.textContent = regime.subtitle;
   elements.primaryAction.textContent = actions.primary;
   elements.actionDetail.textContent = actions.stance;
   elements.compareAge.textContent = previous.text;
   document.body.dataset.regime = regime.tone;
+  elements.stanceNeedle.style.setProperty("--stance", calculateStancePosition(analysis.axes) + "%");
 }
 
 function renderSpotlights(indicators) {
@@ -151,6 +159,11 @@ function renderActions(actions) {
   elements.expansionLevel.textContent = actions.expansion;
   elements.trimLevel.textContent = actions.trim;
   elements.hedgeLevel.textContent = actions.hedge;
+}
+
+function calculateStancePosition(axes) {
+  const attack = axes.recovery * 0.55 + (100 - axes.stress) * 0.3 + (100 - axes.heat) * 0.15;
+  return clamp(100 - attack, 4, 96);
 }
 
 function renderMatrix(analysis) {

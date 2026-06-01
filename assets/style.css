@@ -26,8 +26,11 @@ body {
   margin: 0;
   font-family: Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
   background:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px),
     radial-gradient(circle at top left, rgba(56, 167, 255, 0.16), transparent 32rem),
     linear-gradient(180deg, #090f18 0%, var(--bg) 45%, #06090e 100%);
+  background-size: 28px 28px, 28px 28px, auto, auto;
   color: var(--text);
   line-height: 1.6;
 }
@@ -127,6 +130,44 @@ textarea {
   align-items: center;
 }
 
+.regime-symbol {
+  display: grid;
+  grid-template-columns: 78px 1fr;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 14px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02)),
+    rgba(5, 10, 16, 0.42);
+}
+
+.regime-icon {
+  width: 70px;
+  height: 70px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 40px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.regime-symbol span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.regime-symbol strong {
+  display: block;
+  color: var(--ink);
+  font-size: 22px;
+  line-height: 1.15;
+}
+
 .regime-copy,
 .decision-panel {
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -145,7 +186,7 @@ textarea {
 .regime-hero h2 {
   margin: 0;
   color: var(--ink);
-  font-size: clamp(40px, 12vw, 78px);
+  font-size: clamp(28px, 8vw, 48px);
   line-height: 1.05;
   text-shadow: 0 0 26px rgba(255, 255, 255, 0.08);
 }
@@ -153,7 +194,7 @@ textarea {
 .regime-hero h3 {
   margin: 0 0 8px;
   color: var(--ink);
-  font-size: clamp(28px, 8vw, 46px);
+  font-size: clamp(22px, 6vw, 34px);
   line-height: 1.1;
 }
 
@@ -188,6 +229,91 @@ body[data-regime="danger"] .regime-hero h2 {
   display: grid;
   grid-template-columns: 1fr;
   gap: 10px;
+}
+
+.stance-board {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 14px;
+  background: rgba(5, 10, 16, 0.42);
+}
+
+.stance-side {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.stance-side.defense {
+  justify-content: flex-start;
+}
+
+.stance-icon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 24px;
+}
+
+.stance-side strong {
+  display: block;
+  color: var(--ink);
+  font-size: 16px;
+}
+
+.stance-side p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.stance-meter {
+  position: relative;
+  height: 26px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--green), var(--blue), var(--yellow), var(--red));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.35);
+}
+
+.stance-meter::before {
+  content: "攻め";
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(5, 10, 16, 0.72);
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.stance-meter::after {
+  content: "守り";
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(5, 10, 16, 0.72);
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.stance-meter i {
+  position: absolute;
+  left: var(--stance, 50%);
+  top: 50%;
+  width: 6px;
+  height: 42px;
+  border-radius: 999px;
+  background: #ffffff;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 3px rgba(5, 10, 16, 0.82), 0 0 20px rgba(255, 255, 255, 0.65);
 }
 
 .spotlight-card {
@@ -283,9 +409,12 @@ body[data-regime="danger"] .regime-hero h2 {
 }
 
 .axis-bar {
-  height: 18px;
+  position: relative;
+  height: 22px;
   border-radius: 999px;
-  background: #07101a;
+  background:
+    linear-gradient(90deg, rgba(67, 210, 154, 0.22) 0 33%, rgba(255, 212, 90, 0.22) 33% 66%, rgba(255, 101, 96, 0.24) 66% 100%),
+    #07101a;
   border: 1px solid rgba(255, 255, 255, 0.06);
   overflow: hidden;
 }
@@ -295,6 +424,7 @@ body[data-regime="danger"] .regime-hero h2 {
   width: var(--value, 0%);
   height: 100%;
   border-radius: inherit;
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.16);
 }
 
 .axis-card.heat .axis-bar i {
@@ -307,6 +437,14 @@ body[data-regime="danger"] .regime-hero h2 {
 
 .axis-card.recovery .axis-bar i {
   background: linear-gradient(90deg, #475569, var(--blue), var(--green));
+}
+
+.axis-zones {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 4px;
 }
 
 .action-grid {
@@ -402,7 +540,7 @@ body[data-regime="danger"] .regime-hero h2 {
 
 .matrix {
   position: relative;
-  min-height: 220px;
+  min-height: 180px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background:
@@ -829,11 +967,21 @@ textarea:focus {
 
   .status-card,
   .regime-hero {
-    grid-template-columns: 270px 1fr;
+    grid-template-columns: 220px 1fr 1fr;
   }
 
   .spotlight-grid {
     grid-template-columns: 1.15fr 1fr 1fr;
+  }
+
+  .stance-board {
+    grid-template-columns: 180px 1fr 180px;
+    align-items: center;
+  }
+
+  .stance-side.defense {
+    justify-content: flex-end;
+    text-align: right;
   }
 
   .axis-grid {
