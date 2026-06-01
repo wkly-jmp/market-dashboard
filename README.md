@@ -48,7 +48,6 @@ FREDのCSVをAPIキーなしで取得します。
 - `STLFSI4`: St. Louis Fed Financial Stress Index
 - `DFII10`: 米10年実質金利
 - `T10Y2Y`: 10年-2年金利差
-- `DTWEXBGS`: ドル指数
 - `DCOILWTICO`: WTI原油価格
 
 計算で作る値:
@@ -58,7 +57,6 @@ FREDのCSVをAPIキーなしで取得します。
 - `us10yChange`: 米10年金利の約1か月前との差、単位bp
 - `vixChange`: VIXの約1か月前との差
 - `fearGreedChange`: Fear & Greedの約1か月前との差
-- `dollarDeviation`: ドル指数の200日移動平均からの乖離率
 - `oilDeviation`: WTI原油価格の200日移動平均からの乖離率
 
 ## 初版で自動取得しない項目

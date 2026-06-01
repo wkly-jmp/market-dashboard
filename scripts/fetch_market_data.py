@@ -28,7 +28,6 @@ SERIES = {
     "financial_stress": "STLFSI4",
     "real_yield": "DFII10",
     "yield_curve": "T10Y2Y",
-    "dollar_index": "DTWEXBGS",
     "oil": "DCOILWTICO",
 }
 
@@ -183,12 +182,10 @@ def build_payload(raw: dict[str, list[tuple[datetime, float]]], fear_greed: dict
     stress_date, financial_stress = latest(raw["financial_stress"])
     real_yield_date, real_yield = latest(raw["real_yield"])
     curve_date, yield_curve = latest(raw["yield_curve"])
-    dollar_date, dollar_index = latest(raw["dollar_index"])
     oil_date, oil = latest(raw["oil"])
 
     sp_ma = moving_average(raw["sp500"], 200)
     nasdaq_ma = moving_average(raw["nasdaq100"], 200)
-    dollar_ma = moving_average(raw["dollar_index"], 200)
     oil_ma = moving_average(raw["oil"], 200)
     _, us10y_month_ago = nearest_on_or_before(raw["us10y"], us10y_date - timedelta(days=30))
     _, vix_month_ago = nearest_on_or_before(raw["vix"], vix_date - timedelta(days=30))
@@ -205,7 +202,6 @@ def build_payload(raw: dict[str, list[tuple[datetime, float]]], fear_greed: dict
         "financialStress": round(financial_stress, 3),
         "realYield": round(real_yield, 3),
         "yieldCurve": round(yield_curve, 3),
-        "dollarDeviation": round((dollar_index / dollar_ma - 1) * 100, 2),
         "oilDeviation": round((oil / oil_ma - 1) * 100, 2),
     }
 
@@ -234,7 +230,6 @@ def build_payload(raw: dict[str, list[tuple[datetime, float]]], fear_greed: dict
         "financialStress": source("STLFSI4", stress_date),
         "realYield": source("DFII10", real_yield_date),
         "yieldCurve": source("T10Y2Y", curve_date),
-        "dollarDeviation": source("DTWEXBGS", dollar_date),
         "oilDeviation": source("DCOILWTICO", oil_date),
     }
 

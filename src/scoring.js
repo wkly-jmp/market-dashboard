@@ -10,7 +10,6 @@ export const FIELDS = [
   { id: "financialStress", name: "金融ストレス指数", shortName: "金融ストレス", unit: "", source: "auto", describe: describeFinancialStress },
   { id: "realYield", name: "米10年実質金利", shortName: "実質金利", unit: "%", source: "auto", describe: describeRealYield },
   { id: "yieldCurve", name: "10年-2年金利差", shortName: "長短金利差", unit: "%", source: "auto", describe: describeYieldCurve },
-  { id: "dollarDeviation", name: "ドル指数 200日線乖離", shortName: "ドル指数乖離", unit: "%", source: "auto", describe: describeDollarDeviation },
   { id: "oilDeviation", name: "原油価格 200日線乖離", shortName: "原油乖離", unit: "%", source: "auto", describe: describeOilDeviation },
   { id: "fearGreed", name: "Fear & Greed Index", shortName: "Fear & Greed", unit: "", source: "auto", min: 0, max: 100, describe: describeFearGreed },
   { id: "fearGreedChange", name: "Fear & Greed 1か月変化", shortName: "F&G変化", unit: "", source: "auto", describe: describeFearGreedChange },
@@ -143,7 +142,7 @@ function classifyDeltaTone(id, diff, current, previous) {
   if (["spDeviation", "nasdaqDeviation", "spAbove200", "naaim", "aaii", "yieldCurve", "fearGreed"].includes(id)) {
     return diff > 0 ? "good" : "bad";
   }
-  if (["vix", "vixChange", "creditSpread", "financialStress", "realYield", "dollarDeviation", "putCall"].includes(id)) {
+  if (["vix", "vixChange", "creditSpread", "financialStress", "realYield", "putCall"].includes(id)) {
     return diff < 0 ? "good" : "bad";
   }
   if (id === "us10yChange") return Math.abs(current) < Math.abs(previous) ? "good" : "bad";
@@ -459,13 +458,6 @@ function describeYieldCurve(value) {
   return axis("順イールド", "景気拡大寄りの環境。", "neutral", 52, 28, 50, 2, 5, 4);
 }
 
-function describeDollarDeviation(value) {
-  if (value <= -5) return axis("ドル安", "ドル安方向。金融環境には支援的な面。", "pessimistic", 35, 28, 52, 3, 5, 4);
-  if (value <= 5) return axis("中立", "ドル指数は200日線近辺。", "neutral", 45, 35, 45, 3, 5, 3);
-  if (value <= 10) return axis("ドル高警戒", "ドル高が進み、新興国・外貨建て資産に圧力。", "warning", 58, 58, 28, 4, 7, 4);
-  return axis("ドル高強い", "ドル高が強い。グローバル金融環境に注意。", "warning", 65, 72, 22, 4, 8, 4);
-}
-
 function describeOilDeviation(value) {
   if (value <= -20) return axis("原油弱い", "景気減速懸念を示す場合がある。", "warning", 20, 52, 28, 2, 4, 2);
   if (value <= 10) return axis("中立", "原油は中立圏。", "neutral", 42, 35, 42, 2, 4, 2);
@@ -524,7 +516,7 @@ function formatDelta(diff, unit) {
 }
 
 function deltaUnit(id, unit) {
-  if (["spDeviation", "nasdaqDeviation", "creditSpread", "realYield", "yieldCurve", "dollarDeviation", "oilDeviation", "spAbove200", "aaii", "goldDeviation"].includes(id)) return "pt";
+  if (["spDeviation", "nasdaqDeviation", "creditSpread", "realYield", "yieldCurve", "oilDeviation", "spAbove200", "aaii", "goldDeviation"].includes(id)) return "pt";
   return unit;
 }
 

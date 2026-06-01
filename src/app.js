@@ -134,7 +134,7 @@ function renderRegime(analysis) {
 }
 
 function renderSpotlights(indicators) {
-  const ids = ["fearGreed", "fearGreedChange", "dollarDeviation"];
+  const ids = ["fearGreed", "fearGreedChange", "usdjpy"];
   const selected = ids
     .map((id) => indicators.find((indicator) => indicator.id === id))
     .filter(Boolean);
@@ -205,7 +205,6 @@ function renderCards(indicators) {
   const priority = [
     "fearGreed",
     "fearGreedChange",
-    "dollarDeviation",
     "vix",
     "vixChange",
     "spDeviation",
