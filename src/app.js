@@ -38,6 +38,9 @@ const elements = {
   expansionLevel: document.getElementById("expansionLevel"),
   trimLevel: document.getElementById("trimLevel"),
   hedgeLevel: document.getElementById("hedgeLevel"),
+  expansionTile: document.getElementById("expansionTile"),
+  trimTile: document.getElementById("trimTile"),
+  hedgeTile: document.getElementById("hedgeTile"),
   stanceNeedle: document.getElementById("stanceNeedle"),
   regimeMatrix: document.getElementById("regimeMatrix"),
   spotlightCards: document.getElementById("spotlightCards"),
@@ -156,9 +159,22 @@ function renderAxes(axes) {
 }
 
 function renderActions(actions) {
-  elements.expansionLevel.textContent = actions.expansion;
-  elements.trimLevel.textContent = actions.trim;
-  elements.hedgeLevel.textContent = actions.hedge;
+  setActionTile(elements.expansionTile, elements.expansionLevel, actions.expansion);
+  setActionTile(elements.trimTile, elements.trimLevel, actions.trim);
+  setActionTile(elements.hedgeTile, elements.hedgeLevel, actions.hedge);
+}
+
+function setActionTile(tile, label, level) {
+  label.textContent = level;
+  tile.dataset.level = level;
+  tile.style.setProperty("--level", levelToPercent(level) + "%");
+}
+
+function levelToPercent(level) {
+  if (level === "高") return 100;
+  if (level === "中") return 62;
+  if (level === "低") return 28;
+  return 0;
 }
 
 function calculateStancePosition(axes) {

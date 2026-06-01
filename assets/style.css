@@ -233,7 +233,7 @@ body[data-regime="danger"] .regime-hero h2 {
 
 .stance-board {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
   border: 1px solid var(--line);
   border-radius: 18px;
@@ -248,7 +248,13 @@ body[data-regime="danger"] .regime-hero h2 {
 }
 
 .stance-side.defense {
-  justify-content: flex-start;
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.stance-meter {
+  grid-column: 1 / -1;
+  grid-row: 2;
 }
 
 .stance-icon {
@@ -378,6 +384,52 @@ body[data-regime="danger"] .regime-hero h2 {
   background: rgba(8, 13, 20, 0.34);
 }
 
+.action-tile {
+  position: relative;
+  min-height: 106px;
+  overflow: hidden;
+  display: grid;
+  align-content: start;
+  gap: 4px;
+}
+
+.action-tile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.14;
+  pointer-events: none;
+}
+
+.action-tile.expansion::before {
+  background: radial-gradient(circle at top right, var(--green), transparent 10rem);
+}
+
+.action-tile.trim::before {
+  background: radial-gradient(circle at top right, var(--yellow), transparent 10rem);
+}
+
+.action-tile.hedge::before {
+  background: radial-gradient(circle at top right, var(--blue), transparent 10rem);
+}
+
+.action-tile[data-level="高"] {
+  border-color: rgba(67, 210, 154, 0.55);
+}
+
+.action-tile.trim[data-level="高"],
+.action-tile.hedge[data-level="高"] {
+  border-color: rgba(255, 101, 96, 0.55);
+}
+
+.action-tile[data-level="中"] {
+  border-color: rgba(255, 212, 90, 0.48);
+}
+
+.action-tile[data-level="低"] {
+  border-color: rgba(138, 152, 168, 0.38);
+}
+
 .axis-card {
   padding: 14px;
   border-radius: 16px;
@@ -392,8 +444,34 @@ body[data-regime="danger"] .regime-hero h2 {
 }
 
 .axis-head span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   color: var(--ink);
   font-weight: bold;
+}
+
+.axis-icon {
+  width: 32px;
+  height: 32px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 20px;
+  font-weight: normal;
+}
+
+.axis-card.heat .axis-icon {
+  background: rgba(255, 101, 96, 0.18);
+}
+
+.axis-card.stress .axis-icon {
+  background: rgba(56, 167, 255, 0.16);
+}
+
+.axis-card.recovery .axis-icon {
+  background: rgba(67, 210, 154, 0.16);
 }
 
 .axis-head strong {
@@ -453,7 +531,19 @@ body[data-regime="danger"] .regime-hero h2 {
   gap: 10px;
 }
 
-.action-tile span {
+.action-icon {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 24px;
+}
+
+.action-tile .action-label {
+  position: relative;
   display: block;
   color: var(--muted);
   font-size: 12px;
@@ -461,10 +551,59 @@ body[data-regime="danger"] .regime-hero h2 {
 }
 
 .action-tile strong {
+  position: relative;
   display: block;
   color: var(--ink);
-  font-size: 24px;
+  font-size: 30px;
   margin-top: 4px;
+}
+
+.action-tile i {
+  position: relative;
+  display: block;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.action-tile i::before {
+  content: "";
+  display: block;
+  width: var(--level, 0%);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--muted);
+}
+
+.action-tile.expansion i::before {
+  background: linear-gradient(90deg, #475569, var(--green));
+}
+
+.action-tile.trim i::before {
+  background: linear-gradient(90deg, #475569, var(--yellow), var(--red));
+}
+
+.action-tile.hedge i::before {
+  background: linear-gradient(90deg, #475569, var(--blue), var(--red));
+}
+
+.action-tile[data-level="高"] strong {
+  color: #d7fff0;
+}
+
+.action-tile.trim[data-level="高"] strong,
+.action-tile.hedge[data-level="高"] strong {
+  color: #ffd2d0;
+}
+
+.action-tile[data-level="中"] strong {
+  color: #ffe7a1;
+}
+
+.action-tile[data-level="低"] strong {
+  color: var(--muted);
 }
 
 .visual-grid {
@@ -977,6 +1116,11 @@ textarea:focus {
   .stance-board {
     grid-template-columns: 180px 1fr 180px;
     align-items: center;
+  }
+
+  .stance-meter {
+    grid-column: auto;
+    grid-row: auto;
   }
 
   .stance-side.defense {
