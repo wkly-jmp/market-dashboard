@@ -13,6 +13,7 @@ from zoneinfo import ZoneInfo
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "data" / "latest.json"
+HISTORY_OUTPUT = ROOT / "data" / "history.json"
 FRED_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={series}&cosd={start_date}"
 CNN_FEAR_GREED_URL = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
 STOOQ_USDJPY_URL = "https://stooq.com/q/l/?s=usdjpy&f=sd2t2ohlcv&h&e=csv"
@@ -42,6 +43,7 @@ def main() -> int:
         usdjpy_quote = fetch_usdjpy_quote(raw["usdjpy_fred"], warnings)
         payload = build_payload(raw, fear_greed, usdjpy_quote, warnings)
         write_json(payload)
+        update_history(payload)
         return 0
     except Exception as exc:
         warnings.append(f"FRED取得に失敗しました: {exc}")
@@ -330,6 +332,37 @@ def load_previous() -> dict | None:
 def write_json(payload: dict) -> None:
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def update_history(payload: dict) -> None:
+    if payload.get("status") != "ok":
+        return
+
+    history = load_history()
+    snapshot = {
+        "updated_at": payload.get("updated_at"),
+        "updated_at_jst": payload.get("updated_at_jst"),
+        "values": payload.get("values", {}),
+        "sources": payload.get("sources", {}),
+    }
+
+    history = [item for item in history if item.get("updated_at") != snapshot["updated_at"]]
+    history.append(snapshot)
+    history = history[-30:]
+
+    HISTORY_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    HISTORY_OUTPUT.write_text(json.dumps(history, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def load_history() -> list[dict]:
+    if not HISTORY_OUTPUT.exists():
+        return []
+
+    try:
+        parsed = json.loads(HISTORY_OUTPUT.read_text(encoding="utf-8"))
+        return parsed if isinstance(parsed, list) else []
+    except json.JSONDecodeError:
+        return []
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-06-01T10:29:42Z",
-  "updated_at_jst": "2026-06-01 19:29",
+  "updated_at": "2026-06-01T10:38:51Z",
+  "updated_at_jst": "2026-06-01 19:38",
   "status": "ok",
   "values": {
     "vix": 15.74,
@@ -9,7 +9,7 @@
     "nasdaqDeviation": 19.47,
     "us10y": 4.45,
     "us10yChange": 9.0,
-    "usdjpy": 159.4635,
+    "usdjpy": 159.4625,
     "creditSpread": 1.57,
     "financialStress": -0.761,
     "realYield": 2.06,
@@ -53,7 +53,7 @@
       "series": "USDJPY",
       "source": "Stooq",
       "date": "2026-06-01",
-      "time": "12:29:44"
+      "time": "12:38:52"
     },
     "creditSpread": {
       "series": "BAA10Y",

@@ -24,6 +24,17 @@ export async function loadLatestData() {
   }
 }
 
+export async function loadRemoteHistory() {
+  try {
+    const response = await fetch("data/history.json", { cache: "no-store" });
+    if (!response.ok) return [];
+    const parsed = await response.json();
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    return [];
+  }
+}
+
 export function loadOverrides() {
   try {
     const parsed = JSON.parse(localStorage.getItem(OVERRIDE_KEY) || "{}");
@@ -146,6 +157,29 @@ export function getComparisonSnapshot(values) {
   }
 
   return latest;
+}
+
+export function getRemoteComparisonSnapshot(remoteHistory, latestData) {
+  if (!Array.isArray(remoteHistory) || remoteHistory.length < 2) return null;
+
+  const latestUpdatedAt = latestData && latestData.updated_at;
+  const currentIndex = latestUpdatedAt
+    ? remoteHistory.findIndex((item) => item.updated_at === latestUpdatedAt)
+    : remoteHistory.length - 1;
+
+  if (currentIndex > 0) return remoteHistory[currentIndex - 1];
+  if (currentIndex === -1) return remoteHistory[remoteHistory.length - 1];
+  return null;
+}
+
+export function getSeriesHistory(remoteHistory, id) {
+  if (!Array.isArray(remoteHistory)) return [];
+  return remoteHistory
+    .map((item) => ({
+      date: item.updated_at_jst || item.updated_at || "",
+      value: normalizeNullableNumber(item.values ? item.values[id] : null)
+    }))
+    .filter((item) => item.value !== null);
 }
 
 export function getDataWarnings(latestData) {

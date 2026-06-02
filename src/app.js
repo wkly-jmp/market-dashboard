@@ -6,10 +6,13 @@ import {
   getComparisonSnapshot,
   getDataDateSummary,
   getDataWarnings,
+  getRemoteComparisonSnapshot,
+  getSeriesHistory,
   getSourceRows,
   hydrateOverrideForm,
   loadLatestData,
   loadOverrides,
+  loadRemoteHistory,
   resetOverrideForm,
   saveOverrides,
   saveSnapshot
@@ -55,6 +58,7 @@ const elements = {
 };
 
 let latestData = null;
+let remoteHistory = [];
 let currentValues = {};
 let currentAnalysis = null;
 
@@ -65,7 +69,10 @@ async function init() {
 }
 
 async function reloadData() {
-  latestData = await loadLatestData();
+  [latestData, remoteHistory] = await Promise.all([
+    loadLatestData(),
+    loadRemoteHistory()
+  ]);
   render();
 }
 
@@ -74,7 +81,7 @@ function render() {
   saveOverrides(overrides);
 
   const built = buildValues(latestData, overrides);
-  const previousSnapshot = getComparisonSnapshot(built.values);
+  const previousSnapshot = getRemoteComparisonSnapshot(remoteHistory, latestData) || getComparisonSnapshot(built.values);
   const analysis = analyzeMarket(built.values, previousSnapshot);
 
   currentValues = built.values;
@@ -242,6 +249,7 @@ function renderCards(indicators) {
       miniBar("ストレス", card.stress),
       miniBar("回復", card.recovery),
       "</div>",
+      sparkline(card.id),
       "</article>"
     ].join("");
   }).join("");
@@ -297,6 +305,34 @@ function miniBar(label, value) {
     '<span>' + label + '</span>',
     '<div><i style="width: ' + clamp(value, 0, 100) + '%;"></i></div>',
     '<b>' + Math.round(value) + '</b>',
+    '</div>'
+  ].join("");
+}
+
+function sparkline(id) {
+  const points = getSeriesHistory(remoteHistory, id).slice(-30);
+  if (points.length < 2) {
+    return '<div class="sparkline empty">履歴チャート：データ不足</div>';
+  }
+
+  const values = points.map((point) => point.value);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = max - min || 1;
+  const width = 100;
+  const height = 34;
+  const coordinates = values.map((value, index) => {
+    const x = values.length === 1 ? 0 : index / (values.length - 1) * width;
+    const y = height - ((value - min) / range * height);
+    return x.toFixed(2) + "," + y.toFixed(2);
+  }).join(" ");
+
+  return [
+    '<div class="sparkline">',
+    '<svg viewBox="0 0 100 34" preserveAspectRatio="none" aria-hidden="true">',
+    '<polyline points="' + coordinates + '"></polyline>',
+    '</svg>',
+    '<span>30件履歴</span>',
     '</div>'
   ].join("");
 }
