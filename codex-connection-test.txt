@@ -1,0 +1,3 @@
+Codex GitHub connector write test.
+Date: 2026-06-02
+Result: If this file exists, Codex can write to this repository.
