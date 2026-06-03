@@ -1,7 +1,7 @@
 {
   "updated_at": "2026-06-02T12:55:17Z",
   "updated_at_jst": "2026-06-02 21:55",
-  "status": "ok",
+  "status": "error",
   "values": {
     "vix": 15.32,
     "vixChange": -3.49,
@@ -91,5 +91,9 @@
       "date": "2026-06-02"
     }
   },
-  "warnings": []
+  "warnings": [
+    "FRED取得に失敗しました: The read operation timed out"
+  ],
+  "fetch_attempted_at": "2026-06-03T13:35:01Z",
+  "fetch_attempted_at_jst": "2026-06-03 22:35"
 }
