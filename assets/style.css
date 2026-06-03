@@ -68,6 +68,13 @@ textarea {
   font-size: 14px;
 }
 
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 .eyebrow {
   margin: 0;
   color: #9ed8ff;
@@ -911,6 +918,9 @@ textarea:focus {
 }
 
 .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: 49px;
   border: 0;
   border-radius: 10px;
@@ -918,6 +928,7 @@ textarea:focus {
   font-weight: bold;
   color: #051018;
   background: var(--green);
+  text-decoration: none;
 }
 
 .button.secondary {
