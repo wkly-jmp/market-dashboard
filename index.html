@@ -14,7 +14,10 @@
         <h1>市場温度計</h1>
         <p>自動取得データからPF調整の方向を確認</p>
       </div>
-      <button id="refreshButton" class="button secondary compact" type="button">再読み込み</button>
+      <div class="header-actions">
+        <a class="button secondary compact" href="https://github.com/wkly-jmp/market-dashboard/actions/workflows/update-market-data.yml" target="_blank" rel="noopener">データ取得する</a>
+        <button id="refreshButton" class="button secondary compact" type="button">再読み込み</button>
+      </div>
     </header>
 
     <section id="dataStatus" class="card status-card">
