@@ -6,7 +6,7 @@ import math
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from urllib.error import URLError
+from time import sleep
 from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
@@ -18,6 +18,8 @@ FRED_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={series}&cosd={st
 CNN_FEAR_GREED_URL = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
 STOOQ_USDJPY_URL = "https://stooq.com/q/l/?s=usdjpy&f=sd2t2ohlcv&h&e=csv"
 FRANKFURTER_USDJPY_URL = "https://api.frankfurter.app/latest?from=USD&to=JPY"
+FRED_TIMEOUT_SECONDS = 90
+FRED_RETRIES = 3
 
 SERIES = {
     "vix": "VIXCLS",
@@ -55,11 +57,17 @@ def main() -> int:
 def fetch_series(series: str) -> list[tuple[datetime, float]]:
     start_date = (datetime.now(timezone.utc) - timedelta(days=900)).strftime("%Y-%m-%d")
     url = FRED_URL.format(series=series, start_date=start_date)
-    try:
-        with urlopen(url, timeout=45) as response:
-            text = response.read().decode("utf-8-sig")
-    except URLError as exc:
-        raise RuntimeError(f"{series} を取得できませんでした: {exc}") from exc
+    request = Request(url, headers={"User-Agent": "Mozilla/5.0"})
+
+    for attempt in range(1, FRED_RETRIES + 1):
+        try:
+            with urlopen(request, timeout=FRED_TIMEOUT_SECONDS) as response:
+                text = response.read().decode("utf-8-sig")
+            break
+        except Exception as exc:
+            if attempt >= FRED_RETRIES:
+                raise RuntimeError(f"{series} を取得できませんでした: {exc}") from exc
+            sleep(5 * attempt)
 
     rows = csv.DictReader(text.splitlines())
     result: list[tuple[datetime, float]] = []
@@ -301,10 +309,12 @@ def build_error_payload(previous: dict | None, warnings: list[str]) -> dict:
 
     if previous:
         payload = dict(previous)
-        payload["status"] = "error"
+        payload["status"] = "ok" if payload.get("values") else "error"
         payload["fetch_attempted_at"] = now_utc.replace(microsecond=0).isoformat().replace("+00:00", "Z")
         payload["fetch_attempted_at_jst"] = now_jst.strftime("%Y-%m-%d %H:%M")
-        payload["warnings"] = warnings + previous.get("warnings", [])
+        if payload.get("values"):
+            warnings = ["最新取得に失敗したため、前回データを表示しています。"] + warnings
+        payload["warnings"] = warnings
         return payload
 
     return {
