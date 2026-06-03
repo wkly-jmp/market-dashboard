@@ -92,8 +92,9 @@
     }
   },
   "warnings": [
-    "最新取得に失敗したため、前回データを表示しています。"
+    "最新取得に失敗したため、前回データを表示しています。",
+    "FRED取得に失敗しました: VIXCLS を取得できませんでした: The read operation timed out"
   ],
-  "fetch_attempted_at": "2026-06-03T13:35:01Z",
-  "fetch_attempted_at_jst": "2026-06-03 22:35"
+  "fetch_attempted_at": "2026-06-03T14:01:28Z",
+  "fetch_attempted_at_jst": "2026-06-03 23:01"
 }
