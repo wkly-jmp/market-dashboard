@@ -16,20 +16,23 @@ OUTPUT = ROOT / "data" / "latest.json"
 HISTORY_OUTPUT = ROOT / "data" / "history.json"
 FRED_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={series}&cosd={start_date}"
 YAHOO_CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?range=1y&interval=1d"
+TREASURY_CSV_URL = "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/{year}/all?field_tdr_date_value={year}&type={rate_type}&page&_format=csv"
 CNN_FEAR_GREED_URL = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
 STOOQ_USDJPY_URL = "https://stooq.com/q/l/?s=usdjpy&f=sd2t2ohlcv&h&e=csv"
 FRANKFURTER_USDJPY_URL = "https://api.frankfurter.app/latest?from=USD&to=JPY"
-FRED_TIMEOUT_SECONDS = 30
-FRED_RETRIES = 2
+FRED_TIMEOUT_SECONDS = 12
+FRED_RETRIES = 1
 YAHOO_TIMEOUT_SECONDS = 30
+TREASURY_TIMEOUT_SECONDS = 30
 
 SERIES = {
-    "us10y": "DGS10",
-    "usdjpy_fred": "DEXJPUS",
     "credit_spread": "BAA10Y",
     "financial_stress": "STLFSI4",
-    "real_yield": "DFII10",
-    "yield_curve": "T10Y2Y",
+}
+
+FRED_VALUE_KEYS = {
+    "credit_spread": "creditSpread",
+    "financial_stress": "financialStress",
 }
 
 YAHOO_SERIES = {
@@ -49,20 +52,37 @@ def main() -> int:
         try:
             raw[name] = fetch_yahoo_series(symbol)
         except Exception as exc:
-            warnings.append(f"Yahoo Financeの{name}取得に失敗しました: {exc}")
+            warnings.append(f"Yahoo Finance {name} fetch failed: {exc}")
+
+    try:
+        treasury_nominal = fetch_treasury_csv("daily_treasury_yield_curve")
+        raw["us10y"] = [(date, values["10 Yr"]) for date, values in treasury_nominal]
+        raw["yield_curve"] = [(date, values["10 Yr"] - values["2 Yr"]) for date, values in treasury_nominal]
+    except Exception as exc:
+        warnings.append(f"Treasury nominal rates fetch failed; using previous values: {exc}")
+
+    try:
+        treasury_real = fetch_treasury_csv("daily_treasury_real_yield_curve")
+        raw["real_yield"] = [(date, values["10 Yr"]) for date, values in treasury_real]
+    except Exception as exc:
+        warnings.append(f"Treasury real yields fetch failed; using previous values: {exc}")
 
     for name, series in SERIES.items():
         try:
             raw[name] = fetch_series(series)
         except Exception as exc:
-            warnings.append(f"FREDの{series}取得に失敗しました: {exc}")
+            value_key = FRED_VALUE_KEYS.get(name, name)
+            if previous_value_for(previous, value_key) is not None:
+                warnings.append(f"FRED {series} fetch failed; using previous value: {exc}")
+            else:
+                warnings.append(f"FRED {series} fetch failed: {exc}")
 
     try:
         fear_greed = fetch_fear_greed(warnings)
-        usdjpy_quote = fetch_usdjpy_quote(raw.get("usdjpy_fred"), previous, warnings)
+        usdjpy_quote = fetch_usdjpy_quote(previous, warnings)
         payload = build_payload(raw, fear_greed, usdjpy_quote, warnings, previous)
     except Exception as exc:
-        warnings.append(f"市場データ作成に失敗しました: {exc}")
+        warnings.append(f"Market data payload build failed: {exc}")
         payload = build_error_payload(previous, warnings)
 
     write_json(payload)
@@ -78,7 +98,7 @@ def fetch_yahoo_series(symbol: str) -> list[tuple[datetime, float]]:
 
     result = (data.get("chart", {}).get("result") or [None])[0]
     if not result:
-        raise RuntimeError("レスポンスにチャートデータがありません")
+        raise RuntimeError("Yahoo response has no chart data")
 
     timestamps = result.get("timestamp") or []
     closes = (((result.get("indicators") or {}).get("quote") or [{}])[0]).get("close") or []
@@ -93,7 +113,49 @@ def fetch_yahoo_series(symbol: str) -> list[tuple[datetime, float]]:
         rows.append((date, value))
 
     if not rows:
-        raise RuntimeError("有効データがありません")
+        raise RuntimeError("Yahoo response has no usable rows")
+
+    return rows
+
+
+def fetch_treasury_csv(rate_type: str) -> list[tuple[datetime, dict[str, float]]]:
+    now = datetime.now(timezone.utc)
+    years = [now.year, now.year - 1]
+    result: dict[datetime, dict[str, float]] = {}
+
+    for year in years:
+        url = TREASURY_CSV_URL.format(year=year, rate_type=rate_type)
+        request = Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urlopen(request, timeout=TREASURY_TIMEOUT_SECONDS) as response:
+            text = response.read().decode("utf-8-sig")
+
+        for row in csv.DictReader(text.splitlines()):
+            date_text = row.get("Date")
+            if not date_text:
+                continue
+            try:
+                date = datetime.strptime(date_text, "%m/%d/%Y")
+            except ValueError:
+                continue
+
+            values: dict[str, float] = {}
+            for key, value_text in row.items():
+                if key == "Date" or value_text in (None, "", "N/A"):
+                    continue
+                normalized_key = key.title().replace("Yr", "Yr")
+                try:
+                    value = float(value_text)
+                except ValueError:
+                    continue
+                if math.isfinite(value):
+                    values[normalized_key] = value
+
+            if values:
+                result[date] = values
+
+    rows = sorted(result.items(), key=lambda item: item[0])
+    if not rows:
+        raise RuntimeError(f"{rate_type} has no usable rows")
 
     return rows
 
@@ -110,7 +172,7 @@ def fetch_series(series: str) -> list[tuple[datetime, float]]:
             break
         except Exception as exc:
             if attempt >= FRED_RETRIES:
-                raise RuntimeError(f"{series} を取得できませんでした: {exc}") from exc
+                raise RuntimeError(f"{series} fetch failed: {exc}") from exc
             sleep(5 * attempt)
 
     rows = csv.DictReader(text.splitlines())
@@ -132,7 +194,7 @@ def fetch_series(series: str) -> list[tuple[datetime, float]]:
         result.append((date, value))
 
     if not result:
-        raise RuntimeError(f"{series} の有効データがありません")
+        raise RuntimeError(f"{series} has no usable rows")
 
     return result
 
@@ -160,34 +222,24 @@ def fetch_fear_greed(warnings: list[str]) -> dict | None:
             "rating": result.get("rating", ""),
         }
     except Exception as exc:
-        warnings.append(f"Fear & Greed取得に失敗しました: {exc}")
+        warnings.append(f"Fear & Greed fetch failed: {exc}")
         return None
 
 
-def fetch_usdjpy_quote(fred_rows: list[tuple[datetime, float]] | None, previous: dict | None, warnings: list[str]) -> dict:
+def fetch_usdjpy_quote(previous: dict | None, warnings: list[str]) -> dict:
     stooq = fetch_usdjpy_from_stooq()
     if stooq:
         return stooq
 
     frankfurter = fetch_usdjpy_from_frankfurter()
     if frankfurter:
-        warnings.append("Stooqのドル円取得に失敗したため、Frankfurterの日次レートを使用しました。")
+        warnings.append("Stooq USDJPY fetch failed; using Frankfurter daily reference rate.")
         return frankfurter
-
-    if fred_rows:
-        date, value = latest(fred_rows)
-        warnings.append("Stooq/Frankfurterのドル円取得に失敗したため、FRED DEXJPUSを使用しました。")
-        return {
-            "value": value,
-            "source": "FRED",
-            "series": "DEXJPUS",
-            "date": date.strftime("%Y-%m-%d"),
-        }
 
     previous_value = previous_value_for(previous, "usdjpy")
     previous_source = previous_source_for(previous, "usdjpy")
     if previous_value is not None:
-        warnings.append("ドル円取得に失敗したため、前回値を使用しました。")
+        warnings.append("USDJPY fetch failed; using previous value.")
         return {
             "value": previous_value,
             "source": previous_source.get("source", "Previous"),
@@ -196,7 +248,7 @@ def fetch_usdjpy_quote(fred_rows: list[tuple[datetime, float]] | None, previous:
             "time": previous_source.get("time", ""),
         }
 
-    raise RuntimeError("ドル円を取得できませんでした")
+    raise RuntimeError("USDJPY fetch failed")
 
 
 def fetch_usdjpy_from_stooq() -> dict | None:
@@ -296,13 +348,13 @@ def build_payload(raw: dict[str, list[tuple[datetime, float]]], fear_greed: dict
         "vixChange": source("YAHOO:^VIX", vix_date, "Yahoo Finance"),
         "spDeviation": source("YAHOO:^GSPC", sp_date, "Yahoo Finance"),
         "nasdaqDeviation": source("YAHOO:^NDX", nasdaq_date, "Yahoo Finance"),
-        "us10y": source_for(raw, "us10y", "DGS10", us10y_date, previous),
-        "us10yChange": source_for(raw, "us10y", "DGS10", us10y_date, previous, "us10yChange"),
+        "us10y": source_for(raw, "us10y", "TREASURY_YIELD_CURVE:10 Yr", us10y_date, previous, source_name="U.S. Treasury"),
+        "us10yChange": source_for(raw, "us10y", "TREASURY_YIELD_CURVE:10 Yr", us10y_date, previous, "us10yChange", "U.S. Treasury"),
         "usdjpy": usdjpy_source,
         "creditSpread": source_for(raw, "credit_spread", "BAA10Y", credit_date, previous, "creditSpread"),
         "financialStress": source_for(raw, "financial_stress", "STLFSI4", stress_date, previous, "financialStress"),
-        "realYield": source_for(raw, "real_yield", "DFII10", real_yield_date, previous, "realYield"),
-        "yieldCurve": source_for(raw, "yield_curve", "T10Y2Y", curve_date, previous, "yieldCurve"),
+        "realYield": source_for(raw, "real_yield", "TREASURY_REAL_YIELD_CURVE:10 Yr", real_yield_date, previous, "realYield", "U.S. Treasury"),
+        "yieldCurve": source_for(raw, "yield_curve", "TREASURY_YIELD_CURVE:10 Yr-2 Yr", curve_date, previous, "yieldCurve", "U.S. Treasury"),
         "oilDeviation": source("YAHOO:CL=F", oil_date, "Yahoo Finance"),
     }
 
@@ -343,7 +395,7 @@ def latest_or_previous(raw: dict[str, list[tuple[datetime, float]]], raw_key: st
     source_info = previous_source_for(previous, key)
     date_text = source_info.get("date") or (previous or {}).get("updated_at", "")
     if value is None:
-        raise RuntimeError(f"{key} の値を取得できませんでした")
+        raise RuntimeError(f"{key} value is unavailable")
 
     return parse_date_or_now(date_text), value
 
@@ -362,7 +414,7 @@ def previous_source_for(previous: dict | None, key: str) -> dict:
 
 def moving_average(rows: list[tuple[datetime, float]], window: int) -> float:
     if len(rows) < window:
-        raise RuntimeError(f"{window}日移動平均に必要なデータが不足しています")
+        raise RuntimeError(f"Not enough rows for {window}-day moving average")
 
     values = [value for _, value in rows[-window:]]
     return sum(values) / len(values)
@@ -371,7 +423,7 @@ def moving_average(rows: list[tuple[datetime, float]], window: int) -> float:
 def nearest_on_or_before(rows: list[tuple[datetime, float]], target: datetime) -> tuple[datetime, float]:
     candidates = [row for row in rows if row[0] <= target]
     if not candidates:
-        raise RuntimeError("1か月前の金利データがありません")
+        raise RuntimeError("No data on or before target date")
     return candidates[-1]
 
 
@@ -383,14 +435,15 @@ def source(series: str, date: datetime, source_name: str = "FRED") -> dict[str, 
     }
 
 
-def source_for(raw: dict[str, list[tuple[datetime, float]]], raw_key: str, series: str, date: datetime, previous: dict | None, value_key: str | None = None) -> dict[str, str]:
+def source_for(raw: dict[str, list[tuple[datetime, float]]], raw_key: str, series: str, date: datetime, previous: dict | None, value_key: str | None = None, source_name: str = "FRED") -> dict[str, str]:
     if raw_key in raw:
-        return source(series, date)
+        return source(series, date, source_name)
 
     previous_source = previous_source_for(previous, value_key or raw_key)
     if previous_source:
         result = dict(previous_source)
-        result["source"] = result.get("source", "Previous") + " (前回値)"
+        base_source = result.get("source", "Previous").split(" (", 1)[0]
+        result["source"] = base_source + " (previous value)"
         return result
 
     return source(series, date, "Previous")
@@ -428,7 +481,7 @@ def build_error_payload(previous: dict | None, warnings: list[str]) -> dict:
         payload["fetch_attempted_at"] = now_utc.replace(microsecond=0).isoformat().replace("+00:00", "Z")
         payload["fetch_attempted_at_jst"] = now_jst.strftime("%Y-%m-%d %H:%M")
         if payload.get("values"):
-            warnings = ["最新取得に失敗したため、前回データを表示しています。"] + warnings
+            warnings = ["Latest fetch failed; showing previous data."] + warnings
         payload["warnings"] = warnings
         return payload
 
