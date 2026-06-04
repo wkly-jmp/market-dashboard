@@ -631,5 +631,92 @@
         "date": "2026-06-03"
       }
     }
+  },
+  {
+    "updated_at": "2026-06-04T11:27:22Z",
+    "updated_at_jst": "2026-06-04 20:27",
+    "values": {
+      "vix": 16.59,
+      "vixChange": -0.79,
+      "spDeviation": 10.31,
+      "nasdaqDeviation": 19.93,
+      "us10y": 4.49,
+      "us10yChange": 4.0,
+      "usdjpy": 159.8205,
+      "creditTrend": 1.2,
+      "realYield": 2.11,
+      "yieldCurve": 0.41,
+      "oilDeviation": 29.77,
+      "fearGreed": 53.51,
+      "fearGreedChange": -13.37
+    },
+    "sources": {
+      "vix": {
+        "series": "YAHOO:^VIX",
+        "source": "Yahoo Finance",
+        "date": "2026-06-04"
+      },
+      "vixChange": {
+        "series": "YAHOO:^VIX",
+        "source": "Yahoo Finance",
+        "date": "2026-06-04"
+      },
+      "spDeviation": {
+        "series": "YAHOO:^GSPC",
+        "source": "Yahoo Finance",
+        "date": "2026-06-03"
+      },
+      "nasdaqDeviation": {
+        "series": "YAHOO:^NDX",
+        "source": "Yahoo Finance",
+        "date": "2026-06-03"
+      },
+      "us10y": {
+        "series": "TREASURY_YIELD_CURVE:10 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-03"
+      },
+      "us10yChange": {
+        "series": "TREASURY_YIELD_CURVE:10 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-03"
+      },
+      "usdjpy": {
+        "series": "USDJPY",
+        "source": "Stooq",
+        "date": "2026-06-04",
+        "time": "13:27:20"
+      },
+      "creditTrend": {
+        "series": "YAHOO:HYG/IEF 200d deviation",
+        "source": "Yahoo Finance",
+        "date": "2026-06-03"
+      },
+      "realYield": {
+        "series": "TREASURY_REAL_YIELD_CURVE:10 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-03"
+      },
+      "yieldCurve": {
+        "series": "TREASURY_YIELD_CURVE:10 Yr-2 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-03"
+      },
+      "oilDeviation": {
+        "series": "YAHOO:CL=F",
+        "source": "Yahoo Finance",
+        "date": "2026-06-04"
+      },
+      "fearGreed": {
+        "series": "CNN_FEAR_GREED",
+        "source": "CNN",
+        "date": "2026-06-04"
+      },
+      "fearGreedChange": {
+        "series": "CNN_FEAR_GREED",
+        "source": "CNN",
+        "date": "2026-06-04"
+      }
+    }
   }
 ]
