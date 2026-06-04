@@ -141,7 +141,7 @@ function renderRegime(analysis) {
 }
 
 function renderSpotlights(indicators) {
-  const ids = ["fearGreed", "fearGreedChange", "usdjpy"];
+  const ids = ["vix", "creditTrend", "fearGreed"];
   const selected = ids
     .map((id) => indicators.find((indicator) => indicator.id === id))
     .filter(Boolean);
@@ -216,8 +216,7 @@ function renderCards(indicators) {
     "vixChange",
     "spDeviation",
     "nasdaqDeviation",
-    "creditSpread",
-    "financialStress",
+    "creditTrend",
     "realYield",
     "yieldCurve",
     "us10y",
