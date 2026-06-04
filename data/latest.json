@@ -1,22 +1,22 @@
 {
-  "updated_at": "2026-06-03T16:14:01Z",
-  "updated_at_jst": "2026-06-04 01:14",
+  "updated_at": "2026-06-04T02:29:29Z",
+  "updated_at_jst": "2026-06-04 11:29",
   "status": "ok",
   "values": {
-    "vix": 16.26,
-    "vixChange": -2.03,
-    "spDeviation": 10.51,
-    "nasdaqDeviation": 19.83,
-    "us10y": 4.45,
-    "us10yChange": 9.0,
-    "usdjpy": 160.0235,
+    "vix": 16.06,
+    "vixChange": -2.23,
+    "spDeviation": 10.31,
+    "nasdaqDeviation": 19.93,
+    "us10y": 4.49,
+    "us10yChange": 4.0,
+    "usdjpy": 159.8975,
     "creditSpread": 1.57,
     "financialStress": -0.761,
-    "realYield": 2.06,
-    "yieldCurve": 0.47,
-    "oilDeviation": 32.35,
-    "fearGreed": 54.26,
-    "fearGreedChange": -16.91
+    "realYield": 2.11,
+    "yieldCurve": 0.41,
+    "oilDeviation": 30.72,
+    "fearGreed": 54.0,
+    "fearGreedChange": -17.17
   },
   "sources": {
     "vix": {
@@ -40,45 +40,45 @@
       "date": "2026-06-03"
     },
     "us10y": {
-      "series": "DGS10",
-      "source": "FRED (前回値) (前回値)",
-      "date": "2026-05-28"
+      "series": "TREASURY_YIELD_CURVE:10 Yr",
+      "source": "U.S. Treasury",
+      "date": "2026-06-03"
     },
     "us10yChange": {
-      "series": "DGS10",
-      "source": "FRED (前回値) (前回値)",
-      "date": "2026-05-28"
+      "series": "TREASURY_YIELD_CURVE:10 Yr",
+      "source": "U.S. Treasury",
+      "date": "2026-06-03"
     },
     "usdjpy": {
       "series": "USDJPY",
       "source": "Stooq",
-      "date": "2026-06-03",
-      "time": "18:13:56"
+      "date": "2026-06-04",
+      "time": "04:29:28"
     },
     "creditSpread": {
       "series": "BAA10Y",
-      "source": "FRED (前回値) (前回値)",
+      "source": "FRED (previous value)",
       "date": "2026-05-28"
     },
     "financialStress": {
       "series": "STLFSI4",
-      "source": "FRED (前回値) (前回値)",
+      "source": "FRED (previous value)",
       "date": "2026-05-22"
     },
     "realYield": {
-      "series": "DFII10",
-      "source": "FRED (前回値) (前回値)",
-      "date": "2026-05-28"
+      "series": "TREASURY_REAL_YIELD_CURVE:10 Yr",
+      "source": "U.S. Treasury",
+      "date": "2026-06-03"
     },
     "yieldCurve": {
-      "series": "T10Y2Y",
-      "source": "FRED (前回値) (前回値)",
-      "date": "2026-05-29"
+      "series": "TREASURY_YIELD_CURVE:10 Yr-2 Yr",
+      "source": "U.S. Treasury",
+      "date": "2026-06-03"
     },
     "oilDeviation": {
       "series": "YAHOO:CL=F",
       "source": "Yahoo Finance",
-      "date": "2026-06-03"
+      "date": "2026-06-04"
     },
     "fearGreed": {
       "series": "CNN_FEAR_GREED",
@@ -92,11 +92,7 @@
     }
   },
   "warnings": [
-    "FREDのDGS10取得に失敗しました: DGS10 を取得できませんでした: The read operation timed out",
-    "FREDのDEXJPUS取得に失敗しました: DEXJPUS を取得できませんでした: The read operation timed out",
-    "FREDのBAA10Y取得に失敗しました: BAA10Y を取得できませんでした: The read operation timed out",
-    "FREDのSTLFSI4取得に失敗しました: STLFSI4 を取得できませんでした: The read operation timed out",
-    "FREDのDFII10取得に失敗しました: DFII10 を取得できませんでした: The read operation timed out",
-    "FREDのT10Y2Y取得に失敗しました: T10Y2Y を取得できませんでした: The read operation timed out"
+    "FRED BAA10Y fetch failed; using previous value: BAA10Y fetch failed: The read operation timed out",
+    "FRED STLFSI4 fetch failed; using previous value: STLFSI4 fetch failed: The read operation timed out"
   ]
 }
