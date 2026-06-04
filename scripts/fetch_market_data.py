@@ -6,7 +6,6 @@ import math
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from time import sleep
 from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
@@ -14,32 +13,21 @@ from zoneinfo import ZoneInfo
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "data" / "latest.json"
 HISTORY_OUTPUT = ROOT / "data" / "history.json"
-FRED_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={series}&cosd={start_date}"
 YAHOO_CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?range=1y&interval=1d"
 TREASURY_CSV_URL = "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/{year}/all?field_tdr_date_value={year}&type={rate_type}&page&_format=csv"
 CNN_FEAR_GREED_URL = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
 STOOQ_USDJPY_URL = "https://stooq.com/q/l/?s=usdjpy&f=sd2t2ohlcv&h&e=csv"
 FRANKFURTER_USDJPY_URL = "https://api.frankfurter.app/latest?from=USD&to=JPY"
-FRED_TIMEOUT_SECONDS = 12
-FRED_RETRIES = 1
 YAHOO_TIMEOUT_SECONDS = 30
 TREASURY_TIMEOUT_SECONDS = 30
-
-SERIES = {
-    "credit_spread": "BAA10Y",
-    "financial_stress": "STLFSI4",
-}
-
-FRED_VALUE_KEYS = {
-    "credit_spread": "creditSpread",
-    "financial_stress": "financialStress",
-}
 
 YAHOO_SERIES = {
     "vix": "%5EVIX",
     "sp500": "%5EGSPC",
     "nasdaq100": "%5ENDX",
     "oil": "CL%3DF",
+    "hyg": "HYG",
+    "ief": "IEF",
 }
 
 
@@ -66,16 +54,6 @@ def main() -> int:
         raw["real_yield"] = [(date, values["10 Yr"]) for date, values in treasury_real]
     except Exception as exc:
         warnings.append(f"Treasury real yields fetch failed; using previous values: {exc}")
-
-    for name, series in SERIES.items():
-        try:
-            raw[name] = fetch_series(series)
-        except Exception as exc:
-            value_key = FRED_VALUE_KEYS.get(name, name)
-            if previous_value_for(previous, value_key) is not None:
-                warnings.append(f"FRED {series} fetch failed; using previous value: {exc}")
-            else:
-                warnings.append(f"FRED {series} fetch failed: {exc}")
 
     try:
         fear_greed = fetch_fear_greed(warnings)
@@ -160,43 +138,22 @@ def fetch_treasury_csv(rate_type: str) -> list[tuple[datetime, dict[str, float]]
     return rows
 
 
-def fetch_series(series: str) -> list[tuple[datetime, float]]:
-    start_date = (datetime.now(timezone.utc) - timedelta(days=900)).strftime("%Y-%m-%d")
-    url = FRED_URL.format(series=series, start_date=start_date)
-    request = Request(url, headers={"User-Agent": "Mozilla/5.0"})
+def ratio_series(numerator: list[tuple[datetime, float]], denominator: list[tuple[datetime, float]]) -> list[tuple[datetime, float]]:
+    denominator_by_date = {date.date(): value for date, value in denominator if value != 0}
+    rows: list[tuple[datetime, float]] = []
 
-    for attempt in range(1, FRED_RETRIES + 1):
-        try:
-            with urlopen(request, timeout=FRED_TIMEOUT_SECONDS) as response:
-                text = response.read().decode("utf-8-sig")
-            break
-        except Exception as exc:
-            if attempt >= FRED_RETRIES:
-                raise RuntimeError(f"{series} fetch failed: {exc}") from exc
-            sleep(5 * attempt)
-
-    rows = csv.DictReader(text.splitlines())
-    result: list[tuple[datetime, float]] = []
-    for row in rows:
-        date_text = row.get("observation_date") or row.get("DATE")
-        value_text = row.get(series)
-        if not date_text or value_text in (None, "", "."):
+    for date, numerator_value in numerator:
+        denominator_value = denominator_by_date.get(date.date())
+        if denominator_value is None:
             continue
+        ratio = numerator_value / denominator_value
+        if math.isfinite(ratio):
+            rows.append((date, ratio))
 
-        try:
-            value = float(value_text)
-            if not math.isfinite(value):
-                continue
-            date = datetime.strptime(date_text, "%Y-%m-%d")
-        except ValueError:
-            continue
+    if not rows:
+        raise RuntimeError("Ratio series has no overlapping rows")
 
-        result.append((date, value))
-
-    if not result:
-        raise RuntimeError(f"{series} has no usable rows")
-
-    return result
+    return rows
 
 
 def fetch_fear_greed(warnings: list[str]) -> dict | None:
@@ -299,15 +256,16 @@ def build_payload(raw: dict[str, list[tuple[datetime, float]]], fear_greed: dict
     nasdaq_date, nasdaq = latest(raw["nasdaq100"])
     us10y_date, us10y = latest_or_previous(raw, "us10y", previous)
     usdjpy = usdjpy_quote["value"]
-    credit_date, credit_spread = latest_or_previous(raw, "credit_spread", previous, "creditSpread")
-    stress_date, financial_stress = latest_or_previous(raw, "financial_stress", previous, "financialStress")
     real_yield_date, real_yield = latest_or_previous(raw, "real_yield", previous, "realYield")
     curve_date, yield_curve = latest_or_previous(raw, "yield_curve", previous, "yieldCurve")
     oil_date, oil = latest(raw["oil"])
+    credit_ratio = ratio_series(raw["hyg"], raw["ief"])
+    credit_date, credit_value = latest(credit_ratio)
 
     sp_ma = moving_average(raw["sp500"], 200)
     nasdaq_ma = moving_average(raw["nasdaq100"], 200)
     oil_ma = moving_average(raw["oil"], 200)
+    credit_ma = moving_average(credit_ratio, 200)
     if "us10y" in raw:
         _, us10y_month_ago = nearest_on_or_before(raw["us10y"], us10y_date - timedelta(days=30))
         us10y_change = round((us10y - us10y_month_ago) * 100, 1)
@@ -323,8 +281,7 @@ def build_payload(raw: dict[str, list[tuple[datetime, float]]], fear_greed: dict
         "us10y": round(us10y, 3),
         "us10yChange": round(us10y_change, 1) if us10y_change is not None else None,
         "usdjpy": round(usdjpy, 4),
-        "creditSpread": round(credit_spread, 3),
-        "financialStress": round(financial_stress, 3),
+        "creditTrend": round((credit_value / credit_ma - 1) * 100, 2),
         "realYield": round(real_yield, 3),
         "yieldCurve": round(yield_curve, 3),
         "oilDeviation": round((oil / oil_ma - 1) * 100, 2),
@@ -351,8 +308,7 @@ def build_payload(raw: dict[str, list[tuple[datetime, float]]], fear_greed: dict
         "us10y": source_for(raw, "us10y", "TREASURY_YIELD_CURVE:10 Yr", us10y_date, previous, source_name="U.S. Treasury"),
         "us10yChange": source_for(raw, "us10y", "TREASURY_YIELD_CURVE:10 Yr", us10y_date, previous, "us10yChange", "U.S. Treasury"),
         "usdjpy": usdjpy_source,
-        "creditSpread": source_for(raw, "credit_spread", "BAA10Y", credit_date, previous, "creditSpread"),
-        "financialStress": source_for(raw, "financial_stress", "STLFSI4", stress_date, previous, "financialStress"),
+        "creditTrend": source("YAHOO:HYG/IEF 200d deviation", credit_date, "Yahoo Finance"),
         "realYield": source_for(raw, "real_yield", "TREASURY_REAL_YIELD_CURVE:10 Yr", real_yield_date, previous, "realYield", "U.S. Treasury"),
         "yieldCurve": source_for(raw, "yield_curve", "TREASURY_YIELD_CURVE:10 Yr-2 Yr", curve_date, previous, "yieldCurve", "U.S. Treasury"),
         "oilDeviation": source("YAHOO:CL=F", oil_date, "Yahoo Finance"),
@@ -427,7 +383,7 @@ def nearest_on_or_before(rows: list[tuple[datetime, float]], target: datetime) -
     return candidates[-1]
 
 
-def source(series: str, date: datetime, source_name: str = "FRED") -> dict[str, str]:
+def source(series: str, date: datetime, source_name: str = "Market data") -> dict[str, str]:
     return {
         "series": series,
         "source": source_name,
@@ -435,7 +391,7 @@ def source(series: str, date: datetime, source_name: str = "FRED") -> dict[str, 
     }
 
 
-def source_for(raw: dict[str, list[tuple[datetime, float]]], raw_key: str, series: str, date: datetime, previous: dict | None, value_key: str | None = None, source_name: str = "FRED") -> dict[str, str]:
+def source_for(raw: dict[str, list[tuple[datetime, float]]], raw_key: str, series: str, date: datetime, previous: dict | None, value_key: str | None = None, source_name: str = "Market data") -> dict[str, str]:
     if raw_key in raw:
         return source(series, date, source_name)
 
