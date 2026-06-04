@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-06-04T02:29:29Z",
-  "updated_at_jst": "2026-06-04 11:29",
+  "updated_at": "2026-06-04T03:01:24Z",
+  "updated_at_jst": "2026-06-04 12:01",
   "status": "ok",
   "values": {
     "vix": 16.06,
@@ -9,12 +9,11 @@
     "nasdaqDeviation": 19.93,
     "us10y": 4.49,
     "us10yChange": 4.0,
-    "usdjpy": 159.8975,
-    "creditSpread": 1.57,
-    "financialStress": -0.761,
+    "usdjpy": 159.8985,
+    "creditTrend": 1.2,
     "realYield": 2.11,
     "yieldCurve": 0.41,
-    "oilDeviation": 30.72,
+    "oilDeviation": 30.59,
     "fearGreed": 54.0,
     "fearGreedChange": -17.17
   },
@@ -53,17 +52,12 @@
       "series": "USDJPY",
       "source": "Stooq",
       "date": "2026-06-04",
-      "time": "04:29:28"
+      "time": "05:01:24"
     },
-    "creditSpread": {
-      "series": "BAA10Y",
-      "source": "FRED (previous value)",
-      "date": "2026-05-28"
-    },
-    "financialStress": {
-      "series": "STLFSI4",
-      "source": "FRED (previous value)",
-      "date": "2026-05-22"
+    "creditTrend": {
+      "series": "YAHOO:HYG/IEF 200d deviation",
+      "source": "Yahoo Finance",
+      "date": "2026-06-03"
     },
     "realYield": {
       "series": "TREASURY_REAL_YIELD_CURVE:10 Yr",
@@ -91,8 +85,5 @@
       "date": "2026-06-03"
     }
   },
-  "warnings": [
-    "FRED BAA10Y fetch failed; using previous value: BAA10Y fetch failed: The read operation timed out",
-    "FRED STLFSI4 fetch failed; using previous value: STLFSI4 fetch failed: The read operation timed out"
-  ]
+  "warnings": []
 }
