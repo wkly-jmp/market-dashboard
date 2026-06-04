@@ -6,8 +6,7 @@ export const FIELDS = [
   { id: "us10y", name: "米10年金利", shortName: "米10年金利", unit: "%", source: "auto", min: 0, describe: describeUs10y },
   { id: "us10yChange", name: "米10年金利 1か月変化", shortName: "金利変化", unit: "bp", source: "auto", describe: describeUs10yChange },
   { id: "usdjpy", name: "ドル円", shortName: "ドル円", unit: "円", source: "auto", min: 0, describe: describeUsdJpy },
-  { id: "creditSpread", name: "信用スプレッド代理", shortName: "信用スプレッド", unit: "%", source: "auto", min: 0, describe: describeCreditSpread },
-  { id: "financialStress", name: "金融ストレス指数", shortName: "金融ストレス", unit: "", source: "auto", describe: describeFinancialStress },
+  { id: "creditTrend", name: "信用選好 HYG/IEF 200日線乖離", shortName: "信用選好", unit: "%", source: "auto", describe: describeCreditTrend },
   { id: "realYield", name: "米10年実質金利", shortName: "実質金利", unit: "%", source: "auto", describe: describeRealYield },
   { id: "yieldCurve", name: "10年-2年金利差", shortName: "長短金利差", unit: "%", source: "auto", describe: describeYieldCurve },
   { id: "oilDeviation", name: "原油価格 200日線乖離", shortName: "原油乖離", unit: "%", source: "auto", describe: describeOilDeviation },
@@ -139,10 +138,10 @@ function calculateDeltas(values, previousSnapshot) {
 
 function classifyDeltaTone(id, diff, current, previous) {
   if (diff === 0) return "none";
-  if (["spDeviation", "nasdaqDeviation", "spAbove200", "naaim", "aaii", "yieldCurve", "fearGreed"].includes(id)) {
+  if (["spDeviation", "nasdaqDeviation", "creditTrend", "spAbove200", "naaim", "aaii", "yieldCurve", "fearGreed"].includes(id)) {
     return diff > 0 ? "good" : "bad";
   }
-  if (["vix", "vixChange", "creditSpread", "financialStress", "realYield", "putCall"].includes(id)) {
+  if (["vix", "vixChange", "realYield", "putCall"].includes(id)) {
     return diff < 0 ? "good" : "bad";
   }
   if (id === "us10yChange") return Math.abs(current) < Math.abs(previous) ? "good" : "bad";
@@ -175,7 +174,7 @@ function decideRegime(axes) {
       tone: "danger",
       icon: "⛈️",
       weather: "荒天",
-      mode: "守り優先"
+      mode: "縮小"
     };
   }
 
@@ -187,7 +186,7 @@ function decideRegime(axes) {
       tone: "blue",
       icon: "🌦️",
       weather: "雨上がり",
-      mode: "慎重に攻め"
+      mode: "やや拡大"
     };
   }
 
@@ -199,7 +198,7 @@ function decideRegime(axes) {
       tone: "danger",
       icon: "⚠️",
       weather: "雷注意",
-      mode: "縮小候補"
+      mode: "やや縮小"
     };
   }
 
@@ -211,7 +210,7 @@ function decideRegime(axes) {
       tone: "red",
       icon: "🔥",
       weather: "熱波",
-      mode: "追いかけ注意"
+      mode: "維持"
     };
   }
 
@@ -223,7 +222,7 @@ function decideRegime(axes) {
       tone: "green",
       icon: "⚔️",
       weather: "晴れ",
-      mode: "攻め候補"
+      mode: "拡大"
     };
   }
 
@@ -235,7 +234,7 @@ function decideRegime(axes) {
       tone: "yellow",
       icon: "🌤️",
       weather: "晴れ寄り",
-      mode: "維持〜小攻め"
+      mode: "維持"
     };
   }
 
@@ -247,7 +246,7 @@ function decideRegime(axes) {
       tone: "yellow",
       icon: "🛡️",
       weather: "くもり",
-      mode: "守り寄り"
+      mode: "維持"
     };
   }
 
@@ -267,7 +266,7 @@ function decideActions(axes) {
 
   if (regime.key === "crisis") {
     return {
-      primary: "防御優先・急がない",
+      primary: "縮小",
       stance: "現金余力を残し、拡大する場合もかなり小さく分割。",
       expansion: "低",
       trim: "中",
@@ -277,7 +276,7 @@ function decideActions(axes) {
 
   if (regime.key === "recovering_stress") {
     return {
-      primary: "小さく分割で拡大候補",
+      primary: "やや拡大",
       stance: "悲観が改善し始めた局面。危機指標を見ながら打診。",
       expansion: "中",
       trim: "低",
@@ -287,7 +286,7 @@ function decideActions(axes) {
 
   if (regime.key === "constructive") {
     return {
-      primary: "分割で拡大候補",
+      primary: "拡大",
       stance: "過熱が強くない回復局面。通常の分割ペースを検討。",
       expansion: "高",
       trim: "低",
@@ -297,7 +296,7 @@ function decideActions(axes) {
 
   if (regime.key === "overheat_fading") {
     return {
-      primary: "新規抑制・一部縮小候補",
+      primary: "やや縮小",
       stance: "過熱に失速の兆し。利益確定、サイズ調整、ストップ厳格化を検討。",
       expansion: "低",
       trim: "高",
@@ -307,7 +306,7 @@ function decideActions(axes) {
 
   if (regime.key === "overheat") {
     return {
-      primary: "追いかけ抑制",
+      primary: heat >= 82 ? "やや縮小" : "維持",
       stance: "リスクオンは続いているが過熱寄り。新規追加は慎重、分割幅は小さく。",
       expansion: heat >= 82 ? "低" : "中",
       trim: "中",
@@ -317,7 +316,7 @@ function decideActions(axes) {
 
   if (regime.key === "risk_on") {
     return {
-      primary: "維持・小さく調整",
+      primary: recovery >= 55 && heat < 70 ? "やや拡大" : "維持",
       stance: "環境は悪くないが、過熱と回復のバランスを確認。",
       expansion: recovery >= 55 ? "中" : "低",
       trim: heat >= 65 ? "中" : "低",
@@ -327,7 +326,7 @@ function decideActions(axes) {
 
   if (regime.key === "caution") {
     return {
-      primary: "維持・様子見",
+      primary: stress >= 65 ? "やや縮小" : "維持",
       stance: "悪化が止まるまで無理に増やさない。改善確認後に分割。",
       expansion: "低",
       trim: "中",
@@ -336,7 +335,7 @@ function decideActions(axes) {
   }
 
   return {
-    primary: "維持中心",
+    primary: "維持",
     stance: "強い優位性は限定的。新規判断は小さく。",
     expansion: recovery >= 55 ? "中" : "低",
     trim: heat >= 65 ? "中" : "低",
@@ -430,18 +429,12 @@ function describeUsdJpy(value) {
   return axis("急変警戒", "為替介入・急変リスクに注意。", "warning", 65, 68, 22, 3, 6, 2);
 }
 
-function describeCreditSpread(value) {
-  if (value < 1.5) return axis("信用楽観", "信用不安はかなり低い。リスク選好が強すぎる可能性。", "overheated", 76, 15, 42, 9, 12, 6);
-  if (value < 2.3) return axis("安定", "信用市場は落ち着いている。", "neutral", 50, 24, 50, 7, 12, 7);
-  if (value < 3.2) return axis("警戒", "信用スプレッドが拡大。景気・信用不安に注意。", "warning", 25, 62, 28, 5, 13, 6);
-  return axis("危機警戒", "信用ストレスが強い。防御優先。", "warning", 10, 88, 18, 5, 14, 5);
-}
-
-function describeFinancialStress(value) {
-  if (value < -0.8) return axis("低ストレス", "金融ストレスはかなり低い。油断にも注意。", "overheated", 68, 12, 48, 7, 12, 6);
-  if (value < 0) return axis("安定", "金融ストレスは低め。", "neutral", 48, 24, 50, 6, 12, 7);
-  if (value < 1) return axis("警戒", "金融ストレスが上昇。", "warning", 25, 62, 30, 5, 13, 6);
-  return axis("危機警戒", "金融ストレスが高い。", "warning", 8, 90, 18, 5, 14, 5);
+function describeCreditTrend(value) {
+  if (value <= -6) return axis("信用悪化", "HYGが米国債に大きく劣後。信用市場は防御優先。", "warning", 10, 84, 18, 5, 13, 7);
+  if (value <= -2) return axis("信用警戒", "ハイイールド債が相対的に弱く、リスク選好は鈍い。", "warning", 25, 62, 30, 5, 12, 7);
+  if (value < 2) return axis("中立", "信用市場のリスク選好は中立圏。", "neutral", 45, 35, 45, 5, 10, 6);
+  if (value < 6) return axis("信用安定", "HYGが米国債に優位。リスク選好は良好。", "neutral", 58, 24, 58, 6, 11, 8);
+  return axis("信用過熱", "信用市場のリスク選好が強い。追いかけすぎには注意。", "overheated", 76, 22, 44, 7, 10, 6);
 }
 
 function describeRealYield(value) {
@@ -516,7 +509,7 @@ function formatDelta(diff, unit) {
 }
 
 function deltaUnit(id, unit) {
-  if (["spDeviation", "nasdaqDeviation", "creditSpread", "realYield", "yieldCurve", "oilDeviation", "spAbove200", "aaii", "goldDeviation"].includes(id)) return "pt";
+  if (["spDeviation", "nasdaqDeviation", "creditTrend", "realYield", "yieldCurve", "oilDeviation", "spAbove200", "aaii", "goldDeviation"].includes(id)) return "pt";
   return unit;
 }
 
