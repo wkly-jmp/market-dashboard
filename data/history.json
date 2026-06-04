@@ -19,77 +19,20 @@
       "fearGreedChange": -12.0
     },
     "sources": {
-      "vix": {
-        "series": "VIXCLS",
-        "source": "FRED",
-        "date": "2026-05-28"
-      },
-      "vixChange": {
-        "series": "VIXCLS",
-        "source": "FRED",
-        "date": "2026-05-28"
-      },
-      "spDeviation": {
-        "series": "SP500",
-        "source": "FRED",
-        "date": "2026-05-29"
-      },
-      "nasdaqDeviation": {
-        "series": "NASDAQ100",
-        "source": "FRED",
-        "date": "2026-05-29"
-      },
-      "us10y": {
-        "series": "DGS10",
-        "source": "FRED",
-        "date": "2026-05-28"
-      },
-      "us10yChange": {
-        "series": "DGS10",
-        "source": "FRED",
-        "date": "2026-05-28"
-      },
-      "usdjpy": {
-        "series": "USDJPY",
-        "source": "Stooq",
-        "date": "2026-06-01",
-        "time": "12:38:52"
-      },
-      "creditSpread": {
-        "series": "BAA10Y",
-        "source": "FRED",
-        "date": "2026-05-28"
-      },
-      "financialStress": {
-        "series": "STLFSI4",
-        "source": "FRED",
-        "date": "2026-05-22"
-      },
-      "realYield": {
-        "series": "DFII10",
-        "source": "FRED",
-        "date": "2026-05-28"
-      },
-      "yieldCurve": {
-        "series": "T10Y2Y",
-        "source": "FRED",
-        "date": "2026-05-29"
-      },
-      "oilDeviation": {
-        "series": "DCOILWTICO",
-        "source": "FRED",
-        "date": "2026-05-26"
-      },
-      "fearGreed": {
-        "series": "CNN_FEAR_GREED",
-        "source": "CNN",
-        "date": "2026-06-01"
-      },
-      "fearGreedChange": {
-        "series": "CNN_FEAR_GREED",
-        "source": "CNN",
-        "date": "2026-06-01"
-      }
+      "vix": { "series": "VIXCLS", "source": "FRED", "date": "2026-05-28" },
+      "vixChange": { "series": "VIXCLS", "source": "FRED", "date": "2026-05-28" },
+      "spDeviation": { "series": "SP500", "source": "FRED", "date": "2026-05-29" },
+      "nasdaqDeviation": { "series": "NASDAQ100", "source": "FRED", "date": "2026-05-29" },
+      "us10y": { "series": "DGS10", "source": "FRED", "date": "2026-05-28" },
+      "us10yChange": { "series": "DGS10", "source": "FRED", "date": "2026-05-28" },
+      "usdjpy": { "series": "USDJPY", "source": "Stooq", "date": "2026-06-01", "time": "12:38:52" },
+      "creditSpread": { "series": "BAA10Y", "source": "FRED", "date": "2026-05-28" },
+      "financialStress": { "series": "STLFSI4", "source": "FRED", "date": "2026-05-22" },
+      "realYield": { "series": "DFII10", "source": "FRED", "date": "2026-05-28" },
+      "yieldCurve": { "series": "T10Y2Y", "source": "FRED", "date": "2026-05-29" },
+      "oilDeviation": { "series": "DCOILWTICO", "source": "FRED", "date": "2026-05-26" },
+      "fearGreed": { "series": "CNN_FEAR_GREED", "source": "CNN", "date": "2026-06-01" },
+      "fearGreedChange": { "series": "CNN_FEAR_GREED", "source": "CNN", "date": "2026-06-01" }
     }
   },
   {
@@ -112,77 +55,20 @@
       "fearGreedChange": -16.69
     },
     "sources": {
-      "vix": {
-        "series": "YAHOO:^VIX",
-        "source": "Yahoo Finance",
-        "date": "2026-06-03"
-      },
-      "vixChange": {
-        "series": "YAHOO:^VIX",
-        "source": "Yahoo Finance",
-        "date": "2026-06-03"
-      },
-      "spDeviation": {
-        "series": "YAHOO:^GSPC",
-        "source": "Yahoo Finance",
-        "date": "2026-06-03"
-      },
-      "nasdaqDeviation": {
-        "series": "YAHOO:^NDX",
-        "source": "Yahoo Finance",
-        "date": "2026-06-03"
-      },
-      "us10y": {
-        "series": "DGS10",
-        "source": "FRED (前回値)",
-        "date": "2026-05-28"
-      },
-      "us10yChange": {
-        "series": "DGS10",
-        "source": "FRED (前回値)",
-        "date": "2026-05-28"
-      },
-      "usdjpy": {
-        "series": "USDJPY",
-        "source": "Stooq",
-        "date": "2026-06-03",
-        "time": "16:19:20"
-      },
-      "creditSpread": {
-        "series": "BAA10Y",
-        "source": "FRED (前回値)",
-        "date": "2026-05-28"
-      },
-      "financialStress": {
-        "series": "STLFSI4",
-        "source": "FRED (前回値)",
-        "date": "2026-05-22"
-      },
-      "realYield": {
-        "series": "DFII10",
-        "source": "FRED (前回値)",
-        "date": "2026-05-28"
-      },
-      "yieldCurve": {
-        "series": "T10Y2Y",
-        "source": "FRED (前回値)",
-        "date": "2026-05-29"
-      },
-      "oilDeviation": {
-        "series": "YAHOO:CL=F",
-        "source": "Yahoo Finance",
-        "date": "2026-06-03"
-      },
-      "fearGreed": {
-        "series": "CNN_FEAR_GREED",
-        "source": "CNN",
-        "date": "2026-06-03"
-      },
-      "fearGreedChange": {
-        "series": "CNN_FEAR_GREED",
-        "source": "CNN",
-        "date": "2026-06-03"
-      }
+      "vix": { "series": "YAHOO:^VIX", "source": "Yahoo Finance", "date": "2026-06-03" },
+      "vixChange": { "series": "YAHOO:^VIX", "source": "Yahoo Finance", "date": "2026-06-03" },
+      "spDeviation": { "series": "YAHOO:^GSPC", "source": "Yahoo Finance", "date": "2026-06-03" },
+      "nasdaqDeviation": { "series": "YAHOO:^NDX", "source": "Yahoo Finance", "date": "2026-06-03" },
+      "us10y": { "series": "DGS10", "source": "FRED (前回値)", "date": "2026-05-28" },
+      "us10yChange": { "series": "DGS10", "source": "FRED (前回値)", "date": "2026-05-28" },
+      "usdjpy": { "series": "USDJPY", "source": "Stooq", "date": "2026-06-03", "time": "16:19:20" },
+      "creditSpread": { "series": "BAA10Y", "source": "FRED (前回値)", "date": "2026-05-28" },
+      "financialStress": { "series": "STLFSI4", "source": "FRED (前回値)", "date": "2026-05-22" },
+      "realYield": { "series": "DFII10", "source": "FRED (前回値)", "date": "2026-05-28" },
+      "yieldCurve": { "series": "T10Y2Y", "source": "FRED (前回値)", "date": "2026-05-29" },
+      "oilDeviation": { "series": "YAHOO:CL=F", "source": "Yahoo Finance", "date": "2026-06-03" },
+      "fearGreed": { "series": "CNN_FEAR_GREED", "source": "CNN", "date": "2026-06-03" },
+      "fearGreedChange": { "series": "CNN_FEAR_GREED", "source": "CNN", "date": "2026-06-03" }
     }
   },
   {
@@ -205,77 +91,56 @@
       "fearGreedChange": -16.91
     },
     "sources": {
-      "vix": {
-        "series": "YAHOO:^VIX",
-        "source": "Yahoo Finance",
-        "date": "2026-06-03"
-      },
-      "vixChange": {
-        "series": "YAHOO:^VIX",
-        "source": "Yahoo Finance",
-        "date": "2026-06-03"
-      },
-      "spDeviation": {
-        "series": "YAHOO:^GSPC",
-        "source": "Yahoo Finance",
-        "date": "2026-06-03"
-      },
-      "nasdaqDeviation": {
-        "series": "YAHOO:^NDX",
-        "source": "Yahoo Finance",
-        "date": "2026-06-03"
-      },
-      "us10y": {
-        "series": "DGS10",
-        "source": "FRED (前回値) (前回値)",
-        "date": "2026-05-28"
-      },
-      "us10yChange": {
-        "series": "DGS10",
-        "source": "FRED (前回値) (前回値)",
-        "date": "2026-05-28"
-      },
-      "usdjpy": {
-        "series": "USDJPY",
-        "source": "Stooq",
-        "date": "2026-06-03",
-        "time": "18:13:56"
-      },
-      "creditSpread": {
-        "series": "BAA10Y",
-        "source": "FRED (前回値) (前回値)",
-        "date": "2026-05-28"
-      },
-      "financialStress": {
-        "series": "STLFSI4",
-        "source": "FRED (前回値) (前回値)",
-        "date": "2026-05-22"
-      },
-      "realYield": {
-        "series": "DFII10",
-        "source": "FRED (前回値) (前回値)",
-        "date": "2026-05-28"
-      },
-      "yieldCurve": {
-        "series": "T10Y2Y",
-        "source": "FRED (前回値) (前回値)",
-        "date": "2026-05-29"
-      },
-      "oilDeviation": {
-        "series": "YAHOO:CL=F",
-        "source": "Yahoo Finance",
-        "date": "2026-06-03"
-      },
-      "fearGreed": {
-        "series": "CNN_FEAR_GREED",
-        "source": "CNN",
-        "date": "2026-06-03"
-      },
-      "fearGreedChange": {
-        "series": "CNN_FEAR_GREED",
-        "source": "CNN",
-        "date": "2026-06-03"
-      }
+      "vix": { "series": "YAHOO:^VIX", "source": "Yahoo Finance", "date": "2026-06-03" },
+      "vixChange": { "series": "YAHOO:^VIX", "source": "Yahoo Finance", "date": "2026-06-03" },
+      "spDeviation": { "series": "YAHOO:^GSPC", "source": "Yahoo Finance", "date": "2026-06-03" },
+      "nasdaqDeviation": { "series": "YAHOO:^NDX", "source": "Yahoo Finance", "date": "2026-06-03" },
+      "us10y": { "series": "DGS10", "source": "FRED (前回値) (前回値)", "date": "2026-05-28" },
+      "us10yChange": { "series": "DGS10", "source": "FRED (前回値) (前回値)", "date": "2026-05-28" },
+      "usdjpy": { "series": "USDJPY", "source": "Stooq", "date": "2026-06-03", "time": "18:13:56" },
+      "creditSpread": { "series": "BAA10Y", "source": "FRED (前回値) (前回値)", "date": "2026-05-28" },
+      "financialStress": { "series": "STLFSI4", "source": "FRED (前回値) (前回値)", "date": "2026-05-22" },
+      "realYield": { "series": "DFII10", "source": "FRED (前回値) (前回値)", "date": "2026-05-28" },
+      "yieldCurve": { "series": "T10Y2Y", "source": "FRED (前回値) (前回値)", "date": "2026-05-29" },
+      "oilDeviation": { "series": "YAHOO:CL=F", "source": "Yahoo Finance", "date": "2026-06-03" },
+      "fearGreed": { "series": "CNN_FEAR_GREED", "source": "CNN", "date": "2026-06-03" },
+      "fearGreedChange": { "series": "CNN_FEAR_GREED", "source": "CNN", "date": "2026-06-03" }
+    }
+  },
+  {
+    "updated_at": "2026-06-04T02:29:29Z",
+    "updated_at_jst": "2026-06-04 11:29",
+    "values": {
+      "vix": 16.06,
+      "vixChange": -2.23,
+      "spDeviation": 10.31,
+      "nasdaqDeviation": 19.93,
+      "us10y": 4.49,
+      "us10yChange": 4.0,
+      "usdjpy": 159.8975,
+      "creditSpread": 1.57,
+      "financialStress": -0.761,
+      "realYield": 2.11,
+      "yieldCurve": 0.41,
+      "oilDeviation": 30.72,
+      "fearGreed": 54.0,
+      "fearGreedChange": -17.17
+    },
+    "sources": {
+      "vix": { "series": "YAHOO:^VIX", "source": "Yahoo Finance", "date": "2026-06-03" },
+      "vixChange": { "series": "YAHOO:^VIX", "source": "Yahoo Finance", "date": "2026-06-03" },
+      "spDeviation": { "series": "YAHOO:^GSPC", "source": "Yahoo Finance", "date": "2026-06-03" },
+      "nasdaqDeviation": { "series": "YAHOO:^NDX", "source": "Yahoo Finance", "date": "2026-06-03" },
+      "us10y": { "series": "TREASURY_YIELD_CURVE:10 Yr", "source": "U.S. Treasury", "date": "2026-06-03" },
+      "us10yChange": { "series": "TREASURY_YIELD_CURVE:10 Yr", "source": "U.S. Treasury", "date": "2026-06-03" },
+      "usdjpy": { "series": "USDJPY", "source": "Stooq", "date": "2026-06-04", "time": "04:29:28" },
+      "creditSpread": { "series": "BAA10Y", "source": "FRED (previous value)", "date": "2026-05-28" },
+      "financialStress": { "series": "STLFSI4", "source": "FRED (previous value)", "date": "2026-05-22" },
+      "realYield": { "series": "TREASURY_REAL_YIELD_CURVE:10 Yr", "source": "U.S. Treasury", "date": "2026-06-03" },
+      "yieldCurve": { "series": "TREASURY_YIELD_CURVE:10 Yr-2 Yr", "source": "U.S. Treasury", "date": "2026-06-03" },
+      "oilDeviation": { "series": "YAHOO:CL=F", "source": "Yahoo Finance", "date": "2026-06-04" },
+      "fearGreed": { "series": "CNN_FEAR_GREED", "source": "CNN", "date": "2026-06-03" },
+      "fearGreedChange": { "series": "CNN_FEAR_GREED", "source": "CNN", "date": "2026-06-03" }
     }
   }
 ]
