@@ -3,11 +3,14 @@ name: Update market data
 on:
   workflow_dispatch:
   schedule:
-    # JST 08:30, Monday-Friday. Intended to run after US market close and FRED updates.
-    - cron: "30 23 * * 0-4"
+    # JST 09:30, Tuesday-Saturday. Captures each Monday-Friday US market close.
+    - cron: "30 0 * * 2-6"
 
 permissions:
   contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   update:
@@ -27,7 +30,7 @@ jobs:
           python -m pip install --upgrade pip
           if [ -s requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Fetch FRED market data
+      - name: Fetch market data
         run: python scripts/fetch_market_data.py
 
       - name: Commit updated data
