@@ -22,8 +22,32 @@ export const FIELDS = [
 export const AUTO_FIELD_IDS = FIELDS.filter((field) => field.source === "auto").map((field) => field.id);
 export const MANUAL_FIELD_IDS = FIELDS.filter((field) => field.source === "manual").map((field) => field.id);
 
-export function analyzeMarket(values, previousSnapshot) {
+const DERIVED_NUMBER_IDS = [
+  "vixChange5d",
+  "vixChange10d",
+  "vixDrawdownFrom10dHigh",
+  "vixDrawdownFrom20dHigh",
+  "sp500Change5d",
+  "sp500Change10d",
+  "nasdaq100Change5d",
+  "nasdaq100Change10d",
+  "creditTrend5d",
+  "creditTrend10d",
+  "creditTrend20d",
+  "creditDrawdownFrom20dHigh",
+  "usdJpyChange5d",
+  "usdJpyChange20d",
+  "goldChange20d",
+  "oilChange20d",
+  "qqqSpyChange5d",
+  "qqqSpyChange20d"
+];
+
+const DERIVED_BOOLEAN_IDS = ["sp500NoNewLow3d", "nasdaq100NoNewLow3d"];
+
+export function analyzeMarket(values, previousSnapshot, context = {}) {
   const current = normalizeValues(values);
+  const derived = normalizeDerived(context.derived || {});
   const deltas = calculateDeltas(current, previousSnapshot);
   const indicators = FIELDS.map((field) => buildIndicator(field, current[field.id], deltas[field.id]));
   const usedIndicators = indicators.filter((item) => item.value !== null);
@@ -31,11 +55,14 @@ export function analyzeMarket(values, previousSnapshot) {
   const heat = weightedAverage(usedIndicators, "heat");
   const stress = weightedAverage(usedIndicators, "stress");
   const recovery = weightedAverage(usedIndicators, "recovery");
-  const regime = decideRegime({ heat, stress, recovery });
+  const scores = buildScores({ heat, stress, recovery }, current, derived, context.scores || {});
+  const regime = decideRegime({ heat, stress, recovery }, current, derived, scores, context.regime || null);
   const actions = decideActions({ heat, stress, recovery, regime });
 
   return {
     axes: { heat, stress, recovery },
+    derived,
+    scores,
     regime,
     actions,
     indicators,
@@ -75,6 +102,17 @@ function normalizeValues(values) {
   const normalized = {};
   FIELDS.forEach((field) => {
     normalized[field.id] = normalizeNullableNumber(values[field.id]);
+  });
+  return normalized;
+}
+
+function normalizeDerived(derived) {
+  const normalized = {};
+  DERIVED_NUMBER_IDS.forEach((id) => {
+    normalized[id] = normalizeNullableNumber(derived[id]);
+  });
+  DERIVED_BOOLEAN_IDS.forEach((id) => {
+    normalized[id] = typeof derived[id] === "boolean" ? derived[id] : null;
   });
   return normalized;
 }
@@ -163,7 +201,246 @@ function weightedAverage(items, axis) {
   return Math.round(total / weight);
 }
 
-function decideRegime(axes) {
+function buildScores(axes, values, derived, payloadScores) {
+  const supplemental = {
+    panicScore: averageScore([
+      [scoreLow(values.fearGreed, [[15, 95], [25, 78], [40, 48]], 18), 1.1],
+      [scoreHigh(values.vix, [[40, 95], [32, 78], [25, 58], [20, 38]], 18), 1.2],
+      [scoreLow(values.spDeviation, [[-15, 92], [-8, 68], [-3, 42]], 16), 0.9],
+      [scoreLow(values.nasdaqDeviation, [[-20, 95], [-12, 72], [-4, 44]], 16), 0.9],
+      [scoreLow(derived.sp500Change10d, [[-12, 92], [-6, 68], [-3, 45]], 16), 0.8],
+      [scoreLow(derived.nasdaq100Change10d, [[-15, 95], [-8, 70], [-4, 46]], 16), 0.8]
+    ]),
+    peakOutScore: averageScore([
+      [scoreLow(derived.vixDrawdownFrom10dHigh, [[-22, 88], [-12, 72], [-5, 55]], 18), 1.1],
+      [scoreLow(derived.vixChange5d, [[-8, 88], [-3, 70], [-0.1, 55]], 20), 1],
+      [scoreLow(derived.vixChange10d, [[-10, 86], [-4, 68], [-0.1, 52]], 22), 0.8],
+      [boolScore(derived.sp500NoNewLow3d, 68, 18), 0.8],
+      [boolScore(derived.nasdaq100NoNewLow3d, 68, 18), 0.8],
+      [scoreHigh(derived.sp500Change5d, [[2, 72], [0, 60], [-2, 48]], 22), 0.7],
+      [scoreHigh(derived.creditTrend5d, [[1, 72], [0, 58], [-0.5, 48]], 22), 1],
+      [scoreHigh(values.fearGreedChange, [[15, 78], [5, 62], [0, 50]], 25), 0.7]
+    ]),
+    preCrashRiskScore: averageScore([
+      [scoreHigh(values.spDeviation, [[18, 92], [12, 72], [8, 55]], 24), 0.9],
+      [scoreHigh(values.nasdaqDeviation, [[25, 95], [15, 76], [10, 58]], 24), 0.9],
+      [scoreLow(values.vix, [[13, 72], [16, 52]], 22), 0.4],
+      [scoreHigh(derived.vixChange5d, [[5, 78], [2, 58], [0, 42]], 24), 0.8],
+      [scoreLow(derived.creditTrend5d, [[-2, 82], [-0.8, 62], [-0.1, 45]], 24), 1],
+      [scoreLow(derived.creditTrend10d, [[-3, 84], [-1.2, 64], [-0.2, 45]], 24), 0.9],
+      [scoreHigh(values.us10yChange, [[30, 72], [15, 55]], 24), 0.6],
+      [relativeStrengthWarning(derived), 0.6]
+    ]),
+    rateBearScore: averageScore([
+      [scoreHigh(values.us10yChange, [[30, 88], [15, 68], [5, 48]], 22), 1.2],
+      [scoreHigh(values.us10y, [[4.8, 78], [4.3, 58], [4, 44]], 24), 0.8],
+      [scoreHigh(values.realYield, [[2.2, 78], [1.7, 60], [1.2, 42]], 24), 0.9],
+      [scoreLow(values.nasdaqDeviation, [[-12, 86], [-4, 62], [0, 42]], 20), 0.9],
+      [scoreLow(derived.nasdaq100Change10d, [[-8, 76], [-4, 58], [-1, 42]], 22), 0.7],
+      [scoreLow(derived.creditTrend5d, [[-1.5, 68], [-0.5, 48]], 24), 0.5]
+    ]),
+    creditStressScore: averageScore([
+      [scoreLow(values.creditTrend, [[-6, 92], [-2, 68], [0, 45]], 20), 1.2],
+      [scoreLow(derived.creditTrend5d, [[-2, 86], [-0.8, 64], [-0.1, 45]], 20), 1],
+      [scoreLow(derived.creditTrend10d, [[-3, 88], [-1.2, 66], [-0.2, 45]], 20), 1],
+      [scoreLow(derived.creditDrawdownFrom20dHigh, [[-5, 82], [-2, 62], [-0.5, 44]], 20), 0.9],
+      [scoreHigh(values.vix, [[35, 78], [28, 60], [22, 42]], 18), 0.5]
+    ])
+  };
+
+  Object.keys(supplemental).forEach((key) => {
+    if (supplemental[key] === null && payloadScores[key] !== undefined) {
+      supplemental[key] = normalizeNullableNumber(payloadScores[key]);
+    }
+  });
+
+  return { ...axes, ...supplemental };
+}
+
+function averageScore(parts) {
+  let total = 0;
+  let weight = 0;
+  parts.forEach(([score, partWeight]) => {
+    if (score === null || score === undefined) return;
+    total += score * partWeight;
+    weight += partWeight;
+  });
+  return weight === 0 ? null : Math.round(clamp(total / weight, 0, 100));
+}
+
+function scoreHigh(value, rules, fallback) {
+  if (value === null || value === undefined) return null;
+  for (const [threshold, score] of rules) {
+    if (value >= threshold) return score;
+  }
+  return fallback;
+}
+
+function scoreLow(value, rules, fallback) {
+  if (value === null || value === undefined) return null;
+  for (const [threshold, score] of rules) {
+    if (value <= threshold) return score;
+  }
+  return fallback;
+}
+
+function boolScore(value, trueScore, falseScore) {
+  if (value === null || value === undefined) return null;
+  return value ? trueScore : falseScore;
+}
+
+function relativeStrengthWarning(derived) {
+  if (derived.qqqSpyChange20d === null || derived.sp500Change10d === null) return null;
+  if (derived.qqqSpyChange20d >= 4 && derived.sp500Change10d <= 0) return 72;
+  if (derived.qqqSpyChange20d >= 2 && derived.sp500Change10d <= 1) return 55;
+  return 24;
+}
+
+function scoreValue(scores, key) {
+  return normalizeNullableNumber(scores[key]) ?? 0;
+}
+
+function decideRegime(axes, values, derived, scores, payloadRegime) {
+  const coreKeys = ["vix", "spDeviation", "nasdaqDeviation", "us10y", "us10yChange", "creditTrend", "realYield", "yieldCurve"];
+  const coreCount = coreKeys.filter((key) => values[key] !== null).length;
+  const missingDerived = [...DERIVED_NUMBER_IDS, ...DERIVED_BOOLEAN_IDS].filter((key) => derived[key] === null);
+  const payloadWarnings = Array.isArray(payloadRegime?.warnings) ? payloadRegime.warnings : [];
+  const warnings = [
+    ...payloadWarnings,
+    ...(missingDerived.length > 0 ? ["一部の派生指標は未取得のため、該当スコアから除外しています。"] : [])
+  ];
+
+  const panic = scoreValue(scores, "panicScore");
+  const peakOut = scoreValue(scores, "peakOutScore");
+  const preCrash = scoreValue(scores, "preCrashRiskScore");
+  const rateBear = scoreValue(scores, "rateBearScore");
+  const creditStress = scoreValue(scores, "creditStressScore");
+  const noNewLow = derived.sp500NoNewLow3d === true || derived.nasdaq100NoNewLow3d === true;
+
+  if (coreCount < 6) {
+    return regimeOverride({
+      key: "data_quality_hold",
+      title: "データ品質確認",
+      subtitle: "主要データが不足しているため、新規判断は保留",
+      tone: "yellow",
+      icon: "⚖️",
+      weather: "確認",
+      mode: "維持",
+      positionSizeHint: "主要データ不足のため新規判断は保留",
+      reasons: ["主要自動指標が6件未満です。"],
+      warnings
+    });
+  }
+
+  if (creditStress >= 68 && panic >= 50 && peakOut < 58) {
+    return regimeOverride({
+      key: "credit_crisis",
+      title: "信用危機継続",
+      subtitle: "恐怖は強いが、信用市場の悪化がまだ止まっていない",
+      tone: "danger",
+      icon: "⛈️",
+      weather: "荒天",
+      mode: "縮小",
+      positionSizeHint: "現金余力優先。反発狙いは極小に限定",
+      reasons: ["HYG/IEFの悪化が強く、恐怖が底打ち確認を上回っています。"],
+      warnings
+    });
+  }
+
+  if (rateBear >= 64 && creditStress >= 35 && peakOut < 62) {
+    const judgment = rateBear >= 74 ? "やや縮小" : "維持";
+    return regimeOverride({
+      key: "rate_bear",
+      title: "金利主導ベア",
+      subtitle: "金利・実質金利の圧力が、株式の反発を抑えている",
+      tone: "yellow",
+      icon: "🛡️",
+      weather: "金利警戒",
+      mode: judgment,
+      positionSizeHint: "金利低下またはグロース回復確認まで拡大を急がない",
+      reasons: ["金利・実質金利の圧力が、株式の短期回復を抑えています。"],
+      warnings
+    });
+  }
+
+  if (preCrash >= 64) {
+    return regimeOverride({
+      key: "pre_crash_risk",
+      title: "過熱・内部劣化",
+      subtitle: "指数は強いが、ボラティリティまたは信用選好が先に悪化",
+      tone: "danger",
+      icon: "⚠️",
+      weather: "雷注意",
+      mode: "やや縮小",
+      positionSizeHint: "利益確定とサイズ調整を優先",
+      reasons: ["上方乖離が大きい一方で、VIXまたは信用選好に悪化の兆しがあります。"],
+      warnings
+    });
+  }
+
+  if (
+    panic >= 64 &&
+    peakOut >= 64 &&
+    creditStress < 60 &&
+    noNewLow &&
+    (derived.creditTrend5d === null || derived.creditTrend5d >= -0.5) &&
+    (derived.vixChange5d === null || derived.vixChange5d < 0)
+  ) {
+    return regimeOverride({
+      key: "buyable_fear",
+      title: "買える恐怖",
+      subtitle: "恐怖は強いが、底打ち確認が出始めている",
+      tone: "blue",
+      icon: "🌦️",
+      weather: "雨上がり",
+      mode: "やや拡大",
+      positionSizeHint: "打診のみ。追加はVIX低下、信用改善、指数回復の継続待ち",
+      reasons: ["恐怖は強いものの、VIX低下・安値更新停止・信用選好の下げ止まりがそろっています。"],
+      warnings
+    });
+  }
+
+  if (panic >= 45 && peakOut >= 55 && creditStress < 68) {
+    return regimeOverride({
+      key: "recovering_stress",
+      title: "悲観だが回復中",
+      subtitle: "ストレスは残るが、改善の兆しが出ている",
+      tone: "blue",
+      icon: "🌦️",
+      weather: "雨上がり",
+      mode: "やや拡大",
+      positionSizeHint: "分割。信用悪化の再燃時は追加停止",
+      reasons: ["悲観は残りますが、回復確認の指標が優勢です。"],
+      warnings
+    });
+  }
+
+  return enrichRegime(decideBaseRegime(axes), warnings);
+}
+
+function regimeOverride(regime) {
+  return {
+    current: regime.title,
+    positionJudgment: regime.mode,
+    positionSizeHint: regime.positionSizeHint || regime.mode,
+    reasons: regime.reasons || [],
+    warnings: regime.warnings || [],
+    ...regime
+  };
+}
+
+function enrichRegime(regime, warnings = []) {
+  return {
+    current: regime.title,
+    positionJudgment: regime.mode,
+    positionSizeHint: regime.mode,
+    reasons: ["補助スコアでは強い上書き条件が出ていません。"],
+    warnings,
+    ...regime
+  };
+}
+
+function decideBaseRegime(axes) {
   const { heat, stress, recovery } = axes;
 
   if (stress >= 72 && recovery < 45) {
@@ -263,6 +540,61 @@ function decideRegime(axes) {
 
 function decideActions(axes) {
   const { heat, stress, recovery, regime } = axes;
+
+  if (regime.key === "data_quality_hold") {
+    return {
+      primary: "維持",
+      stance: "主要データ不足のため、新規の拡大・縮小判断は保留。取得状況を確認してから再判定。",
+      expansion: "低",
+      trim: "低",
+      hedge: "中",
+      positionSizeHint: regime.positionSizeHint
+    };
+  }
+
+  if (regime.key === "credit_crisis") {
+    return {
+      primary: "縮小",
+      stance: "信用市場の悪化が止まっていない局面。現金余力を優先し、反発狙いは極小に限定。",
+      expansion: "低",
+      trim: "高",
+      hedge: "高",
+      positionSizeHint: regime.positionSizeHint
+    };
+  }
+
+  if (regime.key === "rate_bear") {
+    return {
+      primary: regime.mode,
+      stance: "金利主導で株式が重い局面。金利低下、実質金利低下、Nasdaq回復を待ってから追加。",
+      expansion: "低",
+      trim: regime.mode === "やや縮小" ? "中" : "低",
+      hedge: "中",
+      positionSizeHint: regime.positionSizeHint
+    };
+  }
+
+  if (regime.key === "pre_crash_risk") {
+    return {
+      primary: "やや縮小",
+      stance: "指数の強さに対して内部指標が悪化。利益確定、サイズ調整、ストップ厳格化を優先。",
+      expansion: "低",
+      trim: "高",
+      hedge: "中",
+      positionSizeHint: regime.positionSizeHint
+    };
+  }
+
+  if (regime.key === "buyable_fear") {
+    return {
+      primary: "やや拡大",
+      stance: "1回目は小さく打診。追加はVIX低下継続、信用選好改善、指数の短期回復を待つ。VIX再上昇・信用再悪化・安値更新で停止。",
+      expansion: "中",
+      trim: "低",
+      hedge: "中",
+      positionSizeHint: regime.positionSizeHint
+    };
+  }
 
   if (regime.key === "crisis") {
     return {
@@ -518,4 +850,8 @@ function daysBetween(oldIso, newIso) {
   const newTime = new Date(newIso).getTime();
   if (!Number.isFinite(oldTime) || !Number.isFinite(newTime)) return null;
   return Math.floor((newTime - oldTime) / 86400000);
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
 }
