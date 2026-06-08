@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-06-08T05:26:34Z",
-  "updated_at_jst": "2026-06-08 14:26",
+  "updated_at": "2026-06-08T05:53:56Z",
+  "updated_at_jst": "2026-06-08 14:53",
   "status": "ok",
   "values": {
     "vix": 21.51,
@@ -13,7 +13,7 @@
     "creditTrend": 1.29,
     "realYield": 2.19,
     "yieldCurve": 0.38,
-    "oilDeviation": 29.5,
+    "oilDeviation": 29.72,
     "fearGreed": 42.06,
     "fearGreedChange": -25.2
   },
@@ -34,8 +34,8 @@
     "creditDrawdownFrom20dHigh": -0.44,
     "usdJpyChange5d": 0.37,
     "usdJpyChange20d": 1.98,
-    "goldChange20d": -8.29,
-    "oilChange20d": -1.0,
+    "goldChange20d": -8.62,
+    "oilChange20d": -0.83,
     "qqqSpyChange5d": -2.05,
     "qqqSpyChange20d": 0.64
   },
