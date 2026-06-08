@@ -82,7 +82,11 @@ function render() {
 
   const built = buildValues(latestData, overrides);
   const previousSnapshot = getRemoteComparisonSnapshot(remoteHistory, latestData) || getComparisonSnapshot(built.values);
-  const analysis = analyzeMarket(built.values, previousSnapshot);
+  const analysis = analyzeMarket(built.values, previousSnapshot, {
+    derived: latestData.derived || {},
+    scores: latestData.scores || {},
+    regime: latestData.regime || null
+  });
 
   currentValues = built.values;
   currentAnalysis = analysis;
