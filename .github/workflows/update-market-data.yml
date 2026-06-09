@@ -3,14 +3,19 @@ name: Update market data
 on:
   workflow_dispatch:
   schedule:
-    # JST 09:30, Tuesday-Saturday. Captures each Monday-Friday US market close.
-    - cron: "30 0 * * 2-6"
+    # JST 09:37 and 10:47, Tuesday-Saturday. The second run is a fallback.
+    - cron: "37 0 * * 2-6"
+    - cron: "47 1 * * 2-6"
 
 permissions:
   contents: write
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: update-market-data
+  cancel-in-progress: false
 
 jobs:
   update:
@@ -25,15 +30,52 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Check update freshness
+        id: freshness
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from datetime import datetime
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          should_run = os.environ["EVENT_NAME"] == "workflow_dispatch"
+          updated_date = ""
+          today_jst = datetime.now(ZoneInfo("Asia/Tokyo")).date().isoformat()
+
+          if not should_run:
+              try:
+                  latest = json.loads(Path("data/latest.json").read_text(encoding="utf-8"))
+                  if latest.get("status") == "ok":
+                      updated_date = str(latest.get("updated_at_jst", ""))[:10]
+              except (OSError, ValueError):
+                  pass
+              should_run = updated_date != today_jst
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"should_run={'true' if should_run else 'false'}\n")
+
+          print(
+              f"event={os.environ['EVENT_NAME']} today_jst={today_jst} "
+              f"updated_date={updated_date or 'none'} should_run={should_run}"
+          )
+          PY
+
       - name: Install dependencies
+        if: steps.freshness.outputs.should_run == 'true'
         run: |
           python -m pip install --upgrade pip
           if [ -s requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Fetch market data
+        if: steps.freshness.outputs.should_run == 'true'
         run: python scripts/fetch_market_data.py
 
       - name: Commit updated data
+        if: steps.freshness.outputs.should_run == 'true'
         run: |
           if [ -z "$(git status --porcelain -- data/latest.json data/history.json)" ]; then
             echo "No market data changes."
