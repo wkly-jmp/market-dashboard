@@ -969,8 +969,7 @@ textarea:focus {
   gap: 10px;
 }
 
-.indicator-card,
-.source-item {
+.indicator-card {
   border: 1px solid var(--line);
   border-radius: 12px;
   background: rgba(8, 13, 20, 0.32);
@@ -1040,8 +1039,7 @@ textarea:focus {
   color: #ffd2d0;
 }
 
-.indicator-card p,
-.source-item p {
+.indicator-card p {
   margin: 0;
   color: var(--muted);
   font-size: 14px;
@@ -1114,9 +1112,32 @@ textarea:focus {
   background: rgba(255, 255, 255, 0.04);
 }
 
-.source-list {
+.indicator-source {
   display: grid;
-  gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 4px 7px;
+  align-items: baseline;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  color: #738396;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.indicator-source span {
+  color: var(--muted);
+  font-weight: bold;
+}
+
+.indicator-source small {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: inherit;
+}
+
+.indicator-source time {
+  white-space: nowrap;
 }
 
 .contribution {
