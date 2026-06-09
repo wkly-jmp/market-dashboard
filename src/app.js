@@ -48,7 +48,6 @@ const elements = {
   regimeMatrix: document.getElementById("regimeMatrix"),
   spotlightCards: document.getElementById("spotlightCards"),
   indicatorCards: document.getElementById("indicatorCards"),
-  sourceList: document.getElementById("sourceList"),
   summaryText: document.getElementById("summaryText"),
   saveButton: document.getElementById("saveButton"),
   recalcButton: document.getElementById("recalcButton"),
@@ -98,8 +97,7 @@ function render() {
   renderAxes(analysis.axes);
   renderActions(analysis.actions);
   renderMatrix(analysis);
-  renderCards(analysis.indicators);
-  renderSources(latestData);
+  renderCards(analysis.indicators, latestData);
   renderSummary(overrides);
 }
 
@@ -212,7 +210,7 @@ function renderMatrix(analysis) {
   ].join("");
 }
 
-function renderCards(indicators) {
+function renderCards(indicators, data) {
   const priority = [
     "fearGreed",
     "fearGreedChange",
@@ -235,9 +233,11 @@ function renderCards(indicators) {
       const bi = priority.includes(b.id) ? priority.indexOf(b.id) : 999;
       return ai - bi;
     });
+  const sourceRows = new Map(getSourceRows(data).map((row) => [row.id, row]));
 
   elements.indicatorCards.innerHTML = visibleCards.map((card) => {
     const deltaClass = card.delta.tone === "good" ? "good" : card.delta.tone === "bad" ? "bad" : "";
+    const sourceRow = sourceRows.get(card.id);
     return [
       '<article class="indicator-card">',
       '<div class="indicator-head">',
@@ -253,20 +253,29 @@ function renderCards(indicators) {
       miniBar("回復", card.recovery),
       "</div>",
       sparkline(card.id),
+      indicatorSource(card, sourceRow),
       "</article>"
     ].join("");
   }).join("");
 }
 
-function renderSources(data) {
-  elements.sourceList.innerHTML = getSourceRows(data).map((row) => {
-    return [
-      '<div class="source-item">',
-      '<p><strong>' + escapeHtml(row.name) + "</strong></p>",
-      "<p>" + escapeHtml(row.source) + " / " + escapeHtml(row.series) + " / " + escapeHtml(row.date) + "</p>",
-      "</div>"
-    ].join("");
-  }).join("");
+function indicatorSource(card, row) {
+  if (!row) {
+    return '<div class="indicator-source"><span>出典</span><small>' +
+      escapeHtml(card.source === "manual" ? "手動入力" : "未取得") +
+      "</small></div>";
+  }
+
+  const sourceLabel = [row.source, row.series]
+    .filter((value) => value && value !== "--")
+    .join(" / ");
+  return [
+    '<div class="indicator-source">',
+    "<span>出典</span>",
+    "<small>" + escapeHtml(sourceLabel || "未取得") + "</small>",
+    "<time>" + escapeHtml(row.date || "--") + "</time>",
+    "</div>"
+  ].join("");
 }
 
 function renderSummary(overrides) {
