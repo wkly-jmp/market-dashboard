@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-06-13T01:49:35Z",
-  "updated_at_jst": "2026-06-13 10:49",
+  "updated_at": "2026-06-14T07:33:10Z",
+  "updated_at_jst": "2026-06-14 16:33",
   "status": "ok",
   "values": {
     "vix": 17.68,
@@ -8,13 +8,13 @@
     "spDeviation": 7.98,
     "nasdaqDeviation": 15.32,
     "us10y": 4.48,
-    "us10yChange": 2.0,
+    "us10yChange": 2,
     "usdjpy": 160.2,
     "creditTrend": 1.32,
     "realYield": 2.17,
     "yieldCurve": 0.39,
-    "oilDeviation": 14.83,
-    "fearGreed": 34.0,
+    "oilDeviation": 15.62,
+    "fearGreed": 34,
     "fearGreedChange": -31.11
   },
   "derived": {
@@ -34,10 +34,21 @@
     "creditDrawdownFrom20dHigh": -0.4,
     "usdJpyChange5d": 0.21,
     "usdJpyChange20d": 1.04,
-    "goldChange20d": -9.37,
-    "oilChange20d": -16.68,
+    "goldChange20d": -9.39,
+    "oilChange20d": -16.1,
     "qqqSpyChange5d": 1.73,
-    "qqqSpyChange20d": 1.08
+    "qqqSpyChange20d": 1.08,
+    "selectiveDefenseActive": false,
+    "selectiveDefenseRisk": false,
+    "selectiveDefenseBadCount": 0,
+    "selectiveDefenseRiskDays": 0,
+    "selectivePriceRisk": false,
+    "selectiveVolatilityRisk": false,
+    "selectiveCreditRisk": false,
+    "selectiveBreadthRisk": false,
+    "sp500Drawdown20d": -2.34,
+    "vixTermRatio": 0.86,
+    "rspSpyChange5d": 1.26
   },
   "scores": {
     "panicScore": 23,
@@ -53,6 +64,17 @@
     "positionSizeHint": "追いかけすぎに注意しながら維持",
     "reasons": [
       "3軸判定で市場環境は比較的安定しています。"
+    ],
+    "warnings": []
+  },
+  "guardrails": {
+    "addPermission": "cautious",
+    "trimPermission": "cautious",
+    "mainLabel": "慎重維持",
+    "confidence": "high",
+    "reasons": [
+      "悲観が強い一方、底打ち確認が不足しています。",
+      "悲観が強く、縮小は小さく分ける局面です。"
     ],
     "warnings": []
   },
