@@ -8,7 +8,7 @@
       "spDeviation": 10.97,
       "nasdaqDeviation": 19.47,
       "us10y": 4.45,
-      "us10yChange": 9.0,
+      "us10yChange": 9,
       "usdjpy": 159.4625,
       "creditSpread": 1.57,
       "financialStress": -0.761,
@@ -16,7 +16,7 @@
       "yieldCurve": 0.47,
       "oilDeviation": 34.57,
       "fearGreed": 59.17,
-      "fearGreedChange": -12.0
+      "fearGreedChange": -12
     },
     "sources": {
       "vix": {
@@ -101,7 +101,7 @@
       "spDeviation": 10.75,
       "nasdaqDeviation": 20.15,
       "us10y": 4.45,
-      "us10yChange": 9.0,
+      "us10yChange": 9,
       "usdjpy": 159.9715,
       "creditSpread": 1.57,
       "financialStress": -0.761,
@@ -194,7 +194,7 @@
       "spDeviation": 10.51,
       "nasdaqDeviation": 19.83,
       "us10y": 4.45,
-      "us10yChange": 9.0,
+      "us10yChange": 9,
       "usdjpy": 160.0235,
       "creditSpread": 1.57,
       "financialStress": -0.761,
@@ -287,14 +287,14 @@
       "spDeviation": 10.31,
       "nasdaqDeviation": 19.93,
       "us10y": 4.49,
-      "us10yChange": 4.0,
+      "us10yChange": 4,
       "usdjpy": 159.8975,
       "creditSpread": 1.57,
       "financialStress": -0.761,
       "realYield": 2.11,
       "yieldCurve": 0.41,
       "oilDeviation": 30.72,
-      "fearGreed": 54.0,
+      "fearGreed": 54,
       "fearGreedChange": -17.17
     },
     "sources": {
@@ -380,13 +380,13 @@
       "spDeviation": 10.31,
       "nasdaqDeviation": 19.93,
       "us10y": 4.49,
-      "us10yChange": 4.0,
+      "us10yChange": 4,
       "usdjpy": 159.8955,
       "creditTrend": 1.2,
       "realYield": 2.11,
       "yieldCurve": 0.41,
       "oilDeviation": 30.64,
-      "fearGreed": 54.0,
+      "fearGreed": 54,
       "fearGreedChange": -17.17
     },
     "sources": {
@@ -467,13 +467,13 @@
       "spDeviation": 10.31,
       "nasdaqDeviation": 19.93,
       "us10y": 4.49,
-      "us10yChange": 4.0,
+      "us10yChange": 4,
       "usdjpy": 159.8975,
       "creditTrend": 1.2,
       "realYield": 2.11,
       "yieldCurve": 0.41,
       "oilDeviation": 30.62,
-      "fearGreed": 54.0,
+      "fearGreed": 54,
       "fearGreedChange": -17.17
     },
     "sources": {
@@ -554,13 +554,13 @@
       "spDeviation": 10.31,
       "nasdaqDeviation": 19.93,
       "us10y": 4.49,
-      "us10yChange": 4.0,
+      "us10yChange": 4,
       "usdjpy": 159.8985,
       "creditTrend": 1.2,
       "realYield": 2.11,
       "yieldCurve": 0.41,
       "oilDeviation": 30.59,
-      "fearGreed": 54.0,
+      "fearGreed": 54,
       "fearGreedChange": -17.17
     },
     "sources": {
@@ -641,7 +641,7 @@
       "spDeviation": 10.31,
       "nasdaqDeviation": 19.93,
       "us10y": 4.49,
-      "us10yChange": 4.0,
+      "us10yChange": 4,
       "usdjpy": 159.8205,
       "creditTrend": 1.2,
       "realYield": 2.11,
@@ -728,13 +728,13 @@
       "spDeviation": 10.66,
       "nasdaqDeviation": 19.13,
       "us10y": 4.47,
-      "us10yChange": 4.0,
+      "us10yChange": 4,
       "usdjpy": 159.8,
       "creditTrend": 1.26,
       "realYield": 2.11,
       "yieldCurve": 0.42,
       "oilDeviation": 27.58,
-      "fearGreed": 55.0,
+      "fearGreed": 55,
       "fearGreedChange": -12.26
     },
     "sources": {
@@ -814,7 +814,7 @@
       "spDeviation": 7.66,
       "nasdaqDeviation": 13.33,
       "us10y": 4.55,
-      "us10yChange": 19.0,
+      "us10yChange": 19,
       "usdjpy": 159.86,
       "creditTrend": 1.29,
       "realYield": 2.19,
@@ -900,7 +900,7 @@
       "spDeviation": 7.66,
       "nasdaqDeviation": 13.33,
       "us10y": 4.55,
-      "us10yChange": 19.0,
+      "us10yChange": 19,
       "usdjpy": 159.86,
       "creditTrend": 1.29,
       "realYield": 2.19,
@@ -979,8 +979,8 @@
     "derived": {
       "vixChange5d": 6.19,
       "vixChange10d": 4.81,
-      "vixDrawdownFrom10dHigh": 0.0,
-      "vixDrawdownFrom20dHigh": 0.0,
+      "vixDrawdownFrom10dHigh": 0,
+      "vixDrawdownFrom20dHigh": 0,
       "sp500Change5d": -2.59,
       "sp500Change10d": -0.83,
       "nasdaq100Change5d": -4.53,
@@ -1025,7 +1025,7 @@
       "spDeviation": 7.9,
       "nasdaqDeviation": 14.98,
       "us10y": 4.56,
-      "us10yChange": 18.0,
+      "us10yChange": 18,
       "usdjpy": 159.97,
       "creditTrend": 1.53,
       "realYield": 2.21,
@@ -1150,7 +1150,7 @@
       "spDeviation": 7.55,
       "nasdaqDeviation": 13.55,
       "us10y": 4.53,
-      "us10yChange": 15.0,
+      "us10yChange": 15,
       "usdjpy": 160.16,
       "creditTrend": 1.35,
       "realYield": 2.2,
@@ -1275,7 +1275,7 @@
       "spDeviation": 7.9,
       "nasdaqDeviation": 14.98,
       "us10y": 4.53,
-      "us10yChange": 15.0,
+      "us10yChange": 15,
       "usdjpy": 160.16,
       "creditTrend": 1.53,
       "realYield": 2.2,
@@ -1400,7 +1400,7 @@
       "spDeviation": 5.74,
       "nasdaqDeviation": 11.2,
       "us10y": 4.55,
-      "us10yChange": 13.0,
+      "us10yChange": 13,
       "usdjpy": 160.49,
       "creditTrend": 1.25,
       "realYield": 2.21,
@@ -1479,8 +1479,8 @@
     "derived": {
       "vixChange5d": 6.16,
       "vixChange10d": 5.93,
-      "vixDrawdownFrom10dHigh": 0.0,
-      "vixDrawdownFrom20dHigh": 0.0,
+      "vixDrawdownFrom10dHigh": 0,
+      "vixDrawdownFrom20dHigh": 0,
       "sp500Change5d": -3.8,
       "sp500Change10d": -3.37,
       "nasdaq100Change5d": -6.75,
@@ -1525,7 +1525,7 @@
       "spDeviation": 5.72,
       "nasdaqDeviation": 11.58,
       "us10y": 4.55,
-      "us10yChange": 13.0,
+      "us10yChange": 13,
       "usdjpy": 160.54,
       "creditTrend": 1.24,
       "realYield": 2.21,
@@ -1612,7 +1612,7 @@
       "nasdaq100Change10d": -5.25,
       "sp500NoNewLow3d": false,
       "nasdaq100NoNewLow3d": false,
-      "creditTrend5d": -0.0,
+      "creditTrend5d": 0,
       "creditTrend10d": -0.06,
       "creditTrend20d": 0.11,
       "creditDrawdownFrom20dHigh": -0.48,
@@ -1650,7 +1650,7 @@
       "spDeviation": 7.52,
       "nasdaqDeviation": 14.72,
       "us10y": 4.45,
-      "us10yChange": -1.0,
+      "us10yChange": -1,
       "usdjpy": 160.54,
       "creditTrend": 1.15,
       "realYield": 2.16,
@@ -1775,13 +1775,13 @@
       "spDeviation": 7.98,
       "nasdaqDeviation": 15.32,
       "us10y": 4.48,
-      "us10yChange": 2.0,
+      "us10yChange": 2,
       "usdjpy": 160.2,
       "creditTrend": 1.32,
       "realYield": 2.17,
       "yieldCurve": 0.39,
       "oilDeviation": 14.83,
-      "fearGreed": 34.0,
+      "fearGreed": 34,
       "fearGreedChange": -31.11
     },
     "sources": {
@@ -1887,6 +1887,142 @@
       "positionSizeHint": "追いかけすぎに注意しながら維持",
       "reasons": [
         "3軸判定で市場環境は比較的安定しています。"
+      ],
+      "warnings": []
+    }
+  },
+  {
+    "updated_at": "2026-06-14T08:34:49Z",
+    "updated_at_jst": "2026-06-14 17:34",
+    "values": {
+      "vix": 17.68,
+      "vixChange": -0.19,
+      "spDeviation": 7.98,
+      "nasdaqDeviation": 15.32,
+      "us10y": 4.48,
+      "us10yChange": 2,
+      "usdjpy": 160.2,
+      "creditTrend": 1.32,
+      "realYield": 2.17,
+      "yieldCurve": 0.39,
+      "oilDeviation": 15.62,
+      "fearGreed": 34,
+      "fearGreedChange": -31.11
+    },
+    "sources": {
+      "vix": {
+        "series": "YAHOO:^VIX",
+        "source": "Yahoo Finance",
+        "date": "2026-06-12"
+      },
+      "vixChange": {
+        "series": "YAHOO:^VIX",
+        "source": "Yahoo Finance",
+        "date": "2026-06-12"
+      },
+      "spDeviation": {
+        "series": "YAHOO:^GSPC",
+        "source": "Yahoo Finance",
+        "date": "2026-06-12"
+      },
+      "nasdaqDeviation": {
+        "series": "YAHOO:^NDX",
+        "source": "Yahoo Finance",
+        "date": "2026-06-12"
+      },
+      "us10y": {
+        "series": "TREASURY_YIELD_CURVE:10 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-12"
+      },
+      "us10yChange": {
+        "series": "TREASURY_YIELD_CURVE:10 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-12"
+      },
+      "usdjpy": {
+        "series": "USDJPY_ECB_REFERENCE",
+        "source": "Frankfurter",
+        "date": "2026-06-12"
+      },
+      "creditTrend": {
+        "series": "YAHOO:HYG/IEF 200d deviation",
+        "source": "Yahoo Finance",
+        "date": "2026-06-12"
+      },
+      "realYield": {
+        "series": "TREASURY_REAL_YIELD_CURVE:10 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-12"
+      },
+      "yieldCurve": {
+        "series": "TREASURY_YIELD_CURVE:10 Yr-2 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-12"
+      },
+      "oilDeviation": {
+        "series": "YAHOO:CL=F",
+        "source": "Yahoo Finance",
+        "date": "2026-06-12"
+      },
+      "fearGreed": {
+        "series": "CNN_FEAR_GREED",
+        "source": "CNN",
+        "date": "2026-06-12"
+      },
+      "fearGreedChange": {
+        "series": "CNN_FEAR_GREED",
+        "source": "CNN",
+        "date": "2026-06-12"
+      }
+    },
+    "derived": {
+      "vixChange5d": -3.83,
+      "vixChange10d": 2.36,
+      "vixDrawdownFrom10dHigh": -20.43,
+      "vixDrawdownFrom20dHigh": -20.43,
+      "sp500Change5d": 0.65,
+      "sp500Change10d": -1.96,
+      "nasdaq100Change5d": 2.34,
+      "nasdaq100Change10d": -2.3,
+      "sp500NoNewLow3d": false,
+      "nasdaq100NoNewLow3d": false,
+      "creditTrend5d": 0.04,
+      "creditTrend10d": 0.04,
+      "creditTrend20d": 0.2,
+      "creditDrawdownFrom20dHigh": -0.4,
+      "usdJpyChange5d": 0.21,
+      "usdJpyChange20d": 1.04,
+      "goldChange20d": -9.39,
+      "oilChange20d": -16.1,
+      "qqqSpyChange5d": 1.73,
+      "qqqSpyChange20d": 1.08
+    },
+    "scores": {
+      "panicScore": 23,
+      "peakOutScore": 45,
+      "preCrashRiskScore": 32,
+      "rateBearScore": 37,
+      "creditStressScore": 20
+    },
+    "regime": {
+      "key": "risk_on",
+      "current": "通常のリスクオン",
+      "positionJudgment": "維持",
+      "positionSizeHint": "追いかけすぎに注意しながら維持",
+      "reasons": [
+        "3軸判定で市場環境は比較的安定しています。"
+      ],
+      "warnings": []
+    },
+    "guardrails": {
+      "addPermission": "cautious",
+      "trimPermission": "cautious",
+      "mainLabel": "慎重維持",
+      "confidence": "high",
+      "reasons": [
+        "悲観が強い一方、底打ち確認が不足しています。",
+        "悲観が強く、縮小は小さく分ける局面です。"
       ],
       "warnings": []
     }
