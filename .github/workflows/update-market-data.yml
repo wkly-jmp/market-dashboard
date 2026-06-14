@@ -74,6 +74,10 @@ jobs:
         if: steps.freshness.outputs.should_run == 'true'
         run: python scripts/fetch_market_data.py
 
+      - name: Add action guardrails
+        if: steps.freshness.outputs.should_run == 'true'
+        run: node scripts/apply_guardrails.mjs
+
       - name: Commit updated data
         if: steps.freshness.outputs.should_run == 'true'
         run: |
