@@ -33,6 +33,34 @@
 
     <div id="warningArea" class="warnings"></div>
 
+    <section id="guardrailCard" class="card guardrail-card" data-tone="unknown" aria-label="行動制御ガードレール">
+      <div class="guardrail-head">
+        <div>
+          <p class="box-title">行動制御ガードレール</p>
+          <h2 id="guardrailMain">未判定</h2>
+        </div>
+        <span id="guardrailConfidence" class="guardrail-confidence">信頼度 --</span>
+      </div>
+      <div class="guardrail-grid">
+        <div class="guardrail-permission add">
+          <span>新規追加</span>
+          <strong id="guardrailAdd">未判定</strong>
+        </div>
+        <div class="guardrail-permission trim">
+          <span>ポジション縮小</span>
+          <strong id="guardrailTrim">未判定</strong>
+        </div>
+      </div>
+      <div class="guardrail-detail">
+        <p class="box-title">判定理由</p>
+        <ul id="guardrailReasons">
+          <li>データ読み込み後に判定します。</li>
+        </ul>
+        <div id="guardrailWarnings" class="guardrail-warnings"></div>
+      </div>
+      <p class="guardrail-note">売買命令ではなく、追加や縮小を避けるべき条件を示す補助判定です。</p>
+    </section>
+
     <section class="card main-card regime-card" aria-label="市場局面">
       <div class="regime-hero">
         <div class="regime-symbol">
