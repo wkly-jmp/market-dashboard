@@ -24,6 +24,13 @@ const elements = {
   updatedAt: document.getElementById("updatedAt"),
   dataDates: document.getElementById("dataDates"),
   warningArea: document.getElementById("warningArea"),
+  guardrailCard: document.getElementById("guardrailCard"),
+  guardrailMain: document.getElementById("guardrailMain"),
+  guardrailConfidence: document.getElementById("guardrailConfidence"),
+  guardrailAdd: document.getElementById("guardrailAdd"),
+  guardrailTrim: document.getElementById("guardrailTrim"),
+  guardrailReasons: document.getElementById("guardrailReasons"),
+  guardrailWarnings: document.getElementById("guardrailWarnings"),
   regimeTitle: document.getElementById("regimeTitle"),
   regimeIcon: document.getElementById("regimeIcon"),
   weatherLabel: document.getElementById("weatherLabel"),
@@ -92,6 +99,7 @@ function render() {
 
   renderDataStatus(latestData);
   renderWarnings(latestData, built.inputWarnings);
+  renderGuardrails(analysis.guardrails);
   renderRegime(analysis);
   renderSpotlights(analysis.indicators);
   renderAxes(analysis.axes);
@@ -99,6 +107,57 @@ function render() {
   renderMatrix(analysis);
   renderCards(analysis.indicators, latestData);
   renderSummary(overrides);
+}
+
+function renderGuardrails(guardrails) {
+  if (!guardrails) {
+    elements.guardrailCard.dataset.tone = "unknown";
+    elements.guardrailMain.textContent = "未判定";
+    elements.guardrailConfidence.textContent = "信頼度 --";
+    elements.guardrailAdd.textContent = "未判定";
+    elements.guardrailTrim.textContent = "未判定";
+    elements.guardrailReasons.innerHTML = "<li>ガードレール情報がない旧形式データです。</li>";
+    elements.guardrailWarnings.innerHTML = "";
+    return;
+  }
+
+  const addLabels = {
+    blocked: "避ける",
+    cautious: "小さく打診まで",
+    normal: "通常ペース可"
+  };
+  const trimLabels = {
+    avoid: "大幅縮小は避ける",
+    cautious: "小さく慎重に",
+    allowed: "通常判断",
+    defensive_priority: "防御優先"
+  };
+  const confidenceLabels = {
+    high: "高",
+    medium: "中",
+    low: "低"
+  };
+
+  elements.guardrailMain.textContent = guardrails.mainLabel || "未判定";
+  elements.guardrailConfidence.textContent = "信頼度 " + (confidenceLabels[guardrails.confidence] || "--");
+  elements.guardrailAdd.textContent = addLabels[guardrails.addPermission] || "未判定";
+  elements.guardrailTrim.textContent = trimLabels[guardrails.trimPermission] || "未判定";
+  elements.guardrailReasons.innerHTML = (guardrails.reasons || [])
+    .map((reason) => "<li>" + escapeHtml(reason) + "</li>")
+    .join("") || "<li>判定理由はありません。</li>";
+  elements.guardrailWarnings.innerHTML = (guardrails.warnings || [])
+    .map((warning) => '<p>' + escapeHtml(warning) + "</p>")
+    .join("");
+
+  let tone = "normal";
+  if (guardrails.trimPermission === "defensive_priority" || guardrails.addPermission === "blocked") {
+    tone = "danger";
+  } else if (guardrails.trimPermission === "avoid") {
+    tone = "avoid";
+  } else if (guardrails.addPermission === "cautious" || guardrails.trimPermission === "cautious") {
+    tone = "cautious";
+  }
+  elements.guardrailCard.dataset.tone = tone;
 }
 
 function renderDataStatus(data) {
