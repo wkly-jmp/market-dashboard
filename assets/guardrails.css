@@ -1,0 +1,107 @@
+.guardrail-card {
+  padding: 16px;
+  display: grid;
+  gap: 14px;
+  margin-bottom: 14px;
+  border-radius: 8px;
+  background: #111c29;
+}
+
+.guardrail-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.guardrail-head h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 26px;
+  line-height: 1.2;
+}
+
+.guardrail-confidence {
+  flex: 0 0 auto;
+  padding: 4px 9px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  background: var(--soft-gray);
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.guardrail-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.guardrail-permission {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 58px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(8, 13, 20, 0.42);
+}
+
+.guardrail-permission span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.guardrail-permission strong {
+  color: var(--ink);
+  font-size: 17px;
+  text-align: right;
+}
+
+.guardrail-detail ul {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.guardrail-detail li + li {
+  margin-top: 4px;
+}
+
+.guardrail-warnings p {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  border-left: 3px solid var(--yellow);
+  color: #ffeab1;
+  background: var(--soft-yellow);
+  font-size: 12px;
+}
+
+.guardrail-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.guardrail-card[data-tone="danger"] { border-color: rgba(255, 101, 96, 0.58); }
+.guardrail-card[data-tone="danger"] h2,
+.guardrail-card[data-tone="danger"] strong { color: #ffd2d0; }
+.guardrail-card[data-tone="avoid"] { border-color: rgba(56, 167, 255, 0.54); }
+.guardrail-card[data-tone="avoid"] h2,
+.guardrail-card[data-tone="avoid"] strong { color: #b8e5ff; }
+.guardrail-card[data-tone="cautious"] { border-color: rgba(255, 212, 90, 0.52); }
+.guardrail-card[data-tone="cautious"] h2,
+.guardrail-card[data-tone="cautious"] strong { color: #ffeab1; }
+.guardrail-card[data-tone="normal"] { border-color: rgba(67, 210, 154, 0.42); }
+.guardrail-card[data-tone="normal"] h2 { color: #d7fff0; }
+
+@media (min-width: 680px) {
+  .guardrail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
