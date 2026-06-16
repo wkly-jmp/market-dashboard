@@ -75,10 +75,18 @@ jobs:
           root = extract_dir.resolve()
           with zipfile.ZipFile(zip_path) as archive:
               for member in archive.infolist():
-                  target = (extract_dir / member.filename).resolve()
-                  if not str(target).startswith(str(root)):
+                  normalized_name = member.filename.replace("\\", "/")
+                  target = (extract_dir / normalized_name).resolve()
+                  try:
+                      target.relative_to(root)
+                  except ValueError:
                       raise SystemExit(f"Unsafe archive path: {member.filename}")
-                  archive.extract(member, extract_dir)
+                  if member.is_dir() or normalized_name.endswith("/"):
+                      target.mkdir(parents=True, exist_ok=True)
+                      continue
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  with archive.open(member) as src, target.open("wb") as dst:
+                      shutil.copyfileobj(src, dst)
 
           files = manifest["files"]
           for rel in files:
