@@ -38,12 +38,14 @@ Yahoo Finance、米財務省、Stooq、CNNの公開データをGitHub Actionsで
 `行動制御ガードレール` は、既存の3軸・局面判定を置き換えるものではありません。現在の局面に対して「新規追加を避けるべきか」と「縮小を急ぎすぎるべきでないか」を別々に判定する補助レイヤーです。
 
 - `新規追加`: `blocked`、`cautious`、`normal`
-- `ポジション縮小`: `avoid`、`cautious`、`allowed`、`defensive_priority`
+- `ポジション縮小`: `avoid`、`cautious`、`allowed`、`hold_defense`、`defensive_priority`
 - `confidence`: `high`、`medium`、`low`
 
-`normal` は買い推奨ではなく、強い禁止条件がなく通常の分割ペースを検討できるという意味です。`avoid` も保有継続の命令ではなく、恐怖局面での一括縮小を避けるための警告です。信用危機や強い金利主導ベアでは `defensive_priority` を優先します。
+`normal` は買い推奨ではなく、強い禁止条件がなく通常の分割ペースを検討できるという意味です。`avoid` も保有継続の命令ではなく、恐怖局面での一括縮小を避けるための警告です。`hold_defense` は既存の防御状態を維持しつつ、反転確認後の追加縮小を止める状態です。信用危機や強い金利主導ベアでは `defensive_priority` を優先します。
 
 主要データが不足した場合は `confidence: low` とし、既知の強い危機条件を除いて `判断不能・維持` に寄せます。欠損値は0として扱わず、`null` のまま判定対象から除外します。
+
+3サイクルの検証結果と採否理由は `analysis/GUARDRAIL_QUALITY_REPORT.md` に記録しています。
 
 ## ファイル構成
 

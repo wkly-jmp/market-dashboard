@@ -55,7 +55,7 @@ function average(parts) {
     total += score * partWeight;
     weight += partWeight;
   }
-  return weight ? Math.round(total / weight) : 0;
+  return weight ? Math.round(total / weight) : null;
 }
 
 function high(value, rules, fallback) {

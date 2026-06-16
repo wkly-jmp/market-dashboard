@@ -37,13 +37,97 @@ assert.equal(normal.addPermission, "normal");
 assert.equal(normal.trimPermission, "allowed");
 assert.equal(normal.confidence, "high");
 
-const blocked = buildGuardrails(axes, values, derived, { ...scores, preCrashRiskScore: 70 }, { key: "risk_on" });
+const blocked = buildGuardrails(
+  axes,
+  values,
+  derived,
+  { ...scores, preCrashRiskScore: 70 },
+  { key: "risk_on" }
+);
 assert.equal(blocked.addPermission, "blocked");
 
-const avoid = buildGuardrails(axes, { ...values, fearGreed: 20 }, derived, { ...scores, peakOutScore: 60 }, { key: "risk_on" });
+const avoid = buildGuardrails(
+  axes,
+  { ...values, fearGreed: 20 },
+  derived,
+  { ...scores, peakOutScore: 60 },
+  { key: "risk_on" }
+);
 assert.equal(avoid.trimPermission, "avoid");
 
-const defensive = buildGuardrails(axes, values, { ...derived, creditTrend5d: -2.5 }, scores, { key: "risk_on" });
-assert.equal(defensive.trimPermission, "defensive_priority");
+const defensive = buildGuardrails(
+  axes,
+  values,
+  { ...derived, creditTrend5d: -2.5 },
+  scores,
+  { key: "risk_on" }
+);
+assert.equal(defensive.trimPermission, "cautious");
+
+const selectiveDefense = buildGuardrails(
+  axes,
+  values,
+  derived,
+  scores,
+  { key: "selective_defense" }
+);
+assert.equal(selectiveDefense.addPermission, "blocked");
+assert.equal(selectiveDefense.trimPermission, "defensive_priority");
+
+const freshSources = Object.fromEntries(
+  ["vix", "spDeviation", "nasdaqDeviation", "creditTrend", "us10y", "realYield"]
+    .map((id) => [id, { date: "2026-06-12" }])
+);
+const weekendFresh = buildGuardrails(
+  axes,
+  values,
+  derived,
+  scores,
+  { key: "risk_on" },
+  {
+    status: "ok",
+    now: "2026-06-15T09:30:00+09:00",
+    sources: freshSources
+  }
+);
+assert.equal(weekendFresh.confidence, "high");
+
+const stale = buildGuardrails(
+  axes,
+  values,
+  derived,
+  scores,
+  { key: "risk_on" },
+  {
+    status: "ok",
+    now: "2026-06-15T09:30:00+09:00",
+    sources: Object.fromEntries(
+      Object.keys(freshSources).map((id) => [id, { date: "2026-06-05" }])
+    )
+  }
+);
+assert.equal(stale.confidence, "low");
+assert.equal(stale.addPermission, "cautious");
+assert.equal(stale.mainLabel, "判断不能・維持");
+assert.match(stale.warnings.join(" "), /営業日前/);
+
+const missingCredit = buildGuardrails(
+  axes,
+  { ...values, creditTrend: null },
+  derived,
+  scores,
+  { key: "risk_on" }
+);
+assert.equal(missingCredit.confidence, "low");
+assert.equal(missingCredit.mainLabel, "判断不能・維持");
+
+const missingOneRate = buildGuardrails(
+  axes,
+  { ...values, us10y: null },
+  derived,
+  scores,
+  { key: "risk_on" }
+);
+assert.equal(missingOneRate.confidence, "medium");
 
 console.log("guardrail scenarios passed");

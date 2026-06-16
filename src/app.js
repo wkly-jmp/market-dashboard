@@ -1,4 +1,4 @@
-import { analyzeMarket } from "./scoring.js";
+import { analyzeMarket } from "./market-analysis.js";
 import {
   buildValues,
   clearOverrides,
@@ -91,7 +91,8 @@ function render() {
   const analysis = analyzeMarket(built.values, previousSnapshot, {
     derived: latestData.derived || {},
     scores: latestData.scores || {},
-    regime: latestData.regime || null
+    regime: latestData.regime || null,
+    quality: latestData
   });
 
   currentValues = built.values;
@@ -130,6 +131,7 @@ function renderGuardrails(guardrails) {
     avoid: "大幅縮小は避ける",
     cautious: "小さく慎重に",
     allowed: "通常判断",
+    hold_defense: "防御維持・追加縮小なし",
     defensive_priority: "防御優先"
   };
   const confidenceLabels = {
@@ -246,12 +248,17 @@ function levelToPercent(level) {
 }
 
 function calculateStancePosition(axes) {
+  if ([axes.heat, axes.stress, axes.recovery].some((value) => value === null)) return 50;
   const attack = axes.recovery * 0.55 + (100 - axes.stress) * 0.3 + (100 - axes.heat) * 0.15;
   return clamp(100 - attack, 4, 96);
 }
 
 function renderMatrix(analysis) {
   const { heat, stress, recovery } = analysis.axes;
+  if ([heat, stress, recovery].some((value) => value === null)) {
+    elements.regimeMatrix.innerHTML = '<div class="sparkline empty">3軸判定：データ不足</div>';
+    return;
+  }
   const x = clamp(heat, 0, 100);
   const y = clamp(100 - stress, 0, 100);
   const label = recovery >= 60 ? "回復強め" : recovery <= 35 ? "回復弱め" : "回復中立";
@@ -348,7 +355,10 @@ function bindEvents() {
   elements.refreshButton.addEventListener("click", reloadData);
   elements.recalcButton.addEventListener("click", render);
   elements.saveButton.addEventListener("click", () => {
-    const score = currentAnalysis ? Math.round((currentAnalysis.axes.heat + currentAnalysis.axes.stress + currentAnalysis.axes.recovery) / 3) : null;
+    const axisValues = currentAnalysis ? Object.values(currentAnalysis.axes) : [];
+    const score = axisValues.length === 3 && axisValues.every(Number.isFinite)
+      ? Math.round(axisValues.reduce((sum, value) => sum + value, 0) / axisValues.length)
+      : null;
     saveSnapshot(currentValues, score, latestData, elements.memo.value || "");
     render();
   });
@@ -365,8 +375,8 @@ function bindEvents() {
 }
 
 function setAxis(valueElement, barElement, value) {
-  valueElement.textContent = value;
-  barElement.style.setProperty("--value", clamp(value, 0, 100) + "%");
+  valueElement.textContent = value === null ? "--" : value;
+  barElement.style.setProperty("--value", (value === null ? 0 : clamp(value, 0, 100)) + "%");
 }
 
 function miniBar(label, value) {

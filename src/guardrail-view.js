@@ -28,14 +28,16 @@ function render() {
   const analysis = analyzeMarket(values, null, {
     derived: latest.derived || {},
     scores: latest.scores || {},
-    regime: latest.regime || null
+    regime: latest.regime || null,
+    quality: latest
   });
   renderGuardrails(buildGuardrails(
     analysis.axes,
     values,
     analysis.derived,
     analysis.scores,
-    analysis.regime
+    analysis.regime,
+    latest
   ));
 }
 
@@ -65,6 +67,7 @@ function renderGuardrails(guardrails) {
     avoid: "大幅縮小は避ける",
     cautious: "小さく慎重に",
     allowed: "通常判断",
+    hold_defense: "防御維持・追加縮小なし",
     defensive_priority: "防御優先"
   };
   const confidenceLabels = { high: "高", medium: "中", low: "低" };

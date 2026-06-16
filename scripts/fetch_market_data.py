@@ -36,6 +36,86 @@ OPTIONAL_YAHOO_SERIES = {
     "gold": "GC%3DF",
     "spy": "SPY",
     "qqq": "QQQ",
+    "rsp": "RSP",
+    "vix3m": "%5EVIX3M",
+}
+
+GUARDRAIL_CRITICAL_VALUE_IDS = (
+    "vix",
+    "spDeviation",
+    "nasdaqDeviation",
+    "creditTrend",
+    "us10y",
+    "realYield",
+)
+
+GUARDRAIL_DERIVED_IDS = (
+    "vixChange5d",
+    "vixDrawdownFrom10dHigh",
+    "sp500Change5d",
+    "sp500Change10d",
+    "nasdaq100Change5d",
+    "nasdaq100Change10d",
+    "creditTrend5d",
+    "creditTrend10d",
+    "qqqSpyChange20d",
+    "sp500NoNewLow3d",
+    "nasdaq100NoNewLow3d",
+)
+
+GUARDRAIL_THRESHOLDS = {
+    "addBlocked": {
+        "creditStress": 68,
+        "preCrash": 64,
+        "rateBear": 64,
+        "rateBearPeakOut": 62,
+        "vixChange5d": 4,
+        "sp500Change5d": -2,
+        "nasdaq100Change5d": -3,
+        "creditTrend5d": -0.8,
+        "creditTrend10d": -1.2,
+        "nasdaqDeviation": 18,
+        "qqqSpyChange20d": 3,
+        "sp500Change10d": 1,
+        "heat": 72,
+        "stress": 60,
+    },
+    "addCautious": {
+        "vix": 18,
+        "fearGreed": 35,
+        "fearPeakOut": 55,
+        "rateBear": 45,
+        "ratePeakOut": 50,
+        "heat": 65,
+        "stress": 55,
+    },
+    "trimDefensive": {
+        "creditStress": 68,
+        "creditPeakOut": 58,
+        "rateBear": 74,
+        "ratePeakOut": 62,
+        "creditTrend5d": -2,
+        "creditTrend10d": -3,
+    },
+    "trimAvoid": {
+        "creditStress": 60,
+        "fearGreed": 25,
+        "panic": 55,
+        "vix": 25,
+        "sp500Change10d": -5,
+        "nasdaq100Change10d": -7,
+        "peakOut": 50,
+        "vixDrawdown": -5,
+        "creditTrend5d": -0.5,
+    },
+    "trimCautious": {
+        "fearGreed": 35,
+        "panic": 45,
+        "stress": 58,
+        "creditStress": 68,
+        "sp500Change5d": -3,
+        "nasdaq100Change5d": -5,
+    },
 }
 
 
@@ -373,6 +453,8 @@ def build_payload(raw: dict[str, list[tuple[datetime, float]]], fear_greed: dict
 
     scores = calculate_market_scores(values, derived)
     regime = decide_market_regime(values, derived, scores, missing_derived)
+    axes = calculate_three_axis_scores(values)
+    guardrails = build_guardrails(axes, values, derived, scores, regime)
 
     usdjpy_source = {
         "series": usdjpy_quote["series"],
@@ -418,6 +500,7 @@ def build_payload(raw: dict[str, list[tuple[datetime, float]]], fear_greed: dict
         "derived": derived,
         "scores": scores,
         "regime": regime,
+        "guardrails": guardrails,
         "sources": sources,
         "warnings": warnings,
     }
@@ -425,6 +508,8 @@ def build_payload(raw: dict[str, list[tuple[datetime, float]]], fear_greed: dict
 
 def build_derived(raw: dict[str, list[tuple[datetime, float]]], credit_ratio: list[tuple[datetime, float]]) -> dict:
     qqq_spy_ratio = optional_ratio(raw.get("qqq"), raw.get("spy"))
+    rsp_spy_ratio = optional_ratio(raw.get("rsp"), raw.get("spy"))
+    selective = build_selective_defense(raw, credit_ratio, rsp_spy_ratio)
     return {
         "vixChange5d": optional_metric(lambda: series_point_change(raw["vix"], 5)),
         "vixChange10d": optional_metric(lambda: series_point_change(raw["vix"], 10)),
@@ -446,7 +531,150 @@ def build_derived(raw: dict[str, list[tuple[datetime, float]]], credit_ratio: li
         "oilChange20d": optional_metric(lambda: series_percent_change(raw["oil"], 20)),
         "qqqSpyChange5d": optional_metric(lambda: series_percent_change(qqq_spy_ratio, 5)),
         "qqqSpyChange20d": optional_metric(lambda: series_percent_change(qqq_spy_ratio, 20)),
+        **selective,
     }
+
+
+def build_selective_defense(
+    raw: dict[str, list[tuple[datetime, float]]],
+    credit_ratio: list[tuple[datetime, float]],
+    rsp_spy_ratio: list[tuple[datetime, float]],
+) -> dict:
+    required = ("sp500", "vix", "vix3m")
+    if any(not raw.get(key) for key in required) or not credit_ratio or not rsp_spy_ratio:
+        return empty_selective_defense()
+
+    series_maps = {
+        "sp500": {row_date.date(): value for row_date, value in raw["sp500"]},
+        "vix": {row_date.date(): value for row_date, value in raw["vix"]},
+        "vix3m": {row_date.date(): value for row_date, value in raw["vix3m"]},
+        "credit": {row_date.date(): value for row_date, value in credit_ratio},
+        "breadth": {row_date.date(): value for row_date, value in rsp_spy_ratio},
+    }
+    common_dates = sorted(set.intersection(*(set(values) for values in series_maps.values())))
+    if len(common_dates) < 55:
+        return empty_selective_defense()
+
+    values = {
+        key: [mapping[row_date] for row_date in common_dates]
+        for key, mapping in series_maps.items()
+    }
+    active = False
+    trigger_streak = 0
+    release_streak = 0
+    hold_days = 0
+    latest = None
+
+    for index in range(50, len(common_dates)):
+        sp500 = values["sp500"][index]
+        sp500_change5 = percent_change_at(values["sp500"], index, 5)
+        sp500_drawdown20 = drawdown_at(values["sp500"], index, 20)
+        sp500_ma20 = average_at(values["sp500"], index, 20)
+        sp500_ma50 = average_at(values["sp500"], index, 50)
+        vix_change5 = point_change_at(values["vix"], index, 5)
+        vix_term = values["vix"][index] / values["vix3m"][index]
+        credit_change5 = percent_change_at(values["credit"], index, 5)
+        credit_ma20 = average_at(values["credit"], index, 20)
+        breadth_change5 = percent_change_at(values["breadth"], index, 5)
+        breadth_ma20 = average_at(values["breadth"], index, 20)
+
+        price_risk = (
+            sp500_drawdown20 <= -3.5
+            and sp500_change5 <= -1.0
+        ) or (
+            sp500 < sp500_ma20
+            and sp500 < sp500_ma50
+            and sp500_change5 <= -1.0
+        )
+        volatility_risk = vix_change5 >= 2.5 or vix_term >= 1.0
+        credit_risk = credit_change5 <= -0.5 and values["credit"][index] < credit_ma20
+        breadth_risk = breadth_change5 <= -0.2 and values["breadth"][index] < breadth_ma20
+        bad_count = sum((price_risk, volatility_risk, credit_risk, breadth_risk))
+        risk = (
+            price_risk
+            and volatility_risk
+            and (credit_risk or breadth_risk)
+            and bad_count >= 3
+        )
+        trigger_streak = trigger_streak + 1 if risk else 0
+
+        if not active:
+            if trigger_streak >= 4:
+                active = True
+                hold_days = 1
+                release_streak = 0
+        else:
+            hold_days += 1
+            release_condition = (
+                not risk
+                and sp500 > sp500_ma20
+                and vix_change5 <= 0
+            )
+            release_streak = release_streak + 1 if release_condition else 0
+            if hold_days >= 3 and release_streak >= 2:
+                active = False
+                hold_days = 0
+                trigger_streak = 0
+                release_streak = 0
+
+        latest = {
+            "selectiveDefenseActive": active,
+            "selectiveDefenseRisk": risk,
+            "selectiveDefenseBadCount": bad_count,
+            "selectiveDefenseRiskDays": trigger_streak,
+            "selectivePriceRisk": price_risk,
+            "selectiveVolatilityRisk": volatility_risk,
+            "selectiveCreditRisk": credit_risk,
+            "selectiveBreadthRisk": breadth_risk,
+            "sp500Drawdown20d": sp500_drawdown20,
+            "vixTermRatio": vix_term,
+            "rspSpyChange5d": breadth_change5,
+        }
+
+    if latest is None:
+        return empty_selective_defense()
+    return {
+        key: safe_round(value) if isinstance(value, float) else value
+        for key, value in latest.items()
+    }
+
+
+def empty_selective_defense() -> dict:
+    return {
+        "selectiveDefenseActive": None,
+        "selectiveDefenseRisk": None,
+        "selectiveDefenseBadCount": None,
+        "selectiveDefenseRiskDays": None,
+        "selectivePriceRisk": None,
+        "selectiveVolatilityRisk": None,
+        "selectiveCreditRisk": None,
+        "selectiveBreadthRisk": None,
+        "sp500Drawdown20d": None,
+        "vixTermRatio": None,
+        "rspSpyChange5d": None,
+    }
+
+
+def average_at(values: list[float], index: int, periods: int) -> float:
+    return sum(values[index - periods + 1:index + 1]) / periods
+
+
+def percent_change_at(values: list[float], index: int, periods: int) -> float:
+    previous = values[index - periods]
+    if previous == 0:
+        raise RuntimeError("Previous value is zero")
+    return (values[index] / previous - 1) * 100
+
+
+def point_change_at(values: list[float], index: int, periods: int) -> float:
+    return values[index] - values[index - periods]
+
+
+def drawdown_at(values: list[float], index: int, periods: int) -> float:
+    high = max(values[index - periods + 1:index + 1])
+    if high == 0:
+        raise RuntimeError("High value is zero")
+    return (values[index] / high - 1) * 100
 
 
 def optional_ratio(numerator: list[tuple[datetime, float]] | None, denominator: list[tuple[datetime, float]] | None) -> list[tuple[datetime, float]]:
@@ -570,6 +798,420 @@ def calculate_market_scores(values: dict, derived: dict) -> dict:
     }
 
 
+def calculate_three_axis_scores(values: dict) -> dict:
+    heat = average_score([
+        (score_high(number_from(values, "spDeviation"), [(14, 90), (8, 68), (4, 52)], 30), 1.0),
+        (score_high(number_from(values, "nasdaqDeviation"), [(18, 92), (10, 70), (5, 52)], 30), 1.0),
+        (score_high(number_from(values, "fearGreed"), [(75, 90), (55, 65), (45, 45)], 25), 0.8),
+        (score_high(number_from(values, "creditTrend"), [(6, 78), (2, 58), (0, 42)], 25), 0.6),
+        (score_high(number_from(values, "oilDeviation"), [(25, 68), (10, 52)], 35), 0.4),
+    ])
+    stress = average_score([
+        (score_high(number_from(values, "vix"), [(35, 92), (25, 72), (18, 48)], 25), 1.1),
+        (score_low(number_from(values, "fearGreed"), [(20, 78), (35, 56), (45, 42)], 20), 0.7),
+        (score_high(number_from(values, "us10yChange"), [(30, 78), (15, 60), (5, 42)], 25), 0.7),
+        (score_high(number_from(values, "realYield"), [(2.2, 76), (1.7, 58), (1.2, 42)], 25), 0.6),
+        (score_low(number_from(values, "creditTrend"), [(-6, 84), (-2, 62), (0, 42)], 24), 0.9),
+    ])
+    recovery = average_score([
+        (score_low(number_from(values, "vixChange"), [(-6, 82), (-2, 66), (0, 50)], 25), 1.0),
+        (score_high(number_from(values, "fearGreedChange"), [(20, 82), (8, 66), (0, 50)], 22), 0.8),
+        (score_high(number_from(values, "creditTrend"), [(4, 68), (2, 58), (0, 45)], 25), 0.8),
+        (score_high(number_from(values, "spDeviation"), [(0, 46), (-3, 36)], 24), 0.4),
+    ])
+    return {"heat": heat, "stress": stress, "recovery": recovery}
+
+
+def build_guardrails(axes: dict, values: dict, derived: dict, scores: dict, regime: dict) -> dict:
+    add_reasons: list[str] = []
+    trim_reasons: list[str] = []
+    warnings: list[str] = []
+    add_blocked = GUARDRAIL_THRESHOLDS["addBlocked"]
+    add_cautious = GUARDRAIL_THRESHOLDS["addCautious"]
+    trim_defensive = GUARDRAIL_THRESHOLDS["trimDefensive"]
+    trim_avoid = GUARDRAIL_THRESHOLDS["trimAvoid"]
+    trim_cautious = GUARDRAIL_THRESHOLDS["trimCautious"]
+
+    heat = number_from(axes, "heat")
+    stress = number_from(axes, "stress")
+    vix = number_from(values, "vix")
+    fear_greed = number_from(values, "fearGreed")
+    nasdaq_deviation = number_from(values, "nasdaqDeviation")
+    vix_change_5d = number_from(derived, "vixChange5d")
+    vix_drawdown = number_from(derived, "vixDrawdownFrom10dHigh")
+    sp500_change_5d = number_from(derived, "sp500Change5d")
+    sp500_change_10d = number_from(derived, "sp500Change10d")
+    nasdaq_change_5d = number_from(derived, "nasdaq100Change5d")
+    nasdaq_change_10d = number_from(derived, "nasdaq100Change10d")
+    credit_5d = number_from(derived, "creditTrend5d")
+    credit_10d = number_from(derived, "creditTrend10d")
+    qqq_spy_20d = number_from(derived, "qqqSpyChange20d")
+    panic = number_from(scores, "panicScore")
+    peak_out = number_from(scores, "peakOutScore")
+    pre_crash = number_from(scores, "preCrashRiskScore")
+    rate_bear = number_from(scores, "rateBearScore")
+    credit_stress = number_from(scores, "creditStressScore")
+    regime_key = str(regime.get("key") or "")
+    vix_sp_decline = (
+        at_least(vix_change_5d, add_blocked["vixChange5d"])
+        and at_most(sp500_change_5d, add_blocked["sp500Change5d"])
+    )
+    vix_nasdaq_decline = (
+        at_least(vix_change_5d, add_blocked["vixChange5d"])
+        and at_most(nasdaq_change_5d, add_blocked["nasdaq100Change5d"])
+    )
+    credit_trend_worsening = (
+        at_most(credit_5d, add_blocked["creditTrend5d"])
+        and at_most(credit_10d, add_blocked["creditTrend10d"])
+    )
+    vix_decline_confirmed = (
+        (vix_sp_decline and vix_nasdaq_decline)
+        or (
+            (vix_sp_decline or vix_nasdaq_decline)
+            and (
+                credit_trend_worsening
+                or regime_key == "selective_risk_watch"
+                or at_least(stress, add_blocked["stress"])
+            )
+        )
+    )
+    credit_trend_confirmed = (
+        credit_trend_worsening
+        and (
+            regime_key == "selective_risk_watch"
+            or vix_sp_decline
+            or vix_nasdaq_decline
+            or at_least(stress, add_blocked["stress"])
+        )
+    )
+
+    append_reason(add_reasons, regime_key == "selective_defense", "選択型防御が成立しているため、買い増しを止めます。")
+    append_reason(add_reasons, regime_key == "credit_crisis", "信用危機判定中のため、買い増しを止めます。")
+    append_reason(add_reasons, at_least(credit_stress, add_blocked["creditStress"]), "信用ストレスが高く、買い増しに不向きです。")
+    append_reason(add_reasons, at_least(pre_crash, add_blocked["preCrash"]), "過熱・内部劣化の兆候が強まっています。")
+    append_reason(
+        add_reasons,
+        at_least(rate_bear, add_blocked["rateBear"])
+        and at_least(credit_stress, 35)
+        and below(peak_out, add_blocked["rateBearPeakOut"]),
+        "金利圧力と信用ストレスが重なり、底打ち確認も不足しています。",
+    )
+    append_reason(
+        add_reasons,
+        vix_sp_decline and vix_decline_confirmed,
+        "VIX上昇とS&P500下落に、別の悪化条件も重なっています。",
+    )
+    append_reason(
+        add_reasons,
+        vix_nasdaq_decline and vix_decline_confirmed,
+        "VIX上昇とNasdaq100下落に、別の悪化条件も重なっています。",
+    )
+    append_reason(
+        add_reasons,
+        credit_trend_confirmed,
+        "信用選好の悪化に、価格・VIX・市場ストレスの裏付けがあります。",
+    )
+    append_reason(
+        add_reasons,
+        at_least(nasdaq_deviation, add_blocked["nasdaqDeviation"])
+        and at_least(qqq_spy_20d, add_blocked["qqqSpyChange20d"])
+        and at_most(sp500_change_10d, add_blocked["sp500Change10d"]),
+        "Nasdaq主導の過熱に対して、S&P500の上昇が鈍っています。",
+    )
+    append_reason(
+        add_reasons,
+        at_least(heat, add_blocked["heat"]) and at_least(stress, add_blocked["stress"]),
+        "過熱とストレスが同時に高まっています。",
+    )
+
+    add_permission = "blocked" if add_reasons else "normal"
+    if add_permission != "blocked":
+        append_reason(add_reasons, regime_key == "selective_risk_watch", "危機条件の継続確認中のため、買い増しを急ぎません。")
+        append_reason(add_reasons, regime_key in ("caution", "overheat", "overheat_fading"), "現行局面は追加を急がない判定です。")
+        append_reason(add_reasons, at_least(vix, add_cautious["vix"]) and above(vix_change_5d, 0), "VIXが18以上で、直近5日も上昇しています。")
+        append_reason(
+            add_reasons,
+            at_most(fear_greed, add_cautious["fearGreed"]) and below(peak_out, add_cautious["fearPeakOut"]),
+            "悲観が強い一方、底打ち確認が不足しています。",
+        )
+        append_reason(
+            add_reasons,
+            at_least(rate_bear, add_cautious["rateBear"]) and below(peak_out, add_cautious["ratePeakOut"]),
+            "金利圧力に対して回復確認が弱い状態です。",
+        )
+        append_reason(
+            add_reasons,
+            (vix_sp_decline or vix_nasdaq_decline) and not vix_decline_confirmed,
+            "VIXと一部指数は悪化していますが、市場全体の確認が不足しているため追加は小さくします。",
+        )
+        append_reason(
+            add_reasons,
+            credit_trend_worsening and not credit_trend_confirmed,
+            "信用選好は悪化していますが、市場全体の裏付けが弱いため追加は小さくします。",
+        )
+        append_reason(add_reasons, at_least(heat, add_cautious["heat"]), "過熱度が高く、追加ペースを抑える局面です。")
+        append_reason(add_reasons, at_least(stress, add_cautious["stress"]), "ストレス度が高く、追加は小さく限定すべき局面です。")
+        append_reason(
+            add_reasons,
+            regime_key == "constructive" and at_least(fear_greed, 65) and at_least(qqq_spy_20d, 2),
+            "回復局面でも短期の楽観とNasdaq優位が進み、追いかけ買いは小さくします。",
+        )
+        append_reason(
+            add_reasons,
+            regime_key == "constructive" and at_least(rate_bear, 38) and below(qqq_spy_20d, 1.5),
+            "回復局面でも金利圧力が残り、Nasdaq優位も弱いため追加は小さくします。",
+        )
+        append_reason(
+            add_reasons,
+            regime_key == "risk_on" and at_least(peak_out, 60) and below(nasdaq_change_5d, 0),
+            "リスクオンでもNasdaq100の短期失速があり、追加は小さくします。",
+        )
+        if add_reasons:
+            add_permission = "cautious"
+    if add_permission == "normal":
+        add_reasons.append("通常ペース可。ただし既存ルールと対象ETFのトレンド確認を優先します。")
+
+    basic_safety = (
+        below(credit_stress, trim_avoid["creditStress"])
+        and regime_key != "credit_crisis"
+        and not (
+            at_least(rate_bear, trim_defensive["rateBear"])
+            and below(peak_out, trim_defensive["rateBearPeakOut"])
+        )
+    )
+    fear_or_panic = (
+        at_most(fear_greed, trim_avoid["fearGreed"])
+        or at_least(panic, trim_avoid["panic"])
+        or at_least(vix, trim_avoid["vix"])
+        or at_most(sp500_change_10d, trim_avoid["sp500Change10d"])
+        or at_most(nasdaq_change_10d, trim_avoid["nasdaq100Change10d"])
+    )
+    reversal_evidence = (
+        at_least(peak_out, trim_avoid["peakOut"])
+        or at_most(vix_drawdown, trim_avoid["vixDrawdown"])
+        or derived.get("sp500NoNewLow3d") is True
+        or derived.get("nasdaq100NoNewLow3d") is True
+        or at_least(credit_5d, trim_avoid["creditTrend5d"])
+    )
+    recovery_context = (
+        fear_or_panic
+        or (at_least(peak_out, 65) and at_most(vix_drawdown, -20))
+    )
+    credit_still_worsening = (
+        at_most(credit_5d, add_blocked["creditTrend5d"])
+        or at_most(credit_10d, add_blocked["creditTrend10d"])
+    )
+    strong_short_bounce = (
+        at_least(peak_out, 65)
+        and at_most(vix_drawdown, -15)
+        and (
+            derived.get("sp500NoNewLow3d") is True
+            or derived.get("nasdaq100NoNewLow3d") is True
+        )
+    )
+    credit_crisis_vix_relief = (
+        regime_key == "credit_crisis"
+        and at_least(peak_out, 35)
+        and at_most(vix_drawdown, -10)
+        and (
+            derived.get("sp500NoNewLow3d") is True
+            or derived.get("nasdaq100NoNewLow3d") is True
+            or at_least(credit_5d, -2)
+        )
+    )
+    credit_crisis_reversal = (
+        credit_crisis_vix_relief
+        or (
+            regime_key == "credit_crisis"
+            and at_least(peak_out, 45)
+            and at_most(vix_drawdown, -12)
+            and at_least(credit_5d, -1.5)
+            and (
+                derived.get("sp500NoNewLow3d") is True
+                or derived.get("nasdaq100NoNewLow3d") is True
+                or (
+                    above(sp500_change_5d, 0)
+                    and above(nasdaq_change_5d, 0)
+                    and below(vix_change_5d, 0)
+                )
+            )
+        )
+    )
+    hold_defense = (
+        (
+            regime_key == "selective_defense"
+            and basic_safety
+            and (
+                (recovery_context and reversal_evidence and not credit_still_worsening)
+                or strong_short_bounce
+            )
+        )
+        or credit_crisis_reversal
+    )
+    defensive_priority = (
+        regime_key == "selective_defense"
+        or regime_key == "credit_crisis"
+        or (at_least(credit_stress, trim_defensive["creditStress"]) and below(peak_out, trim_defensive["creditPeakOut"]))
+        or (at_least(rate_bear, trim_defensive["rateBear"]) and below(peak_out, trim_defensive["ratePeakOut"]))
+    )
+
+    if hold_defense:
+        trim_reasons.append("防御状態は維持しつつ、反転確認があるため追加の大幅縮小を止めます。")
+    elif regime_key == "selective_defense":
+        trim_reasons.append("選択型防御が成立しているため、防御余力を確保します。")
+    if regime_key == "credit_crisis":
+        trim_reasons.append("信用危機判定を優先し、防御余力を確保します。")
+    if at_least(credit_stress, trim_defensive["creditStress"]) and below(peak_out, trim_defensive["creditPeakOut"]):
+        trim_reasons.append("信用ストレスが強く、底打ち確認も不足しています。")
+    if at_least(rate_bear, trim_defensive["rateBear"]) and below(peak_out, trim_defensive["ratePeakOut"]):
+        trim_reasons.append("強い金利主導ベアで、回復確認が不足しています。")
+    if at_most(credit_5d, trim_defensive["creditTrend5d"]) or at_most(credit_10d, trim_defensive["creditTrend10d"]):
+        trim_reasons.append("信用選好の急悪化を確認しています。")
+
+    trim_permission = "hold_defense" if hold_defense else "defensive_priority" if defensive_priority else "allowed"
+    if not defensive_priority:
+        basic_safety = (
+            below(credit_stress, trim_avoid["creditStress"])
+            and regime_key != "credit_crisis"
+            and not (
+                at_least(rate_bear, trim_defensive["rateBear"])
+                and below(peak_out, trim_defensive["ratePeakOut"])
+            )
+        )
+        fear_or_panic = (
+            at_most(fear_greed, trim_avoid["fearGreed"])
+            or at_least(panic, trim_avoid["panic"])
+            or at_least(vix, trim_avoid["vix"])
+            or at_most(sp500_change_10d, trim_avoid["sp500Change10d"])
+            or at_most(nasdaq_change_10d, trim_avoid["nasdaq100Change10d"])
+        )
+        reversal_evidence = (
+            at_least(peak_out, trim_avoid["peakOut"])
+            or at_most(vix_drawdown, trim_avoid["vixDrawdown"])
+            or derived.get("sp500NoNewLow3d") is True
+            or derived.get("nasdaq100NoNewLow3d") is True
+            or at_least(credit_5d, trim_avoid["creditTrend5d"])
+        )
+
+        if basic_safety and fear_or_panic:
+            trim_permission = "avoid"
+            trim_reasons.append(
+                "恐怖局面ですが、信用危機ではなく反転確認もあるため、大幅な投げ売りを避けます。"
+                if reversal_evidence
+                else "恐怖水準が高く、信用市場が崩壊していないため、ここからの大幅縮小を避けます。"
+            )
+        else:
+            append_reason(trim_reasons, at_most(fear_greed, trim_cautious["fearGreed"]), "悲観が強く、縮小は小さく分ける局面です。")
+            append_reason(trim_reasons, at_least(panic, trim_cautious["panic"]), "パニック度が高く、安値での売りすぎに注意が必要です。")
+            append_reason(
+                trim_reasons,
+                at_least(stress, trim_cautious["stress"]) and below(credit_stress, trim_cautious["creditStress"]),
+                "市場ストレスは高いものの、信用危機水準には達していません。",
+            )
+            append_reason(
+                trim_reasons,
+                at_most(sp500_change_5d, trim_cautious["sp500Change5d"]),
+                "S&P500の短期下落が大きく、縮小は慎重に行う局面です。",
+            )
+            append_reason(
+                trim_reasons,
+                at_most(nasdaq_change_5d, trim_cautious["nasdaq100Change5d"]),
+                "Nasdaq100の短期下落が大きく、縮小は慎重に行う局面です。",
+            )
+            if trim_reasons:
+                trim_permission = "cautious"
+
+    confidence = guardrail_confidence(values, derived, scores)
+    if confidence != "high":
+        warnings.append("一部データ不足のため、guardrails 判定の信頼度を下げています。")
+
+    if confidence == "low" and trim_permission not in ("defensive_priority", "hold_defense"):
+        if add_permission != "blocked":
+            add_permission = "cautious"
+        if trim_permission != "avoid":
+            trim_permission = "cautious"
+        add_reasons.insert(0, "主要データが不足しているため、積極的な変更判断を保留します。")
+
+    main_label = guardrail_main_label(add_permission, trim_permission)
+    if confidence == "low" and trim_permission not in ("defensive_priority", "hold_defense") and add_permission != "blocked":
+        main_label = "判断不能・維持"
+
+    reasons = list(dict.fromkeys(add_reasons + trim_reasons))[:6]
+    if not reasons:
+        reasons.append("強い禁止条件は確認されていません。")
+
+    return {
+        "addPermission": add_permission,
+        "trimPermission": trim_permission,
+        "mainLabel": main_label,
+        "confidence": confidence,
+        "reasons": reasons,
+        "warnings": warnings,
+    }
+
+
+def guardrail_confidence(values: dict, derived: dict, scores: dict) -> str:
+    critical_missing = sum(1 for key in GUARDRAIL_CRITICAL_VALUE_IDS if number_from(values, key) is None)
+    market_core_missing = (
+        number_from(values, "vix") is None
+        or number_from(values, "creditTrend") is None
+        or (
+            number_from(values, "spDeviation") is None
+            and number_from(values, "nasdaqDeviation") is None
+        )
+    )
+    derived_missing = sum(1 for key in GUARDRAIL_DERIVED_IDS if derived.get(key) is None)
+    score_missing = sum(
+        1
+        for key in ("panicScore", "peakOutScore", "preCrashRiskScore", "rateBearScore", "creditStressScore")
+        if number_from(scores, key) is None
+    )
+    if market_core_missing or critical_missing >= 2:
+        return "low"
+    if critical_missing == 0 and derived_missing <= 2 and score_missing == 0:
+        return "high"
+    return "medium"
+
+
+def guardrail_main_label(add_permission: str, trim_permission: str) -> str:
+    if trim_permission == "hold_defense":
+        return "防御維持・追加縮小なし"
+    if trim_permission == "defensive_priority":
+        return "防御優先"
+    if add_permission == "blocked" and trim_permission == "avoid":
+        return "両面禁止・維持"
+    if add_permission == "blocked":
+        return "買い増し禁止"
+    if trim_permission == "avoid":
+        return "売りすぎ注意"
+    if add_permission == "cautious" and trim_permission == "cautious":
+        return "慎重維持"
+    if add_permission == "cautious":
+        return "小さく打診まで"
+    return "通常維持"
+
+
+def append_reason(reasons: list[str], condition: bool, text: str) -> None:
+    if condition:
+        reasons.append(text)
+
+
+def at_least(value: float | None, threshold: float) -> bool:
+    return value is not None and value >= threshold
+
+
+def at_most(value: float | None, threshold: float) -> bool:
+    return value is not None and value <= threshold
+
+
+def above(value: float | None, threshold: float) -> bool:
+    return value is not None and value > threshold
+
+
+def below(value: float | None, threshold: float) -> bool:
+    return value is not None and value < threshold
+
+
 def decide_market_regime(values: dict, derived: dict, scores: dict, missing_derived: list[str]) -> dict:
     core_keys = ["vix", "spDeviation", "nasdaqDeviation", "us10y", "us10yChange", "creditTrend", "realYield", "yieldCurve"]
     core_count = sum(1 for key in core_keys if number_from(values, key) is not None)
@@ -584,8 +1226,27 @@ def decide_market_regime(values: dict, derived: dict, scores: dict, missing_deri
     credit_stress = score_value(scores, "creditStressScore")
     vix_change_5d = number_from(derived, "vixChange5d")
     credit_5d = number_from(derived, "creditTrend5d")
+    sp500_change_5d = number_from(derived, "sp500Change5d")
+    nasdaq_change_5d = number_from(derived, "nasdaq100Change5d")
+    recovery_expansion_confirmed = (
+        at_least(peak_out, 65)
+        and below(vix_change_5d, 0)
+        and at_least(credit_5d, 0)
+        and above(sp500_change_5d, 0)
+        and above(nasdaq_change_5d, 0)
+    )
+    constructive_expansion_confirmed = (
+        at_least(peak_out, 55)
+        and above(sp500_change_5d, 0)
+        and above(nasdaq_change_5d, 0)
+    )
     sp_no_low = derived.get("sp500NoNewLow3d") is True
     nasdaq_no_low = derived.get("nasdaq100NoNewLow3d") is True
+    selective_active = derived.get("selectiveDefenseActive")
+    selective_risk = derived.get("selectiveDefenseRisk")
+    selective_ready = isinstance(selective_active, bool) and isinstance(selective_risk, bool)
+    selective_days = number_from(derived, "selectiveDefenseRiskDays")
+    selective_reasons = selective_defense_reasons(derived)
 
     if core_count < 6:
         return regime_payload(
@@ -597,7 +1258,17 @@ def decide_market_regime(values: dict, derived: dict, scores: dict, missing_deri
             warnings,
         )
 
-    if credit_stress >= 68 and panic >= 50 and peak_out < 58:
+    if selective_active is True:
+        return regime_payload(
+            "selective_defense",
+            "選択型防御",
+            "縮小",
+            "危機条件の解除確認まで防御を維持",
+            selective_reasons or ["価格・VIX・信用・市場の広がりの悪化が確認されています。"],
+            warnings,
+        )
+
+    if at_least(credit_stress, 68) and at_least(panic, 50) and below(peak_out, 58):
         return regime_payload(
             "credit_crisis",
             "信用危機継続",
@@ -607,47 +1278,60 @@ def decide_market_regime(values: dict, derived: dict, scores: dict, missing_deri
             warnings,
         )
 
-    if rate_bear >= 64 and credit_stress >= 35 and peak_out < 62:
+    if selective_risk is True:
+        selective_days_label = "不明" if selective_days is None else str(round(selective_days))
+        return regime_payload(
+            "selective_risk_watch",
+            "危機予兆を確認中",
+            "維持",
+            f"縮小条件は{selective_days_label}/4日。4日継続までは警戒表示のみ",
+            selective_reasons,
+            warnings,
+        )
+
+    if at_least(rate_bear, 64) and at_least(credit_stress, 35) and below(peak_out, 62):
         return regime_payload(
             "rate_bear",
             "金利主導ベア",
-            "維持" if rate_bear < 74 else "やや縮小",
+            "維持",
             "金利低下またはグロース回復確認まで拡大を急がない",
             ["金利・実質金利の圧力が、株式の短期回復を抑えています。"],
             warnings,
         )
 
-    if pre_crash >= 64:
+    if at_least(pre_crash, 64):
         return regime_payload(
             "pre_crash_risk",
             "過熱・内部劣化",
-            "やや縮小",
-            "利益確定とサイズ調整を優先",
+            "維持",
+            "危機条件が4日継続するまでは警戒表示に限定",
             ["上方乖離が大きい一方で、VIXまたは信用選好に悪化の兆しがあります。"],
             warnings,
         )
 
-    if panic >= 64 and peak_out >= 64 and credit_stress < 60 and (sp_no_low or nasdaq_no_low) and (credit_5d is None or credit_5d >= -0.5) and (vix_change_5d is None or vix_change_5d < 0):
+    if at_least(panic, 64) and at_least(peak_out, 64) and below(credit_stress, 60) and (sp_no_low or nasdaq_no_low) and (credit_5d is None or credit_5d >= -0.5) and (vix_change_5d is None or vix_change_5d < 0):
         return regime_payload(
             "buyable_fear",
             "買える恐怖",
-            "やや拡大",
-            "打診のみ。追加はVIX低下、信用改善、指数回復の継続待ち",
+            "維持",
+            "逆張り候補として監視。追加はVIX低下、信用改善、指数回復の継続待ち",
             ["恐怖は強いものの、VIX低下・安値更新停止・信用選好の下げ止まりがそろっています。"],
             warnings,
         )
 
-    if panic >= 45 and peak_out >= 55 and credit_stress < 68:
+    if at_least(panic, 45) and at_least(peak_out, 55) and below(credit_stress, 68):
         return regime_payload(
             "recovering_stress",
             "悲観だが回復中",
-            "やや拡大",
-            "分割。信用悪化の再燃時は追加停止",
+            "やや拡大" if recovery_expansion_confirmed else "維持",
+            "価格・VIX・信用の確認後に小さく分割"
+            if recovery_expansion_confirmed
+            else "価格・VIX・信用の確認がそろうまで維持",
             ["悲観は残りますが、回復確認の指標が優勢です。"],
             warnings,
         )
 
-    if rate_bear >= 45 and peak_out < 45:
+    if at_least(rate_bear, 45) and below(peak_out, 45):
         return regime_payload(
             "caution",
             "警戒・様子見",
@@ -657,47 +1341,59 @@ def decide_market_regime(values: dict, derived: dict, scores: dict, missing_deri
             warnings,
         )
 
-    return fallback_three_axis_regime(values, warnings)
+    return fallback_three_axis_regime(
+        values,
+        warnings,
+        selective_ready,
+        recovery_expansion_confirmed,
+        constructive_expansion_confirmed,
+    )
 
 
-def fallback_three_axis_regime(values: dict, warnings: list[str]) -> dict:
-    heat = average_score([
-        (score_high(number_from(values, "spDeviation"), [(14, 90), (8, 68), (4, 52)], 30), 1.0),
-        (score_high(number_from(values, "nasdaqDeviation"), [(18, 92), (10, 70), (5, 52)], 30), 1.0),
-        (score_high(number_from(values, "fearGreed"), [(75, 90), (55, 65), (45, 45)], 25), 0.8),
-        (score_high(number_from(values, "creditTrend"), [(6, 78), (2, 58), (0, 42)], 25), 0.6),
-        (score_high(number_from(values, "oilDeviation"), [(25, 68), (10, 52)], 35), 0.4),
-    ]) or 0
-    stress = average_score([
-        (score_high(number_from(values, "vix"), [(35, 92), (25, 72), (18, 48)], 25), 1.1),
-        (score_low(number_from(values, "fearGreed"), [(20, 78), (35, 56), (45, 42)], 20), 0.7),
-        (score_high(number_from(values, "us10yChange"), [(30, 78), (15, 60), (5, 42)], 25), 0.7),
-        (score_high(number_from(values, "realYield"), [(2.2, 76), (1.7, 58), (1.2, 42)], 25), 0.6),
-        (score_low(number_from(values, "creditTrend"), [(-6, 84), (-2, 62), (0, 42)], 24), 0.9),
-    ]) or 0
-    recovery = average_score([
-        (score_low(number_from(values, "vixChange"), [(-6, 82), (-2, 66), (0, 50)], 25), 1.0),
-        (score_high(number_from(values, "fearGreedChange"), [(20, 82), (8, 66), (0, 50)], 22), 0.8),
-        (score_high(number_from(values, "creditTrend"), [(4, 68), (2, 58), (0, 45)], 25), 0.8),
-        (score_high(number_from(values, "spDeviation"), [(0, 46), (-3, 36)], 24), 0.4),
-    ]) or 0
+def fallback_three_axis_regime(
+    values: dict,
+    warnings: list[str],
+    selective_ready: bool = False,
+    recovery_expansion_confirmed: bool = False,
+    constructive_expansion_confirmed: bool = False,
+) -> dict:
+    axes = calculate_three_axis_scores(values)
+    heat = axes["heat"]
+    stress = axes["stress"]
+    recovery = axes["recovery"]
 
     if stress >= 72 and recovery < 45:
-        return regime_payload("crisis", "危機警戒", "縮小", "急いで増やさず、防御と現金余力を優先", ["3軸判定でストレスが高く、回復確認が弱いです。"], warnings)
+        judgment = "維持" if selective_ready else "縮小"
+        return regime_payload("crisis", "危機警戒", judgment, "急いで増やさず、防御条件の確認を優先", ["3軸判定でストレスが高く、回復確認が弱いです。"], warnings)
     if stress >= 58 and recovery >= 58:
-        return regime_payload("recovering_stress", "悲観だが回復中", "やや拡大", "小さく分割。信用悪化の再燃時は追加停止", ["3軸判定でストレスは残る一方、回復確認が出ています。"], warnings)
+        judgment = "やや拡大" if recovery_expansion_confirmed else "維持"
+        hint = "価格・VIX・信用の確認後に小さく分割" if recovery_expansion_confirmed else "価格・VIX・信用の確認がそろうまで維持"
+        return regime_payload("recovering_stress", "悲観だが回復中", judgment, hint, ["3軸判定でストレスは残る一方、回復確認が出ています。"], warnings)
     if heat >= 72 and stress >= 50:
-        return regime_payload("overheat_fading", "過熱から失速", "やや縮小", "利益確定とサイズ調整を優先", ["3軸判定で過熱とストレス上昇が重なっています。"], warnings)
+        judgment = "維持" if selective_ready else "やや縮小"
+        return regime_payload("overheat_fading", "過熱から失速", judgment, "選択型防御条件が成立するまでは警戒表示", ["3軸判定で過熱とストレス上昇が重なっています。"], warnings)
     if heat >= 72:
         return regime_payload("overheat", "過熱リスクオン", "維持", "新規追加は慎重に小さく", ["3軸判定で過熱寄りです。"], warnings)
     if heat < 45 and stress < 55 and recovery >= 55:
-        return regime_payload("constructive", "健全な回復", "拡大", "通常の分割ペースを検討", ["3軸判定で過熱が低く、回復度が優勢です。"], warnings)
+        judgment = "やや拡大" if constructive_expansion_confirmed else "維持"
+        hint = "短期の回復候補。通常より小さく分割" if constructive_expansion_confirmed else "指数の短期上昇と底打ち確認がそろうまで維持"
+        return regime_payload("constructive", "健全な回復", judgment, hint, ["3軸判定で過熱が低く、回復度が優勢です。"], warnings)
     if stress < 45 and 45 <= heat < 70:
         return regime_payload("risk_on", "通常のリスクオン", "維持", "追いかけすぎに注意しながら維持", ["3軸判定で市場環境は比較的安定しています。"], warnings)
     if stress >= 48 and recovery < 50:
         return regime_payload("caution", "警戒・様子見", "維持", "悪化が止まるまで無理に増やさない", ["3軸判定でストレスが残り、回復確認が弱いです。"], warnings)
 
     return regime_payload("neutral", "中立・維持", "維持", "強い方向感は限定的", ["3軸判定では強い方向感が限定的です。"], warnings)
+
+
+def selective_defense_reasons(derived: dict) -> list[str]:
+    labels = [
+        ("selectivePriceRisk", "S&P500の短期価格トレンドが悪化"),
+        ("selectiveVolatilityRisk", "VIXまたはVIX期間構造が悪化"),
+        ("selectiveCreditRisk", "HYG/IEFで信用選好が悪化"),
+        ("selectiveBreadthRisk", "RSP/SPYで市場の広がりが悪化"),
+    ]
+    return [label for key, label in labels if derived.get(key) is True]
 
 
 def regime_payload(key: str, current: str, judgment: str, size_hint: str, reasons: list[str], warnings: list[str]) -> dict:
@@ -718,9 +1414,8 @@ def number_from(data: dict, key: str) -> float | None:
     return None
 
 
-def score_value(scores: dict, key: str) -> float:
-    value = number_from(scores, key)
-    return value if value is not None else 0.0
+def score_value(scores: dict, key: str) -> float | None:
+    return number_from(scores, key)
 
 
 def average_score(parts: list[tuple[float | None, float]]) -> int | None:
@@ -917,7 +1612,7 @@ def update_history(payload: dict) -> None:
         "values": payload.get("values", {}),
         "sources": payload.get("sources", {}),
     }
-    for key in ("derived", "scores", "regime"):
+    for key in ("derived", "scores", "regime", "guardrails"):
         if key in payload:
             snapshot[key] = payload.get(key)
 
