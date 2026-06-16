@@ -2161,5 +2161,151 @@
       ],
       "warnings": []
     }
+  },
+  {
+    "updated_at": "2026-06-16T15:50:19Z",
+    "updated_at_jst": "2026-06-17 00:50",
+    "values": {
+      "vix": 15.9,
+      "vixChange": -2.53,
+      "spDeviation": 9.36,
+      "nasdaqDeviation": 16.95,
+      "us10y": 4.47,
+      "us10yChange": -12,
+      "usdjpy": 160.38,
+      "creditTrend": 1.03,
+      "realYield": 2.15,
+      "yieldCurve": 0.4,
+      "oilDeviation": 3.14,
+      "fearGreed": 40.17,
+      "fearGreedChange": -22.8
+    },
+    "sources": {
+      "vix": {
+        "series": "YAHOO:^VIX",
+        "source": "Yahoo Finance",
+        "date": "2026-06-16"
+      },
+      "vixChange": {
+        "series": "YAHOO:^VIX",
+        "source": "Yahoo Finance",
+        "date": "2026-06-16"
+      },
+      "spDeviation": {
+        "series": "YAHOO:^GSPC",
+        "source": "Yahoo Finance",
+        "date": "2026-06-16"
+      },
+      "nasdaqDeviation": {
+        "series": "YAHOO:^NDX",
+        "source": "Yahoo Finance",
+        "date": "2026-06-16"
+      },
+      "us10y": {
+        "series": "TREASURY_YIELD_CURVE:10 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-15"
+      },
+      "us10yChange": {
+        "series": "TREASURY_YIELD_CURVE:10 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-15"
+      },
+      "usdjpy": {
+        "series": "USDJPY_ECB_REFERENCE",
+        "source": "Frankfurter",
+        "date": "2026-06-16"
+      },
+      "creditTrend": {
+        "series": "YAHOO:HYG/IEF 200d deviation",
+        "source": "Yahoo Finance",
+        "date": "2026-06-16"
+      },
+      "realYield": {
+        "series": "TREASURY_REAL_YIELD_CURVE:10 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-15"
+      },
+      "yieldCurve": {
+        "series": "TREASURY_YIELD_CURVE:10 Yr-2 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-15"
+      },
+      "oilDeviation": {
+        "series": "YAHOO:CL=F",
+        "source": "Yahoo Finance",
+        "date": "2026-06-16"
+      },
+      "fearGreed": {
+        "series": "CNN_FEAR_GREED",
+        "source": "CNN",
+        "date": "2026-06-16"
+      },
+      "fearGreedChange": {
+        "series": "CNN_FEAR_GREED",
+        "source": "CNN",
+        "date": "2026-06-16"
+      }
+    },
+    "derived": {
+      "vixChange5d": -3.02,
+      "vixChange10d": -0.15,
+      "vixDrawdownFrom10dHigh": -28.44,
+      "vixDrawdownFrom20dHigh": -28.44,
+      "sp500Change5d": 1.71,
+      "sp500Change10d": -0.89,
+      "nasdaq100Change5d": 2.3,
+      "nasdaq100Change10d": -1.38,
+      "sp500NoNewLow3d": true,
+      "nasdaq100NoNewLow3d": true,
+      "creditTrend5d": -0.48,
+      "creditTrend10d": -0.16,
+      "creditTrend20d": -0.39,
+      "creditDrawdownFrom20dHigh": -0.68,
+      "usdJpyChange5d": 0.14,
+      "usdJpyChange20d": 0.8,
+      "goldChange20d": -4.52,
+      "oilChange20d": -30.19,
+      "qqqSpyChange5d": 0.59,
+      "qqqSpyChange20d": 1.59,
+      "selectiveDefenseActive": false,
+      "selectiveDefenseRisk": false,
+      "selectiveDefenseBadCount": 0,
+      "selectiveDefenseRiskDays": 0,
+      "selectivePriceRisk": false,
+      "selectiveVolatilityRisk": false,
+      "selectiveCreditRisk": false,
+      "selectiveBreadthRisk": false,
+      "sp500Drawdown20d": -1.02,
+      "vixTermRatio": 0.82,
+      "rspSpyChange5d": 0.75
+    },
+    "scores": {
+      "panicScore": 17,
+      "peakOutScore": 62,
+      "preCrashRiskScore": 42,
+      "rateBearScore": 37,
+      "creditStressScore": 30
+    },
+    "regime": {
+      "key": "risk_on",
+      "current": "通常のリスクオン",
+      "positionJudgment": "維持",
+      "positionSizeHint": "追いかけすぎに注意しながら維持",
+      "reasons": [
+        "3軸判定で市場環境は比較的安定しています。"
+      ],
+      "warnings": []
+    },
+    "guardrails": {
+      "addPermission": "normal",
+      "trimPermission": "allowed",
+      "mainLabel": "通常維持",
+      "confidence": "high",
+      "reasons": [
+        "通常ペース可。ただし既存ルールと対象ETFのトレンド確認を優先します。"
+      ],
+      "warnings": []
+    }
   }
 ]
