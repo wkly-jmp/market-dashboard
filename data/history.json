@@ -2453,5 +2453,152 @@
       ],
       "warnings": []
     }
+  },
+  {
+    "updated_at": "2026-06-18T02:20:24Z",
+    "updated_at_jst": "2026-06-18 11:20",
+    "values": {
+      "vix": 18.44,
+      "vixChange": 0.62,
+      "spDeviation": 7.58,
+      "nasdaqDeviation": 15.02,
+      "us10y": 4.49,
+      "us10yChange": -12,
+      "usdjpy": 160.31,
+      "creditTrend": 1.21,
+      "realYield": 2.23,
+      "yieldCurve": 0.29,
+      "oilDeviation": 1.53,
+      "fearGreed": 32.66,
+      "fearGreedChange": -30.31
+    },
+    "sources": {
+      "vix": {
+        "series": "YAHOO:^VIX",
+        "source": "Yahoo Finance",
+        "date": "2026-06-17"
+      },
+      "vixChange": {
+        "series": "YAHOO:^VIX",
+        "source": "Yahoo Finance",
+        "date": "2026-06-17"
+      },
+      "spDeviation": {
+        "series": "YAHOO:^GSPC",
+        "source": "Yahoo Finance",
+        "date": "2026-06-17"
+      },
+      "nasdaqDeviation": {
+        "series": "YAHOO:^NDX",
+        "source": "Yahoo Finance",
+        "date": "2026-06-17"
+      },
+      "us10y": {
+        "series": "TREASURY_YIELD_CURVE:10 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-17"
+      },
+      "us10yChange": {
+        "series": "TREASURY_YIELD_CURVE:10 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-17"
+      },
+      "usdjpy": {
+        "series": "USDJPY_ECB_REFERENCE",
+        "source": "Frankfurter",
+        "date": "2026-06-17"
+      },
+      "creditTrend": {
+        "series": "YAHOO:HYG/IEF 200d deviation",
+        "source": "Yahoo Finance",
+        "date": "2026-06-17"
+      },
+      "realYield": {
+        "series": "TREASURY_REAL_YIELD_CURVE:10 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-17"
+      },
+      "yieldCurve": {
+        "series": "TREASURY_YIELD_CURVE:10 Yr-2 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-17"
+      },
+      "oilDeviation": {
+        "series": "YAHOO:CL=F",
+        "source": "Yahoo Finance",
+        "date": "2026-06-18"
+      },
+      "fearGreed": {
+        "series": "CNN_FEAR_GREED",
+        "source": "CNN",
+        "date": "2026-06-17"
+      },
+      "fearGreedChange": {
+        "series": "CNN_FEAR_GREED",
+        "source": "CNN",
+        "date": "2026-06-17"
+      }
+    },
+    "derived": {
+      "vixChange5d": -3.78,
+      "vixChange10d": 2.38,
+      "vixDrawdownFrom10dHigh": -17.01,
+      "vixDrawdownFrom20dHigh": -17.01,
+      "sp500Change5d": 2.11,
+      "sp500Change10d": -1.77,
+      "nasdaq100Change5d": 4.08,
+      "nasdaq100Change10d": -2.94,
+      "sp500NoNewLow3d": true,
+      "nasdaq100NoNewLow3d": true,
+      "creditTrend5d": -0.02,
+      "creditTrend10d": 0.04,
+      "creditTrend20d": -0.49,
+      "creditDrawdownFrom20dHigh": -0.46,
+      "usdJpyChange5d": -0.11,
+      "usdJpyChange20d": 0.8,
+      "goldChange20d": -3.56,
+      "oilChange20d": -30.66,
+      "qqqSpyChange5d": 1.97,
+      "qqqSpyChange20d": 1.99,
+      "selectiveDefenseActive": false,
+      "selectiveDefenseRisk": false,
+      "selectiveDefenseBadCount": 0,
+      "selectiveDefenseRiskDays": 0,
+      "selectivePriceRisk": false,
+      "selectiveVolatilityRisk": false,
+      "selectiveCreditRisk": false,
+      "selectiveBreadthRisk": false,
+      "sp500Drawdown20d": -2.49,
+      "vixTermRatio": 0.89,
+      "rspSpyChange5d": 0.43
+    },
+    "scores": {
+      "panicScore": 23,
+      "peakOutScore": 57,
+      "preCrashRiskScore": 32,
+      "rateBearScore": 40,
+      "creditStressScore": 20
+    },
+    "regime": {
+      "key": "risk_on",
+      "current": "通常のリスクオン",
+      "positionJudgment": "維持",
+      "positionSizeHint": "追いかけすぎに注意しながら維持",
+      "reasons": [
+        "3軸判定で市場環境は比較的安定しています。"
+      ],
+      "warnings": []
+    },
+    "guardrails": {
+      "addPermission": "normal",
+      "trimPermission": "cautious",
+      "mainLabel": "通常維持",
+      "confidence": "high",
+      "reasons": [
+        "通常ペース可。ただし既存ルールと対象ETFのトレンド確認を優先します。",
+        "悲観が強く、縮小は小さく分ける局面です。"
+      ],
+      "warnings": []
+    }
   }
 ]
