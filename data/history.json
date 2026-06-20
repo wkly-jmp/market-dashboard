@@ -2746,5 +2746,151 @@
       ],
       "warnings": []
     }
+  },
+  {
+    "updated_at": "2026-06-20T10:22:46Z",
+    "updated_at_jst": "2026-06-20 19:22",
+    "values": {
+      "vix": 16.4,
+      "vixChange": -1.66,
+      "spDeviation": 8.66,
+      "nasdaqDeviation": 17.71,
+      "us10y": 4.46,
+      "us10yChange": -21,
+      "usdjpy": 161.23,
+      "creditTrend": 1.2,
+      "realYield": 2.21,
+      "yieldCurve": 0.27,
+      "oilDeviation": 3.81,
+      "fearGreed": 37.26,
+      "fearGreedChange": -22.11
+    },
+    "sources": {
+      "vix": {
+        "series": "YAHOO:^VIX",
+        "source": "Yahoo Finance",
+        "date": "2026-06-18"
+      },
+      "vixChange": {
+        "series": "YAHOO:^VIX",
+        "source": "Yahoo Finance",
+        "date": "2026-06-18"
+      },
+      "spDeviation": {
+        "series": "YAHOO:^GSPC",
+        "source": "Yahoo Finance",
+        "date": "2026-06-18"
+      },
+      "nasdaqDeviation": {
+        "series": "YAHOO:^NDX",
+        "source": "Yahoo Finance",
+        "date": "2026-06-18"
+      },
+      "us10y": {
+        "series": "TREASURY_YIELD_CURVE:10 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-18"
+      },
+      "us10yChange": {
+        "series": "TREASURY_YIELD_CURVE:10 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-18"
+      },
+      "usdjpy": {
+        "series": "USDJPY_ECB_REFERENCE",
+        "source": "Frankfurter",
+        "date": "2026-06-19"
+      },
+      "creditTrend": {
+        "series": "YAHOO:HYG/IEF 200d deviation",
+        "source": "Yahoo Finance",
+        "date": "2026-06-18"
+      },
+      "realYield": {
+        "series": "TREASURY_REAL_YIELD_CURVE:10 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-18"
+      },
+      "yieldCurve": {
+        "series": "TREASURY_YIELD_CURVE:10 Yr-2 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-18"
+      },
+      "oilDeviation": {
+        "series": "YAHOO:CL=F",
+        "source": "Yahoo Finance",
+        "date": "2026-06-19"
+      },
+      "fearGreed": {
+        "series": "CNN_FEAR_GREED",
+        "source": "CNN",
+        "date": "2026-06-19"
+      },
+      "fearGreedChange": {
+        "series": "CNN_FEAR_GREED",
+        "source": "CNN",
+        "date": "2026-06-19"
+      }
+    },
+    "derived": {
+      "vixChange5d": -3.04,
+      "vixChange10d": 1,
+      "vixDrawdownFrom10dHigh": -26.19,
+      "vixDrawdownFrom20dHigh": -26.19,
+      "sp500Change5d": 1.44,
+      "sp500Change10d": -1.1,
+      "nasdaq100Change5d": 3.26,
+      "nasdaq100Change10d": -0.01,
+      "sp500NoNewLow3d": true,
+      "nasdaq100NoNewLow3d": true,
+      "creditTrend5d": 0.07,
+      "creditTrend10d": -0.03,
+      "creditTrend20d": -0.47,
+      "creditDrawdownFrom20dHigh": -0.46,
+      "usdJpyChange5d": 0.64,
+      "usdJpyChange20d": 1.31,
+      "goldChange20d": -8.08,
+      "oilChange20d": -20.56,
+      "qqqSpyChange5d": 2.04,
+      "qqqSpyChange20d": 3.09,
+      "selectiveDefenseActive": false,
+      "selectiveDefenseRisk": false,
+      "selectiveDefenseBadCount": 0,
+      "selectiveDefenseRiskDays": 0,
+      "selectivePriceRisk": false,
+      "selectiveVolatilityRisk": false,
+      "selectiveCreditRisk": false,
+      "selectiveBreadthRisk": false,
+      "sp500Drawdown20d": -2.34,
+      "vixTermRatio": 0.86,
+      "rspSpyChange5d": 1.26
+    },
+    "scores": {
+      "panicScore": 23,
+      "peakOutScore": 60,
+      "preCrashRiskScore": 39,
+      "rateBearScore": 38,
+      "creditStressScore": 20
+    },
+    "regime": {
+      "key": "risk_on",
+      "current": "通常のリスクオン",
+      "positionJudgment": "維持",
+      "positionSizeHint": "追いかけすぎに注意しながら維持",
+      "reasons": [
+        "3軸判定で市場環境は比較的安定しています。"
+      ],
+      "warnings": []
+    },
+    "guardrails": {
+      "addPermission": "normal",
+      "trimPermission": "allowed",
+      "mainLabel": "通常維持",
+      "confidence": "high",
+      "reasons": [
+        "通常ペース可。ただし既存ルールと対象ETFのトレンド確認を優先します。"
+      ],
+      "warnings": []
+    }
   }
 ]
