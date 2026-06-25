@@ -3335,5 +3335,153 @@
       ],
       "warnings": []
     }
+  },
+  {
+    "updated_at": "2026-06-25T22:44:48Z",
+    "updated_at_jst": "2026-06-26 07:44",
+    "values": {
+      "vix": 18.89,
+      "vixChange": 1.88,
+      "spDeviation": 6.31,
+      "nasdaqDeviation": 13.44,
+      "us10y": 4.4,
+      "us10yChange": -10,
+      "usdjpy": 161.85,
+      "creditTrend": 0.55,
+      "realYield": 2.19,
+      "yieldCurve": 0.31,
+      "oilDeviation": -3.29,
+      "fearGreed": 25.46,
+      "fearGreedChange": -33.51
+    },
+    "sources": {
+      "vix": {
+        "series": "YAHOO:^VIX",
+        "source": "Yahoo Finance",
+        "date": "2026-06-25"
+      },
+      "vixChange": {
+        "series": "YAHOO:^VIX",
+        "source": "Yahoo Finance",
+        "date": "2026-06-25"
+      },
+      "spDeviation": {
+        "series": "YAHOO:^GSPC",
+        "source": "Yahoo Finance",
+        "date": "2026-06-25"
+      },
+      "nasdaqDeviation": {
+        "series": "YAHOO:^NDX",
+        "source": "Yahoo Finance",
+        "date": "2026-06-25"
+      },
+      "us10y": {
+        "series": "TREASURY_YIELD_CURVE:10 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-25"
+      },
+      "us10yChange": {
+        "series": "TREASURY_YIELD_CURVE:10 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-25"
+      },
+      "usdjpy": {
+        "series": "USDJPY_ECB_REFERENCE",
+        "source": "Frankfurter",
+        "date": "2026-06-25"
+      },
+      "creditTrend": {
+        "series": "YAHOO:HYG/IEF 200d deviation",
+        "source": "Yahoo Finance",
+        "date": "2026-06-25"
+      },
+      "realYield": {
+        "series": "TREASURY_REAL_YIELD_CURVE:10 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-25"
+      },
+      "yieldCurve": {
+        "series": "TREASURY_YIELD_CURVE:10 Yr-2 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-06-25"
+      },
+      "oilDeviation": {
+        "series": "YAHOO:CL=F",
+        "source": "Yahoo Finance",
+        "date": "2026-06-25"
+      },
+      "fearGreed": {
+        "series": "CNN_FEAR_GREED",
+        "source": "CNN",
+        "date": "2026-06-25"
+      },
+      "fearGreedChange": {
+        "series": "CNN_FEAR_GREED",
+        "source": "CNN",
+        "date": "2026-06-25"
+      }
+    },
+    "derived": {
+      "vixChange5d": 0.45,
+      "vixChange10d": -3.33,
+      "vixDrawdownFrom10dHigh": -3.08,
+      "vixDrawdownFrom20dHigh": -14.99,
+      "sp500Change5d": -0.84,
+      "sp500Change10d": 1.25,
+      "nasdaq100Change5d": -0.78,
+      "nasdaq100Change10d": 3.27,
+      "sp500NoNewLow3d": true,
+      "nasdaq100NoNewLow3d": true,
+      "creditTrend5d": -0.63,
+      "creditTrend10d": -0.65,
+      "creditTrend20d": -0.81,
+      "creditDrawdownFrom20dHigh": -0.92,
+      "usdJpyChange5d": 0.57,
+      "usdJpyChange20d": 1.5,
+      "goldChange20d": -9.06,
+      "oilChange20d": -19.45,
+      "qqqSpyChange5d": 0.05,
+      "qqqSpyChange20d": 0.37,
+      "selectiveDefenseActive": false,
+      "selectiveDefenseRisk": false,
+      "selectiveDefenseBadCount": 1,
+      "selectiveDefenseRiskDays": 0,
+      "selectivePriceRisk": false,
+      "selectiveVolatilityRisk": false,
+      "selectiveCreditRisk": true,
+      "selectiveBreadthRisk": false,
+      "sp500Drawdown20d": -3.32,
+      "vixTermRatio": 0.93,
+      "rspSpyChange5d": 1.06
+    },
+    "scores": {
+      "panicScore": 23,
+      "peakOutScore": 38,
+      "preCrashRiskScore": 38,
+      "rateBearScore": 37,
+      "creditStressScore": 35
+    },
+    "regime": {
+      "key": "risk_on",
+      "current": "通常のリスクオン",
+      "positionJudgment": "維持",
+      "positionSizeHint": "追いかけすぎに注意しながら維持",
+      "reasons": [
+        "3軸判定で市場環境は比較的安定しています。"
+      ],
+      "warnings": []
+    },
+    "guardrails": {
+      "addPermission": "cautious",
+      "trimPermission": "cautious",
+      "mainLabel": "慎重維持",
+      "confidence": "high",
+      "reasons": [
+        "VIXが18以上で、直近5日も上昇しています。",
+        "悲観が強い一方、底打ち確認が不足しています。",
+        "悲観が強く、縮小は小さく分ける局面です。"
+      ],
+      "warnings": []
+    }
   }
 ]
