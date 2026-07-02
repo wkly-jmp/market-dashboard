@@ -1,43 +1,43 @@
 {
-  "updated_at": "2026-07-01T12:18:08Z",
-  "updated_at_jst": "2026-07-01 21:18",
+  "updated_at": "2026-07-02T04:44:48Z",
+  "updated_at_jst": "2026-07-02 13:44",
   "status": "ok",
   "values": {
-    "vix": 16.77,
-    "vixChange": 0.72,
-    "spDeviation": 8.15,
-    "nasdaqDeviation": 16.27,
-    "us10y": 4.44,
-    "us10yChange": -1,
-    "usdjpy": 162.44,
-    "creditTrend": 0.89,
-    "realYield": 2.2,
-    "yieldCurve": 0.3,
-    "oilDeviation": -6.86,
-    "fearGreed": 30.51,
-    "fearGreedChange": -26.03
+    "vix": 16.59,
+    "vixChange": 0.54,
+    "spDeviation": 7.85,
+    "nasdaqDeviation": 14.35,
+    "us10y": 4.48,
+    "us10yChange": 1,
+    "usdjpy": 162.71,
+    "creditTrend": 0.98,
+    "realYield": 2.25,
+    "yieldCurve": 0.31,
+    "oilDeviation": -8.36,
+    "fearGreed": 31.97,
+    "fearGreedChange": -24.09
   },
   "derived": {
-    "vixChange5d": -1.86,
-    "vixChange10d": 0.36,
-    "vixDrawdownFrom10dHigh": -13.96,
-    "vixDrawdownFrom20dHigh": -24.53,
-    "sp500Change5d": 1.82,
-    "sp500Change10d": -0.73,
-    "nasdaq100Change5d": 3.17,
-    "nasdaq100Change10d": -0.88,
+    "vixChange5d": -2.04,
+    "vixChange10d": 0.18,
+    "vixDrawdownFrom10dHigh": -14.88,
+    "vixDrawdownFrom20dHigh": -25.34,
+    "sp500Change5d": 1.7,
+    "sp500Change10d": -0.37,
+    "nasdaq100Change5d": 2.02,
+    "nasdaq100Change10d": -0.53,
     "sp500NoNewLow3d": true,
     "nasdaq100NoNewLow3d": true,
-    "creditTrend5d": -0.35,
-    "creditTrend10d": -0.39,
-    "creditTrend20d": -0.26,
-    "creditDrawdownFrom20dHigh": -0.58,
-    "usdJpyChange5d": 0.56,
-    "usdJpyChange20d": 1.68,
-    "goldChange20d": -10.1,
-    "oilChange20d": -26.49,
-    "qqqSpyChange5d": 1.37,
-    "qqqSpyChange20d": 0.71,
+    "creditTrend5d": 0.42,
+    "creditTrend10d": -0.03,
+    "creditTrend20d": -0.17,
+    "creditDrawdownFrom20dHigh": -0.48,
+    "usdJpyChange5d": 0.64,
+    "usdJpyChange20d": 1.78,
+    "goldChange20d": -8.14,
+    "oilChange20d": -29.36,
+    "qqqSpyChange5d": 0.33,
+    "qqqSpyChange20d": -1.01,
     "selectiveDefenseActive": false,
     "selectiveDefenseRisk": false,
     "selectiveDefenseBadCount": 2,
@@ -52,10 +52,10 @@
   },
   "scores": {
     "panicScore": 23,
-    "peakOutScore": 53,
-    "preCrashRiskScore": 43,
+    "peakOutScore": 55,
+    "preCrashRiskScore": 29,
     "rateBearScore": 38,
-    "creditStressScore": 35
+    "creditStressScore": 20
   },
   "regime": {
     "key": "risk_on",
@@ -68,12 +68,12 @@
     "warnings": []
   },
   "guardrails": {
-    "addPermission": "cautious",
+    "addPermission": "normal",
     "trimPermission": "cautious",
-    "mainLabel": "慎重維持",
+    "mainLabel": "通常維持",
     "confidence": "high",
     "reasons": [
-      "悲観が強い一方、底打ち確認が不足しています。",
+      "通常ペース可。ただし既存ルールと対象ETFのトレンド確認を優先します。",
       "悲観が強く、縮小は小さく分ける局面です。"
     ],
     "warnings": []
@@ -92,57 +92,57 @@
     "spDeviation": {
       "series": "YAHOO:^GSPC",
       "source": "Yahoo Finance",
-      "date": "2026-06-30"
+      "date": "2026-07-01"
     },
     "nasdaqDeviation": {
       "series": "YAHOO:^NDX",
       "source": "Yahoo Finance",
-      "date": "2026-06-30"
+      "date": "2026-07-01"
     },
     "us10y": {
       "series": "TREASURY_YIELD_CURVE:10 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-06-30"
+      "date": "2026-07-01"
     },
     "us10yChange": {
       "series": "TREASURY_YIELD_CURVE:10 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-06-30"
+      "date": "2026-07-01"
     },
     "usdjpy": {
       "series": "USDJPY_ECB_REFERENCE",
       "source": "Frankfurter",
-      "date": "2026-06-30"
+      "date": "2026-07-01"
     },
     "creditTrend": {
       "series": "YAHOO:HYG/IEF 200d deviation",
       "source": "Yahoo Finance",
-      "date": "2026-06-30"
+      "date": "2026-07-01"
     },
     "realYield": {
       "series": "TREASURY_REAL_YIELD_CURVE:10 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-06-30"
+      "date": "2026-07-01"
     },
     "yieldCurve": {
       "series": "TREASURY_YIELD_CURVE:10 Yr-2 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-06-30"
+      "date": "2026-07-01"
     },
     "oilDeviation": {
       "series": "YAHOO:CL=F",
       "source": "Yahoo Finance",
-      "date": "2026-07-01"
+      "date": "2026-07-02"
     },
     "fearGreed": {
       "series": "CNN_FEAR_GREED",
       "source": "CNN",
-      "date": "2026-07-01"
+      "date": "2026-07-02"
     },
     "fearGreedChange": {
       "series": "CNN_FEAR_GREED",
       "source": "CNN",
-      "date": "2026-07-01"
+      "date": "2026-07-02"
     }
   },
   "warnings": []
