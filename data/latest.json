@@ -1,27 +1,27 @@
 {
-  "updated_at": "2026-07-03T04:29:26Z",
-  "updated_at_jst": "2026-07-03 13:29",
+  "updated_at": "2026-07-04T04:23:28Z",
+  "updated_at_jst": "2026-07-04 13:23",
   "status": "ok",
   "values": {
-    "vix": 16.15,
-    "vixChange": 0.38,
+    "vix": 15.81,
+    "vixChange": -0.25,
     "spDeviation": 7.78,
     "nasdaqDeviation": 12.4,
     "us10y": 4.49,
     "us10yChange": 3,
-    "usdjpy": 161.58,
+    "usdjpy": 161.15,
     "creditTrend": 1.02,
     "realYield": 2.26,
     "yieldCurve": 0.35,
-    "oilDeviation": -6.8,
-    "fearGreed": 31.51,
-    "fearGreedChange": -21.51
+    "oilDeviation": -7.11,
+    "fearGreed": 31.89,
+    "fearGreedChange": -21.14
   },
   "derived": {
-    "vixChange5d": -2.74,
-    "vixChange10d": -2.29,
-    "vixDrawdownFrom10dHigh": -17.14,
-    "vixDrawdownFrom20dHigh": -27.32,
+    "vixChange5d": -2.6,
+    "vixChange10d": -0.59,
+    "vixDrawdownFrom10dHigh": -18.88,
+    "vixDrawdownFrom20dHigh": -28.85,
     "sp500Change5d": 1.71,
     "sp500Change10d": 0.85,
     "nasdaq100Change5d": -0.38,
@@ -32,10 +32,10 @@
     "creditTrend10d": -0.13,
     "creditTrend20d": -0.09,
     "creditDrawdownFrom20dHigh": -0.43,
-    "usdJpyChange5d": -0.17,
-    "usdJpyChange20d": 1.11,
-    "goldChange20d": -6.34,
-    "oilChange20d": -25.83,
+    "usdJpyChange5d": -0.31,
+    "usdJpyChange20d": 0.81,
+    "goldChange20d": -6.45,
+    "oilChange20d": -26.07,
     "qqqSpyChange5d": -1.93,
     "qqqSpyChange20d": -3.03,
     "selectiveDefenseActive": false,
@@ -53,7 +53,7 @@
   "scores": {
     "panicScore": 23,
     "peakOutScore": 58,
-    "preCrashRiskScore": 29,
+    "preCrashRiskScore": 31,
     "rateBearScore": 40,
     "creditStressScore": 20
   },
@@ -82,12 +82,12 @@
     "vix": {
       "series": "YAHOO:^VIX",
       "source": "Yahoo Finance",
-      "date": "2026-07-02"
+      "date": "2026-07-03"
     },
     "vixChange": {
       "series": "YAHOO:^VIX",
       "source": "Yahoo Finance",
-      "date": "2026-07-02"
+      "date": "2026-07-03"
     },
     "spDeviation": {
       "series": "YAHOO:^GSPC",
@@ -112,7 +112,7 @@
     "usdjpy": {
       "series": "USDJPY_ECB_REFERENCE",
       "source": "Frankfurter",
-      "date": "2026-07-02"
+      "date": "2026-07-03"
     },
     "creditTrend": {
       "series": "YAHOO:HYG/IEF 200d deviation",
