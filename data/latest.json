@@ -1,60 +1,60 @@
 {
-  "updated_at": "2026-07-21T03:58:45Z",
-  "updated_at_jst": "2026-07-21 12:58",
+  "updated_at": "2026-07-22T03:59:52Z",
+  "updated_at_jst": "2026-07-22 12:59",
   "status": "ok",
   "values": {
-    "vix": 18.65,
-    "vixChange": 2.25,
-    "spDeviation": 6.47,
-    "nasdaqDeviation": 8.53,
-    "us10y": 4.6,
-    "us10yChange": 14,
-    "usdjpy": 162.38,
-    "creditTrend": 1.54,
-    "realYield": 2.35,
-    "yieldCurve": 0.39,
-    "oilDeviation": 9.94,
-    "fearGreed": 37.51,
-    "fearGreedChange": 0.17
+    "vix": 17.05,
+    "vixChange": 0.65,
+    "spDeviation": 7.35,
+    "nasdaqDeviation": 10.53,
+    "us10y": 4.63,
+    "us10yChange": 17,
+    "usdjpy": 162.74,
+    "creditTrend": 1.74,
+    "realYield": 2.37,
+    "yieldCurve": 0.37,
+    "oilDeviation": 13.8,
+    "fearGreed": 41.03,
+    "fearGreedChange": 3.69
   },
   "derived": {
-    "vixChange5d": 1.49,
-    "vixChange10d": 3.08,
-    "vixDrawdownFrom10dHigh": -0.64,
-    "vixDrawdownFrom20dHigh": -4.31,
-    "sp500Change5d": -0.96,
-    "sp500Change10d": -1.25,
-    "nasdaq100Change5d": -2.25,
-    "nasdaq100Change10d": -3.68,
+    "vixChange5d": 0.55,
+    "vixChange10d": 0.92,
+    "vixDrawdownFrom10dHigh": -9.16,
+    "vixDrawdownFrom20dHigh": -12.52,
+    "sp500Change5d": -0.46,
+    "sp500Change10d": 0.07,
+    "nasdaq100Change5d": -1.46,
+    "nasdaq100Change10d": -0.06,
     "sp500NoNewLow3d": true,
     "nasdaq100NoNewLow3d": false,
-    "creditTrend5d": -0.07,
-    "creditTrend10d": 0.44,
-    "creditTrend20d": 0.46,
-    "creditDrawdownFrom20dHigh": -0.07,
-    "usdJpyChange5d": 0.15,
-    "usdJpyChange20d": 0.37,
-    "goldChange20d": -3.18,
-    "oilChange20d": 9.92,
-    "qqqSpyChange5d": -1.27,
-    "qqqSpyChange20d": -5.43,
+    "creditTrend5d": 0.22,
+    "creditTrend10d": 0.28,
+    "creditTrend20d": 0.37,
+    "creditDrawdownFrom20dHigh": 0,
+    "usdJpyChange5d": 0.32,
+    "usdJpyChange20d": 0.75,
+    "goldChange20d": 0.18,
+    "oilChange20d": 16.49,
+    "qqqSpyChange5d": -1.02,
+    "qqqSpyChange20d": -4.43,
     "selectiveDefenseActive": false,
     "selectiveDefenseRisk": false,
-    "selectiveDefenseBadCount": 0,
+    "selectiveDefenseBadCount": 1,
     "selectiveDefenseRiskDays": 0,
     "selectivePriceRisk": false,
     "selectiveVolatilityRisk": false,
     "selectiveCreditRisk": false,
-    "selectiveBreadthRisk": false,
-    "sp500Drawdown20d": -1.74,
-    "vixTermRatio": 0.91,
-    "rspSpyChange5d": 0.1
+    "selectiveBreadthRisk": true,
+    "sp500Drawdown20d": -0.87,
+    "vixTermRatio": 0.87,
+    "rspSpyChange5d": -0.57
   },
   "scores": {
-    "panicScore": 23,
-    "peakOutScore": 35,
-    "preCrashRiskScore": 26,
-    "rateBearScore": 47,
+    "panicScore": 17,
+    "peakOutScore": 43,
+    "preCrashRiskScore": 34,
+    "rateBearScore": 49,
     "creditStressScore": 20
   },
   "regime": {
@@ -74,7 +74,6 @@
     "confidence": "high",
     "reasons": [
       "現行局面は追加を急がない判定です。",
-      "VIXが18以上で、直近5日も上昇しています。",
       "金利圧力に対して回復確認が弱い状態です。"
     ],
     "warnings": []
@@ -83,67 +82,67 @@
     "vix": {
       "series": "YAHOO:^VIX",
       "source": "Yahoo Finance",
-      "date": "2026-07-20"
+      "date": "2026-07-21"
     },
     "vixChange": {
       "series": "YAHOO:^VIX",
       "source": "Yahoo Finance",
-      "date": "2026-07-20"
+      "date": "2026-07-21"
     },
     "spDeviation": {
       "series": "YAHOO:^GSPC",
       "source": "Yahoo Finance",
-      "date": "2026-07-20"
+      "date": "2026-07-21"
     },
     "nasdaqDeviation": {
       "series": "YAHOO:^NDX",
       "source": "Yahoo Finance",
-      "date": "2026-07-20"
+      "date": "2026-07-21"
     },
     "us10y": {
       "series": "TREASURY_YIELD_CURVE:10 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-07-20"
+      "date": "2026-07-21"
     },
     "us10yChange": {
       "series": "TREASURY_YIELD_CURVE:10 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-07-20"
+      "date": "2026-07-21"
     },
     "usdjpy": {
       "series": "USDJPY_ECB_REFERENCE",
       "source": "Frankfurter",
-      "date": "2026-07-20"
+      "date": "2026-07-21"
     },
     "creditTrend": {
       "series": "YAHOO:HYG/IEF 200d deviation",
       "source": "Yahoo Finance",
-      "date": "2026-07-20"
+      "date": "2026-07-21"
     },
     "realYield": {
       "series": "TREASURY_REAL_YIELD_CURVE:10 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-07-20"
+      "date": "2026-07-21"
     },
     "yieldCurve": {
       "series": "TREASURY_YIELD_CURVE:10 Yr-2 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-07-20"
+      "date": "2026-07-21"
     },
     "oilDeviation": {
       "series": "YAHOO:CL=F",
       "source": "Yahoo Finance",
-      "date": "2026-07-21"
+      "date": "2026-07-22"
     },
     "fearGreed": {
       "series": "CNN_FEAR_GREED",
       "source": "CNN",
-      "date": "2026-07-20"
+      "date": "2026-07-21"
     },
     "fearGreedChange": {
       "series": "CNN_FEAR_GREED",
       "source": "CNN",
-      "date": "2026-07-20"
+      "date": "2026-07-21"
     }
   },
   "warnings": []
