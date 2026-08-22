@@ -1,151 +1,5 @@
 [
   {
-    "updated_at": "2026-07-11T03:55:34Z",
-    "updated_at_jst": "2026-07-11 12:55",
-    "values": {
-      "vix": 15.03,
-      "vixChange": -7.19,
-      "spDeviation": 8.76,
-      "nasdaqDeviation": 13.75,
-      "us10y": 4.56,
-      "us10yChange": 1,
-      "usdjpy": 161.87,
-      "creditTrend": 1.52,
-      "realYield": 2.32,
-      "yieldCurve": 0.35,
-      "oilDeviation": -3.65,
-      "fearGreed": 49.49,
-      "fearGreedChange": 22.57
-    },
-    "sources": {
-      "vix": {
-        "series": "YAHOO:^VIX",
-        "source": "Yahoo Finance",
-        "date": "2026-07-10"
-      },
-      "vixChange": {
-        "series": "YAHOO:^VIX",
-        "source": "Yahoo Finance",
-        "date": "2026-07-10"
-      },
-      "spDeviation": {
-        "series": "YAHOO:^GSPC",
-        "source": "Yahoo Finance",
-        "date": "2026-07-10"
-      },
-      "nasdaqDeviation": {
-        "series": "YAHOO:^NDX",
-        "source": "Yahoo Finance",
-        "date": "2026-07-10"
-      },
-      "us10y": {
-        "series": "TREASURY_YIELD_CURVE:10 Yr",
-        "source": "U.S. Treasury",
-        "date": "2026-07-10"
-      },
-      "us10yChange": {
-        "series": "TREASURY_YIELD_CURVE:10 Yr",
-        "source": "U.S. Treasury",
-        "date": "2026-07-10"
-      },
-      "usdjpy": {
-        "series": "USDJPY_ECB_REFERENCE",
-        "source": "Frankfurter",
-        "date": "2026-07-10"
-      },
-      "creditTrend": {
-        "series": "YAHOO:HYG/IEF 200d deviation",
-        "source": "Yahoo Finance",
-        "date": "2026-07-10"
-      },
-      "realYield": {
-        "series": "TREASURY_REAL_YIELD_CURVE:10 Yr",
-        "source": "U.S. Treasury",
-        "date": "2026-07-10"
-      },
-      "yieldCurve": {
-        "series": "TREASURY_YIELD_CURVE:10 Yr-2 Yr",
-        "source": "U.S. Treasury",
-        "date": "2026-07-10"
-      },
-      "oilDeviation": {
-        "series": "YAHOO:CL=F",
-        "source": "Yahoo Finance",
-        "date": "2026-07-10"
-      },
-      "fearGreed": {
-        "series": "CNN_FEAR_GREED",
-        "source": "CNN",
-        "date": "2026-07-10"
-      },
-      "fearGreedChange": {
-        "series": "CNN_FEAR_GREED",
-        "source": "CNN",
-        "date": "2026-07-10"
-      }
-    },
-    "derived": {
-      "vixChange5d": -1.12,
-      "vixChange10d": -3.86,
-      "vixDrawdownFrom10dHigh": -18.36,
-      "vixDrawdownFrom20dHigh": -22.88,
-      "sp500Change5d": 1.23,
-      "sp500Change10d": 2.96,
-      "nasdaq100Change5d": 1.69,
-      "nasdaq100Change10d": 1.31,
-      "sp500NoNewLow3d": true,
-      "nasdaq100NoNewLow3d": true,
-      "creditTrend5d": 0.52,
-      "creditTrend10d": 1.02,
-      "creditTrend20d": 0.37,
-      "creditDrawdownFrom20dHigh": -0.07,
-      "usdJpyChange5d": 0.45,
-      "usdJpyChange20d": 1.04,
-      "goldChange20d": 0.5,
-      "oilChange20d": -20.57,
-      "qqqSpyChange5d": 0.44,
-      "qqqSpyChange20d": 0.5,
-      "selectiveDefenseActive": false,
-      "selectiveDefenseRisk": false,
-      "selectiveDefenseBadCount": 1,
-      "selectiveDefenseRiskDays": 0,
-      "selectivePriceRisk": false,
-      "selectiveVolatilityRisk": false,
-      "selectiveCreditRisk": false,
-      "selectiveBreadthRisk": true,
-      "sp500Drawdown20d": 0,
-      "vixTermRatio": 0.81,
-      "rspSpyChange5d": -1.61
-    },
-    "scores": {
-      "panicScore": 17,
-      "peakOutScore": 64,
-      "preCrashRiskScore": 35,
-      "rateBearScore": 38,
-      "creditStressScore": 20
-    },
-    "regime": {
-      "key": "risk_on",
-      "current": "通常のリスクオン",
-      "positionJudgment": "維持",
-      "positionSizeHint": "追いかけすぎに注意しながら維持",
-      "reasons": [
-        "3軸判定で市場環境は比較的安定しています。"
-      ],
-      "warnings": []
-    },
-    "guardrails": {
-      "addPermission": "normal",
-      "trimPermission": "allowed",
-      "mainLabel": "通常維持",
-      "confidence": "high",
-      "reasons": [
-        "通常ペース可。ただし既存ルールと対象ETFのトレンド確認を優先します。"
-      ],
-      "warnings": []
-    }
-  },
-  {
     "updated_at": "2026-07-14T03:46:12Z",
     "updated_at_jst": "2026-07-14 12:46",
     "values": {
@@ -4388,6 +4242,154 @@
         "3軸判定で市場環境は比較的安定しています。"
       ],
       "warnings": []
+    },
+    "guardrails": {
+      "addPermission": "normal",
+      "trimPermission": "allowed",
+      "mainLabel": "通常維持",
+      "confidence": "high",
+      "reasons": [
+        "通常ペース可。ただし既存ルールと対象ETFのトレンド確認を優先します。"
+      ],
+      "warnings": []
+    }
+  },
+  {
+    "updated_at": "2026-08-22T02:03:25Z",
+    "updated_at_jst": "2026-08-22 11:03",
+    "values": {
+      "vix": 15.13,
+      "vixChange": -1.51,
+      "spDeviation": 8.15,
+      "nasdaqDeviation": 9.25,
+      "us10y": 4.74,
+      "us10yChange": 7,
+      "usdjpy": 158.7,
+      "creditTrend": 1.92,
+      "realYield": 2.4,
+      "yieldCurve": 0.5,
+      "oilDeviation": 11.84,
+      "fearGreed": 55.17,
+      "fearGreedChange": 11.8
+    },
+    "sources": {
+      "vix": {
+        "series": "YAHOO:^VIX",
+        "source": "Yahoo Finance",
+        "date": "2026-08-21"
+      },
+      "vixChange": {
+        "series": "YAHOO:^VIX",
+        "source": "Yahoo Finance",
+        "date": "2026-08-21"
+      },
+      "spDeviation": {
+        "series": "YAHOO:^GSPC",
+        "source": "Yahoo Finance",
+        "date": "2026-08-21"
+      },
+      "nasdaqDeviation": {
+        "series": "YAHOO:^NDX",
+        "source": "Yahoo Finance",
+        "date": "2026-08-21"
+      },
+      "us10y": {
+        "series": "TREASURY_YIELD_CURVE:10 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-08-21"
+      },
+      "us10yChange": {
+        "series": "TREASURY_YIELD_CURVE:10 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-08-21"
+      },
+      "usdjpy": {
+        "series": "USDJPY_ECB_REFERENCE",
+        "source": "Frankfurter",
+        "date": "2026-08-21"
+      },
+      "creditTrend": {
+        "series": "YAHOO:HYG/IEF 200d deviation",
+        "source": "Yahoo Finance",
+        "date": "2026-08-21"
+      },
+      "realYield": {
+        "series": "TREASURY_REAL_YIELD_CURVE:10 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-08-21"
+      },
+      "yieldCurve": {
+        "series": "TREASURY_YIELD_CURVE:10 Yr-2 Yr",
+        "source": "U.S. Treasury",
+        "date": "2026-08-21"
+      },
+      "oilDeviation": {
+        "series": "YAHOO:CL=F",
+        "source": "Yahoo Finance",
+        "date": "2026-08-21"
+      },
+      "fearGreed": {
+        "series": "CNN_FEAR_GREED",
+        "source": "CNN",
+        "date": "2026-08-21"
+      },
+      "fearGreedChange": {
+        "series": "CNN_FEAR_GREED",
+        "source": "CNN",
+        "date": "2026-08-21"
+      }
+    },
+    "derived": {
+      "vixChange5d": 0.88,
+      "vixChange10d": 0.23,
+      "vixDrawdownFrom10dHigh": -5.5,
+      "vixDrawdownFrom20dHigh": -26.77,
+      "sp500Change5d": -1.43,
+      "sp500Change10d": -1.07,
+      "nasdaq100Change5d": -2.45,
+      "nasdaq100Change10d": -1.39,
+      "sp500NoNewLow3d": true,
+      "nasdaq100NoNewLow3d": true,
+      "creditTrend5d": 0.11,
+      "creditTrend10d": 0.38,
+      "creditTrend20d": 0.71,
+      "creditDrawdownFrom20dHigh": 0,
+      "usdJpyChange5d": -0.19,
+      "usdJpyChange20d": -3.13,
+      "goldChange20d": 14.6,
+      "oilChange20d": -2.99,
+      "qqqSpyChange5d": -1.06,
+      "qqqSpyChange20d": 0.62,
+      "selectiveDefenseActive": null,
+      "selectiveDefenseRisk": null,
+      "selectiveDefenseBadCount": null,
+      "selectiveDefenseRiskDays": null,
+      "selectivePriceRisk": null,
+      "selectiveVolatilityRisk": null,
+      "selectiveCreditRisk": null,
+      "selectiveBreadthRisk": null,
+      "sp500Drawdown20d": null,
+      "vixTermRatio": null,
+      "rspSpyChange5d": null
+    },
+    "scores": {
+      "panicScore": 17,
+      "peakOutScore": 50,
+      "preCrashRiskScore": 33,
+      "rateBearScore": 47,
+      "creditStressScore": 20
+    },
+    "regime": {
+      "key": "risk_on",
+      "current": "通常のリスクオン",
+      "positionJudgment": "維持",
+      "positionSizeHint": "追いかけすぎに注意しながら維持",
+      "reasons": [
+        "3軸判定で市場環境は比較的安定しています。"
+      ],
+      "warnings": [
+        "一部の派生指標は未取得のため、該当スコアから除外しています。"
+      ]
     },
     "guardrails": {
       "addPermission": "normal",
