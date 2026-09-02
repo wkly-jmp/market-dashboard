@@ -1,43 +1,43 @@
 {
-  "updated_at": "2026-09-01T05:37:33Z",
-  "updated_at_jst": "2026-09-01 14:37",
+  "updated_at": "2026-09-02T05:02:01Z",
+  "updated_at_jst": "2026-09-02 14:02",
   "status": "ok",
   "values": {
-    "vix": 14.92,
-    "vixChange": -1.07,
-    "spDeviation": 7.97,
-    "nasdaqDeviation": 9.4,
-    "us10y": 4.75,
-    "us10yChange": 0,
-    "usdjpy": 159.73,
-    "creditTrend": 2.19,
+    "vix": 16.34,
+    "vixChange": 0.35,
+    "spDeviation": 7.08,
+    "nasdaqDeviation": 7.84,
+    "us10y": 4.79,
+    "us10yChange": 4,
+    "usdjpy": 160.16,
+    "creditTrend": 1.95,
     "realYield": 2.44,
-    "yieldCurve": 0.41,
-    "oilDeviation": 10.9,
-    "fearGreed": 49.57,
-    "fearGreedChange": 4.34
+    "yieldCurve": 0.4,
+    "oilDeviation": 15.36,
+    "fearGreed": 44.23,
+    "fearGreedChange": -1
   },
   "derived": {
-    "vixChange5d": -0.21,
-    "vixChange10d": 0.67,
-    "vixDrawdownFrom10dHigh": -6.81,
-    "vixDrawdownFrom20dHigh": -9.58,
-    "sp500Change5d": 0.15,
-    "sp500Change10d": -1.28,
-    "nasdaq100Change5d": 0.51,
-    "nasdaq100Change10d": -1.96,
+    "vixChange5d": 0.89,
+    "vixChange10d": 0.5,
+    "vixDrawdownFrom10dHigh": 0,
+    "vixDrawdownFrom20dHigh": 0,
+    "sp500Change5d": -0.6,
+    "sp500Change10d": -0.78,
+    "nasdaq100Change5d": -0.45,
+    "nasdaq100Change10d": -1.4,
     "sp500NoNewLow3d": true,
     "nasdaq100NoNewLow3d": true,
-    "creditTrend5d": 0.34,
-    "creditTrend10d": 0.45,
-    "creditTrend20d": 0.64,
-    "creditDrawdownFrom20dHigh": 0,
-    "usdJpyChange5d": 0.38,
-    "usdJpyChange20d": 1.95,
-    "goldChange20d": 9.3,
-    "oilChange20d": 14.64,
-    "qqqSpyChange5d": 1,
-    "qqqSpyChange20d": 1.13,
+    "creditTrend5d": 0.49,
+    "creditTrend10d": 0.36,
+    "creditTrend20d": 0.68,
+    "creditDrawdownFrom20dHigh": -0.2,
+    "usdJpyChange5d": 0.58,
+    "usdJpyChange20d": 1.75,
+    "goldChange20d": 2.5,
+    "oilChange20d": 20.39,
+    "qqqSpyChange5d": 0.11,
+    "qqqSpyChange20d": -1.01,
     "selectiveDefenseActive": false,
     "selectiveDefenseRisk": false,
     "selectiveDefenseBadCount": 2,
@@ -52,7 +52,7 @@
   },
   "scores": {
     "panicScore": 17,
-    "peakOutScore": 55,
+    "peakOutScore": 40,
     "preCrashRiskScore": 26,
     "rateBearScore": 40,
     "creditStressScore": 20
@@ -81,67 +81,67 @@
     "vix": {
       "series": "YAHOO:^VIX",
       "source": "Yahoo Finance",
-      "date": "2026-08-31"
+      "date": "2026-09-01"
     },
     "vixChange": {
       "series": "YAHOO:^VIX",
       "source": "Yahoo Finance",
-      "date": "2026-08-31"
+      "date": "2026-09-01"
     },
     "spDeviation": {
       "series": "YAHOO:^GSPC",
       "source": "Yahoo Finance",
-      "date": "2026-08-31"
+      "date": "2026-09-01"
     },
     "nasdaqDeviation": {
       "series": "YAHOO:^NDX",
       "source": "Yahoo Finance",
-      "date": "2026-08-31"
+      "date": "2026-09-01"
     },
     "us10y": {
       "series": "TREASURY_YIELD_CURVE:10 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-08-31"
+      "date": "2026-09-01"
     },
     "us10yChange": {
       "series": "TREASURY_YIELD_CURVE:10 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-08-31"
+      "date": "2026-09-01"
     },
     "usdjpy": {
       "series": "USDJPY_ECB_REFERENCE",
       "source": "Frankfurter",
-      "date": "2026-08-31"
+      "date": "2026-09-01"
     },
     "creditTrend": {
       "series": "YAHOO:HYG/IEF 200d deviation",
       "source": "Yahoo Finance",
-      "date": "2026-08-31"
+      "date": "2026-09-01"
     },
     "realYield": {
       "series": "TREASURY_REAL_YIELD_CURVE:10 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-08-31"
+      "date": "2026-09-01"
     },
     "yieldCurve": {
       "series": "TREASURY_YIELD_CURVE:10 Yr-2 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-08-31"
+      "date": "2026-09-01"
     },
     "oilDeviation": {
       "series": "YAHOO:CL=F",
       "source": "Yahoo Finance",
-      "date": "2026-09-01"
+      "date": "2026-09-02"
     },
     "fearGreed": {
       "series": "CNN_FEAR_GREED",
       "source": "CNN",
-      "date": "2026-09-01"
+      "date": "2026-09-02"
     },
     "fearGreedChange": {
       "series": "CNN_FEAR_GREED",
       "source": "CNN",
-      "date": "2026-09-01"
+      "date": "2026-09-02"
     }
   },
   "warnings": []
