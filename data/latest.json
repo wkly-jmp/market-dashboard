@@ -1,43 +1,43 @@
 {
-  "updated_at": "2026-09-11T05:12:18Z",
-  "updated_at_jst": "2026-09-11 14:12",
+  "updated_at": "2026-09-12T04:59:36Z",
+  "updated_at_jst": "2026-09-12 13:59",
   "status": "ok",
   "values": {
-    "vix": 17.84,
-    "vixChange": 2.56,
-    "spDeviation": 6.07,
-    "nasdaqDeviation": 7.38,
-    "us10y": 4.95,
-    "us10yChange": 25,
+    "vix": 15.84,
+    "vixChange": 1.29,
+    "spDeviation": 6.9,
+    "nasdaqDeviation": 8.25,
+    "us10y": 4.96,
+    "us10yChange": 28,
     "usdjpy": 154.18,
-    "creditTrend": 2.25,
-    "realYield": 2.55,
-    "yieldCurve": 0.39,
-    "oilDeviation": 28.46,
-    "fearGreed": 33.11,
-    "fearGreedChange": -26.97
+    "creditTrend": 2.39,
+    "realYield": 2.6,
+    "yieldCurve": 0.33,
+    "oilDeviation": 25.71,
+    "fearGreed": 33.34,
+    "fearGreedChange": -26.74
   },
   "derived": {
-    "vixChange5d": 3.52,
-    "vixChange10d": 3.33,
-    "vixDrawdownFrom10dHigh": 0,
-    "vixDrawdownFrom20dHigh": 0,
-    "sp500Change5d": -0.98,
-    "sp500Change10d": -1.09,
-    "nasdaq100Change5d": -0.14,
-    "nasdaq100Change10d": -0.41,
+    "vixChange5d": 1.31,
+    "vixChange10d": 1.41,
+    "vixDrawdownFrom10dHigh": -11.21,
+    "vixDrawdownFrom20dHigh": -11.21,
+    "sp500Change5d": -1.17,
+    "sp500Change10d": -0.96,
+    "nasdaq100Change5d": -0.39,
+    "nasdaq100Change10d": -0.92,
     "sp500NoNewLow3d": false,
     "nasdaq100NoNewLow3d": true,
-    "creditTrend5d": 0.47,
-    "creditTrend10d": 0.71,
-    "creditTrend20d": 0.68,
+    "creditTrend5d": 0.61,
+    "creditTrend10d": 0.81,
+    "creditTrend20d": 0.99,
     "creditDrawdownFrom20dHigh": 0,
-    "usdJpyChange5d": -1.17,
-    "usdJpyChange20d": -3.23,
-    "goldChange20d": 0.13,
-    "oilChange20d": 25.85,
-    "qqqSpyChange5d": 0.89,
-    "qqqSpyChange20d": -0.18,
+    "usdJpyChange5d": null,
+    "usdJpyChange20d": null,
+    "goldChange20d": 0.06,
+    "oilChange20d": 23.14,
+    "qqqSpyChange5d": 0.77,
+    "qqqSpyChange20d": -0.61,
     "selectiveDefenseActive": false,
     "selectiveDefenseRisk": false,
     "selectiveDefenseBadCount": 2,
@@ -52,7 +52,7 @@
   },
   "scores": {
     "panicScore": 23,
-    "peakOutScore": 34,
+    "peakOutScore": 40,
     "preCrashRiskScore": 31,
     "rateBearScore": 52,
     "creditStressScore": 20
@@ -65,7 +65,9 @@
     "reasons": [
       "金利系の圧力が残り、VIXピークアウトや短期回復の確認が弱いです。"
     ],
-    "warnings": []
+    "warnings": [
+      "一部の派生指標は未取得のため、該当スコアから除外しています。"
+    ]
   },
   "guardrails": {
     "addPermission": "cautious",
@@ -84,32 +86,32 @@
     "vix": {
       "series": "YAHOO:^VIX",
       "source": "Yahoo Finance",
-      "date": "2026-09-10"
+      "date": "2026-09-11"
     },
     "vixChange": {
       "series": "YAHOO:^VIX",
       "source": "Yahoo Finance",
-      "date": "2026-09-10"
+      "date": "2026-09-11"
     },
     "spDeviation": {
       "series": "YAHOO:^GSPC",
       "source": "Yahoo Finance",
-      "date": "2026-09-10"
+      "date": "2026-09-11"
     },
     "nasdaqDeviation": {
       "series": "YAHOO:^NDX",
       "source": "Yahoo Finance",
-      "date": "2026-09-10"
+      "date": "2026-09-11"
     },
     "us10y": {
       "series": "TREASURY_YIELD_CURVE:10 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-09-10"
+      "date": "2026-09-11"
     },
     "us10yChange": {
       "series": "TREASURY_YIELD_CURVE:10 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-09-10"
+      "date": "2026-09-11"
     },
     "usdjpy": {
       "series": "USDJPY_ECB_REFERENCE",
@@ -119,17 +121,17 @@
     "creditTrend": {
       "series": "YAHOO:HYG/IEF 200d deviation",
       "source": "Yahoo Finance",
-      "date": "2026-09-10"
+      "date": "2026-09-11"
     },
     "realYield": {
       "series": "TREASURY_REAL_YIELD_CURVE:10 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-09-10"
+      "date": "2026-09-11"
     },
     "yieldCurve": {
       "series": "TREASURY_YIELD_CURVE:10 Yr-2 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-09-10"
+      "date": "2026-09-11"
     },
     "oilDeviation": {
       "series": "YAHOO:CL=F",
@@ -147,5 +149,9 @@
       "date": "2026-09-11"
     }
   },
-  "warnings": []
+  "warnings": [
+    "USDJPY fetch failed; using previous value.",
+    "USDJPY history fetch failed: Stooq Stooq usdjpy has no usable rows; Frankfurter The read operation timed out",
+    "派生指標の一部は元データ不足のため判定から除外: usdJpyChange5d, usdJpyChange20d"
+  ]
 }
