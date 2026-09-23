@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-09-22T05:20:47Z",
-  "updated_at_jst": "2026-09-22 14:20",
+  "updated_at": "2026-09-23T05:08:11Z",
+  "updated_at_jst": "2026-09-23 14:08",
   "status": "ok",
   "values": {
     "vix": 14.87,
@@ -9,13 +9,13 @@
     "nasdaqDeviation": 11.84,
     "us10y": 4.96,
     "us10yChange": 22,
-    "usdjpy": 157.27,
+    "usdjpy": 157.18,
     "creditTrend": 2.22,
-    "realYield": 2.62,
-    "yieldCurve": 0.2,
-    "oilDeviation": 15.24,
-    "fearGreed": 33.66,
-    "fearGreedChange": -21
+    "realYield": 2.63,
+    "yieldCurve": 0.25,
+    "oilDeviation": 9.4,
+    "fearGreed": 35.23,
+    "fearGreedChange": -19.43
   },
   "derived": {
     "vixChange5d": -2.23,
@@ -32,10 +32,10 @@
     "creditTrend10d": 0.59,
     "creditTrend20d": 0.64,
     "creditDrawdownFrom20dHigh": -0.19,
-    "usdJpyChange5d": 1.76,
-    "usdJpyChange20d": -1.16,
-    "goldChange20d": -6.72,
-    "oilChange20d": 9.86,
+    "usdJpyChange5d": 1.41,
+    "usdJpyChange20d": -1.29,
+    "goldChange20d": -6.66,
+    "oilChange20d": 7.84,
     "qqqSpyChange5d": 2.85,
     "qqqSpyChange20d": 2.88,
     "selectiveDefenseActive": false,
@@ -69,12 +69,11 @@
   },
   "guardrails": {
     "addPermission": "normal",
-    "trimPermission": "cautious",
+    "trimPermission": "allowed",
     "mainLabel": "通常維持",
     "confidence": "high",
     "reasons": [
-      "通常ペース可。ただし既存ルールと対象ETFのトレンド確認を優先します。",
-      "悲観が強く、縮小は小さく分ける局面です。"
+      "通常ペース可。ただし既存ルールと対象ETFのトレンド確認を優先します。"
     ],
     "warnings": []
   },
@@ -102,17 +101,17 @@
     "us10y": {
       "series": "TREASURY_YIELD_CURVE:10 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-09-21"
+      "date": "2026-09-22"
     },
     "us10yChange": {
       "series": "TREASURY_YIELD_CURVE:10 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-09-21"
+      "date": "2026-09-22"
     },
     "usdjpy": {
       "series": "USDJPY_ECB_REFERENCE",
       "source": "Frankfurter",
-      "date": "2026-09-21"
+      "date": "2026-09-22"
     },
     "creditTrend": {
       "series": "YAHOO:HYG/IEF 200d deviation",
@@ -122,27 +121,27 @@
     "realYield": {
       "series": "TREASURY_REAL_YIELD_CURVE:10 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-09-21"
+      "date": "2026-09-22"
     },
     "yieldCurve": {
       "series": "TREASURY_YIELD_CURVE:10 Yr-2 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-09-21"
+      "date": "2026-09-22"
     },
     "oilDeviation": {
       "series": "YAHOO:CL=F",
       "source": "Yahoo Finance",
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     "fearGreed": {
       "series": "CNN_FEAR_GREED",
       "source": "CNN",
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     },
     "fearGreedChange": {
       "series": "CNN_FEAR_GREED",
       "source": "CNN",
-      "date": "2026-09-22"
+      "date": "2026-09-23"
     }
   },
   "warnings": []
