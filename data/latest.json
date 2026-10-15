@@ -1,43 +1,43 @@
 {
-  "updated_at": "2026-10-14T05:20:29Z",
-  "updated_at_jst": "2026-10-14 14:20",
+  "updated_at": "2026-10-15T05:09:07Z",
+  "updated_at_jst": "2026-10-15 14:09",
   "status": "ok",
   "values": {
-    "vix": 15.27,
-    "vixChange": -0.57,
-    "spDeviation": 7.52,
-    "nasdaqDeviation": 10.46,
-    "us10y": 5.21,
-    "us10yChange": 25,
-    "usdjpy": 158.12,
-    "creditTrend": 1.68,
-    "realYield": 2.88,
-    "yieldCurve": 0.42,
-    "oilDeviation": 13.16,
-    "fearGreed": 44.6,
-    "fearGreedChange": 13.63
+    "vix": 16.87,
+    "vixChange": -0.23,
+    "spDeviation": 6.27,
+    "nasdaqDeviation": 8.14,
+    "us10y": 5.19,
+    "us10yChange": 22,
+    "usdjpy": 158.45,
+    "creditTrend": 1.1,
+    "realYield": 2.84,
+    "yieldCurve": 0.37,
+    "oilDeviation": 12.12,
+    "fearGreed": 32.33,
+    "fearGreedChange": 4.36
   },
   "derived": {
-    "vixChange5d": 0.26,
-    "vixChange10d": -0.77,
-    "vixDrawdownFrom10dHigh": -6.83,
-    "vixDrawdownFrom20dHigh": -13.78,
-    "sp500Change5d": -0.17,
-    "sp500Change10d": 1.75,
-    "nasdaq100Change5d": -2.1,
-    "nasdaq100Change10d": 0.76,
+    "vixChange5d": 1.79,
+    "vixChange10d": 0.53,
+    "vixDrawdownFrom10dHigh": 0,
+    "vixDrawdownFrom20dHigh": 0,
+    "sp500Change5d": -1.06,
+    "sp500Change10d": 0.88,
+    "nasdaq100Change5d": -3.88,
+    "nasdaq100Change10d": -1.51,
     "sp500NoNewLow3d": true,
     "nasdaq100NoNewLow3d": true,
-    "creditTrend5d": -0.69,
-    "creditTrend10d": -0.45,
-    "creditTrend20d": -0.24,
-    "creditDrawdownFrom20dHigh": -0.86,
-    "usdJpyChange5d": 0.02,
-    "usdJpyChange20d": 2.01,
-    "goldChange20d": -4.65,
-    "oilChange20d": -7.45,
-    "qqqSpyChange5d": -1.98,
-    "qqqSpyChange20d": 2.74,
+    "creditTrend5d": -1.15,
+    "creditTrend10d": -0.96,
+    "creditTrend20d": -0.94,
+    "creditDrawdownFrom20dHigh": -1.41,
+    "usdJpyChange5d": 0.14,
+    "usdJpyChange20d": 2.19,
+    "goldChange20d": -5.28,
+    "oilChange20d": -7.63,
+    "qqqSpyChange5d": -2.85,
+    "qqqSpyChange20d": 1.35,
     "selectiveDefenseActive": false,
     "selectiveDefenseRisk": false,
     "selectiveDefenseBadCount": 1,
@@ -46,34 +46,37 @@
     "selectiveVolatilityRisk": false,
     "selectiveCreditRisk": true,
     "selectiveBreadthRisk": false,
-    "sp500Drawdown20d": -0.17,
-    "vixTermRatio": 0.85,
-    "rspSpyChange5d": 0.6
+    "sp500Drawdown20d": -1.28,
+    "vixTermRatio": 0.9,
+    "rspSpyChange5d": 1.7
   },
   "scores": {
-    "panicScore": 17,
-    "peakOutScore": 48,
-    "preCrashRiskScore": 43,
-    "rateBearScore": 54,
-    "creditStressScore": 35
+    "panicScore": 23,
+    "peakOutScore": 37,
+    "preCrashRiskScore": 39,
+    "rateBearScore": 57,
+    "creditStressScore": 39
   },
   "regime": {
-    "key": "risk_on",
-    "current": "通常のリスクオン",
+    "key": "caution",
+    "current": "警戒・様子見",
     "positionJudgment": "維持",
-    "positionSizeHint": "追いかけすぎに注意しながら維持",
+    "positionSizeHint": "金利圧力と回復確認の弱さが残るため、無理に増やさない",
     "reasons": [
-      "3軸判定で市場環境は比較的安定しています。"
+      "金利系の圧力が残り、VIXピークアウトや短期回復の確認が弱いです。"
     ],
     "warnings": []
   },
   "guardrails": {
     "addPermission": "cautious",
-    "trimPermission": "allowed",
-    "mainLabel": "小さく打診まで",
+    "trimPermission": "cautious",
+    "mainLabel": "慎重維持",
     "confidence": "high",
     "reasons": [
-      "金利圧力に対して回復確認が弱い状態です。"
+      "現行局面は追加を急がない判定です。",
+      "悲観が強い一方、底打ち確認が不足しています。",
+      "金利圧力に対して回復確認が弱い状態です。",
+      "悲観が強く、縮小は小さく分ける局面です。"
     ],
     "warnings": []
   },
@@ -81,67 +84,67 @@
     "vix": {
       "series": "YAHOO:^VIX",
       "source": "Yahoo Finance",
-      "date": "2026-10-13"
+      "date": "2026-10-14"
     },
     "vixChange": {
       "series": "YAHOO:^VIX",
       "source": "Yahoo Finance",
-      "date": "2026-10-13"
+      "date": "2026-10-14"
     },
     "spDeviation": {
       "series": "YAHOO:^GSPC",
       "source": "Yahoo Finance",
-      "date": "2026-10-13"
+      "date": "2026-10-14"
     },
     "nasdaqDeviation": {
       "series": "YAHOO:^NDX",
       "source": "Yahoo Finance",
-      "date": "2026-10-13"
+      "date": "2026-10-14"
     },
     "us10y": {
       "series": "TREASURY_YIELD_CURVE:10 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-10-13"
+      "date": "2026-10-14"
     },
     "us10yChange": {
       "series": "TREASURY_YIELD_CURVE:10 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-10-13"
+      "date": "2026-10-14"
     },
     "usdjpy": {
       "series": "USDJPY_ECB_REFERENCE",
       "source": "Frankfurter",
-      "date": "2026-10-13"
+      "date": "2026-10-14"
     },
     "creditTrend": {
       "series": "YAHOO:HYG/IEF 200d deviation",
       "source": "Yahoo Finance",
-      "date": "2026-10-13"
+      "date": "2026-10-14"
     },
     "realYield": {
       "series": "TREASURY_REAL_YIELD_CURVE:10 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-10-13"
+      "date": "2026-10-14"
     },
     "yieldCurve": {
       "series": "TREASURY_YIELD_CURVE:10 Yr-2 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-10-13"
+      "date": "2026-10-14"
     },
     "oilDeviation": {
       "series": "YAHOO:CL=F",
       "source": "Yahoo Finance",
-      "date": "2026-10-14"
+      "date": "2026-10-15"
     },
     "fearGreed": {
       "series": "CNN_FEAR_GREED",
       "source": "CNN",
-      "date": "2026-10-14"
+      "date": "2026-10-15"
     },
     "fearGreedChange": {
       "series": "CNN_FEAR_GREED",
       "source": "CNN",
-      "date": "2026-10-14"
+      "date": "2026-10-15"
     }
   },
   "warnings": []
