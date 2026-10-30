@@ -1,43 +1,43 @@
 {
-  "updated_at": "2026-10-29T06:25:12Z",
-  "updated_at_jst": "2026-10-29 15:25",
+  "updated_at": "2026-10-30T06:24:17Z",
+  "updated_at_jst": "2026-10-30 15:24",
   "status": "ok",
   "values": {
-    "vix": 16.91,
-    "vixChange": 0.84,
-    "spDeviation": 6.04,
-    "nasdaqDeviation": 6.88,
-    "us10y": 5.05,
-    "us10yChange": -19,
-    "usdjpy": 157.96,
-    "creditTrend": 0.78,
-    "realYield": 2.67,
-    "yieldCurve": 0.38,
-    "oilDeviation": 17.68,
-    "fearGreed": 35.83,
-    "fearGreedChange": 4.77
+    "vix": 17.2,
+    "vixChange": 1.16,
+    "spDeviation": 5.66,
+    "nasdaqDeviation": 5.34,
+    "us10y": 4.98,
+    "us10yChange": -28,
+    "usdjpy": 158.06,
+    "creditTrend": 0.32,
+    "realYield": 2.63,
+    "yieldCurve": 0.37,
+    "oilDeviation": 19.8,
+    "fearGreed": 34.6,
+    "fearGreedChange": 4.29
   },
   "derived": {
-    "vixChange5d": 0.23,
-    "vixChange10d": 0.04,
-    "vixDrawdownFrom10dHigh": -15.41,
-    "vixDrawdownFrom20dHigh": -15.41,
-    "sp500Change5d": -0.17,
-    "sp500Change10d": 0.32,
-    "nasdaq100Change5d": -0.03,
-    "nasdaq100Change10d": -0.46,
+    "vixChange5d": -1.83,
+    "vixChange10d": 0.74,
+    "vixDrawdownFrom10dHigh": -13.96,
+    "vixDrawdownFrom20dHigh": -13.96,
+    "sp500Change5d": 0.74,
+    "sp500Change10d": -0.31,
+    "nasdaq100Change5d": 1.53,
+    "nasdaq100Change10d": -1.78,
     "sp500NoNewLow3d": true,
     "nasdaq100NoNewLow3d": true,
-    "creditTrend5d": 0.1,
-    "creditTrend10d": -0.25,
-    "creditTrend20d": -1.21,
-    "creditDrawdownFrom20dHigh": -1.49,
-    "usdJpyChange5d": 0.05,
-    "usdJpyChange20d": 0.61,
-    "goldChange20d": -3.92,
-    "oilChange20d": 9.14,
-    "qqqSpyChange5d": 0.16,
-    "qqqSpyChange20d": -3.14,
+    "creditTrend5d": 0.57,
+    "creditTrend10d": -0.41,
+    "creditTrend20d": -1.27,
+    "creditDrawdownFrom20dHigh": -1.93,
+    "usdJpyChange5d": 0.64,
+    "usdJpyChange20d": 0.05,
+    "goldChange20d": -3.97,
+    "oilChange20d": 13.52,
+    "qqqSpyChange5d": 0.83,
+    "qqqSpyChange20d": -4.27,
     "selectiveDefenseActive": false,
     "selectiveDefenseRisk": false,
     "selectiveDefenseBadCount": 0,
@@ -46,15 +46,15 @@
     "selectiveVolatilityRisk": false,
     "selectiveCreditRisk": false,
     "selectiveBreadthRisk": false,
-    "sp500Drawdown20d": -0.96,
-    "vixTermRatio": 0.88,
-    "rspSpyChange5d": 0.47
+    "sp500Drawdown20d": -1.26,
+    "vixTermRatio": 0.89,
+    "rspSpyChange5d": 0.13
   },
   "scores": {
     "panicScore": 23,
-    "peakOutScore": 51,
-    "preCrashRiskScore": 29,
-    "rateBearScore": 41,
+    "peakOutScore": 57,
+    "preCrashRiskScore": 27,
+    "rateBearScore": 44,
     "creditStressScore": 30
   },
   "regime": {
@@ -69,11 +69,12 @@
   },
   "guardrails": {
     "addPermission": "normal",
-    "trimPermission": "allowed",
+    "trimPermission": "cautious",
     "mainLabel": "通常維持",
     "confidence": "high",
     "reasons": [
-      "通常ペース可。ただし既存ルールと対象ETFのトレンド確認を優先します。"
+      "通常ペース可。ただし既存ルールと対象ETFのトレンド確認を優先します。",
+      "悲観が強く、縮小は小さく分ける局面です。"
     ],
     "warnings": []
   },
@@ -81,67 +82,67 @@
     "vix": {
       "series": "YAHOO:^VIX",
       "source": "Yahoo Finance",
-      "date": "2026-10-28"
+      "date": "2026-10-29"
     },
     "vixChange": {
       "series": "YAHOO:^VIX",
       "source": "Yahoo Finance",
-      "date": "2026-10-28"
+      "date": "2026-10-29"
     },
     "spDeviation": {
       "series": "YAHOO:^GSPC",
       "source": "Yahoo Finance",
-      "date": "2026-10-28"
+      "date": "2026-10-29"
     },
     "nasdaqDeviation": {
       "series": "YAHOO:^NDX",
       "source": "Yahoo Finance",
-      "date": "2026-10-28"
+      "date": "2026-10-29"
     },
     "us10y": {
       "series": "TREASURY_YIELD_CURVE:10 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-10-28"
+      "date": "2026-10-29"
     },
     "us10yChange": {
       "series": "TREASURY_YIELD_CURVE:10 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-10-28"
+      "date": "2026-10-29"
     },
     "usdjpy": {
       "series": "USDJPY_ECB_REFERENCE",
       "source": "Frankfurter",
-      "date": "2026-10-28"
+      "date": "2026-10-29"
     },
     "creditTrend": {
       "series": "YAHOO:HYG/IEF 200d deviation",
       "source": "Yahoo Finance",
-      "date": "2026-10-28"
+      "date": "2026-10-29"
     },
     "realYield": {
       "series": "TREASURY_REAL_YIELD_CURVE:10 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-10-28"
+      "date": "2026-10-29"
     },
     "yieldCurve": {
       "series": "TREASURY_YIELD_CURVE:10 Yr-2 Yr",
       "source": "U.S. Treasury",
-      "date": "2026-10-28"
+      "date": "2026-10-29"
     },
     "oilDeviation": {
       "series": "YAHOO:CL=F",
       "source": "Yahoo Finance",
-      "date": "2026-10-29"
+      "date": "2026-10-30"
     },
     "fearGreed": {
       "series": "CNN_FEAR_GREED",
       "source": "CNN",
-      "date": "2026-10-29"
+      "date": "2026-10-30"
     },
     "fearGreedChange": {
       "series": "CNN_FEAR_GREED",
       "source": "CNN",
-      "date": "2026-10-29"
+      "date": "2026-10-30"
     }
   },
   "warnings": []
